@@ -14,7 +14,11 @@
 
 History Release Notes
 https://github.com/judero01col/GMap.NET/blob/master/README.md#release-notes
-</PackageReleaseNotes>    
+</PackageReleaseNotes>
+    
+    <SignAssembly>False</SignAssembly>
+    
+    <AssemblyOriginatorKeyFile>D:\Projects\BlissKey.snk</AssemblyOriginatorKeyFile>    
   </PropertyGroup>
 
   <ItemGroup>

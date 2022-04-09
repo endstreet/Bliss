@@ -1,6 +1,6 @@
-﻿namespace Bliss.Controls
+namespace Bliss.Controls
 {
-    partial class BlissMap
+    partial class Compass
     {
         /// <summary> 
         /// Required designer variable.
@@ -28,8 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // AquaGauge
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Name = "AquaGauge";
+            this.ResumeLayout(false);
+
         }
 
         #endregion

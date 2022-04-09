@@ -1,4 +1,5 @@
-﻿using GMap.NET;
+﻿using Bliss.Services;
+using GMap.NET;
 using GMap.NET.MapProviders;
 using GMap.NET.WindowsForms;
 using GMap.NET.WindowsForms.Markers;
@@ -24,6 +25,7 @@ namespace Bliss
         readonly GMapOverlay _top = new GMapOverlay();
         internal readonly GMapOverlay Objects = new GMapOverlay("objects");
         internal readonly GMapOverlay Routes = new GMapOverlay("routes");
+        internal readonly GMapOverlay Tracks = new GMapOverlay("tracks");
         internal readonly GMapOverlay Polygons = new GMapOverlay("polygons");
 
         // marker
@@ -45,6 +47,7 @@ namespace Bliss
 
         public Dashboard()
         {
+            SQLite.Test();
             InitializeComponent();
             if (!GMapControl.IsDesignerHosted)
             {
@@ -219,7 +222,62 @@ namespace Bliss
             TopMost = false;
         }
 
+        private void DrawWaypoints(PointLatLng from, PointLatLng to)
+        {
+            GMapRoute line_layer;
 
+            line_layer = new GMapRoute("single_line");
+            line_layer.Stroke = new Pen(Brushes.DodgerBlue, 2); //width and color of line
+
+            Routes.Routes.Add(line_layer);
+            MainMap.Overlays.Add(Routes);
+
+            //Once the layer is created, simply add the two points you want
+            line_layer.Points.Add(from);
+            line_layer.Points.Add(to);
+
+            //Note that if you are using the MouseEventArgs you need to use local coordinates and convert them:
+            //line_layer.Points.Add(MainMap.FromLocalToLatLng(e.X, e.Y));
+
+            //To force the draw, you need to update the route
+            MainMap.UpdateRouteLocalPosition(line_layer);
+
+            //you can even add markers at the end of the lines by adding markers to the same layer:
+            GMarkerGoogle _waypoint = new GMarkerGoogle(to,GMarkerGoogleType.lightblue_pushpin);
+            Routes.Markers.Add(_waypoint);
+        }
+
+        private void DrawTrack(PointLatLng from, PointLatLng to)
+        {
+            GMapRoute track_layer = new GMapRoute("track_layer");
+            track_layer.Stroke = new Pen(Brushes.Green, 2); //width and color of line
+            if (!Tracks.Routes.Contains(track_layer))
+            {
+                Tracks.Routes.Add(track_layer);
+            }
+            if (!MainMap.Overlays.Contains(Tracks))
+            {
+                MainMap.Overlays.Add(Tracks);
+            }
+
+            //Once the layer is created, simply add the two points you want
+            track_layer.Points.Add(from);
+            track_layer.Points.Add(to);
+
+            //Note that if you are using the MouseEventArgs you need to use local coordinates and convert them:
+            //line_layer.Points.Add(MainMap.FromLocalToLatLng(e.X, e.Y));
+
+            //To force the draw, you need to update the route
+            MainMap.UpdateRouteLocalPosition(track_layer);
+
+            //you can even add markers at the end of the lines by adding markers to the same layer:
+            //GMarkerGoogle _waypoint = new GMarkerGoogle(to, GMarkerGoogleType.green_pushpin);
+            //Tracks.Markers.Add(_waypoint);
+        }
+        private void DrawWaypoint()
+        {
+
+        }
         private void MainMap_OnMapClick(PointLatLng pointClick, MouseEventArgs e)
         {
             MainMap.FromLocalToLatLng(e.X, e.Y);
@@ -290,7 +348,9 @@ namespace Bliss
         void MainMap_LocationUpdate(object? sender, EventArgs e)
         {
             if (!GPSSensor.IsValid) return;
+            if (MainMap.Position == GPSSensor.lastLocation) return;
             _top.Markers.Clear();
+            DrawTrack(MainMap.Position, GPSSensor.lastLocation);
             MainMap.Position = GPSSensor.lastLocation;
             _currentMarker = new GMarkerGoogle(MainMap.Position, GMarkerGoogleType.red);
             _top.Markers.Add(_currentMarker);
@@ -1306,5 +1366,23 @@ namespace Bliss
             }
         }
         #endregion
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            MainMap.Visible = true;
+            InstrumentPanel.Visible = false;
+
+        }
+
+        private void dashToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MainMap.Visible = false;
+            InstrumentPanel.Visible = true;
+        }
+
+        private void dashToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }
