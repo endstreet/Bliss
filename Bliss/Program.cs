@@ -1,9 +1,11 @@
+using Bliss.Services;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.IO.Ports;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -24,14 +26,8 @@ namespace Bliss
         [STAThread]
         static void Main()
         {
-            using Bliss.GPSSensor gps = new();
-            //gps.OnRawDataReceived += (_, s) => Console.WriteLine(s);
-            //gps.OnValidDataReceived += (_, v) => Console.WriteLine(v);
-            //gps.OnDataError += (_, e) => Console.WriteLine(e);
-            //gps.Start("COM5");
-            gps.Start(GPSSensor.AvailablePortNames[0]);
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
+            //Set Up the db
+
             ApplicationConfiguration.Initialize();
             Application.Run(new Dashboard());
         }

@@ -2843,26 +2843,21 @@ namespace GMap.NET.WindowsForms
             }
         }
 
+        private string _dbLocation;
         /// <summary>
         ///     location of cache
         /// </summary>
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [Browsable(false)]
+        [Category("GMap.NET")]
+        [Description("Database Location")]
         public string CacheLocation
         {
             get
             {
-#if !DESIGN
-                return CacheLocator.Location;
-#else
-            return string.Empty;
-#endif
+                return _dbLocation;
             }
             set
             {
-#if !DESIGN
-                CacheLocator.Location = value;
-#endif
+                _dbLocation = value;
             }
         }
 

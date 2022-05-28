@@ -6,7 +6,7 @@
 	<OutputType>Library</OutputType>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <SignAssembly>True</SignAssembly>
+    <SignAssembly>False</SignAssembly>
     <AssemblyOriginatorKeyFile>D:\Projects\BlissKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 

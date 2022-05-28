@@ -12,7 +12,7 @@ namespace Bliss {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.1.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.2.0.0")]
     internal sealed partial class AppSettings : global::System.Configuration.ApplicationSettingsBase {
         
         private static AppSettings defaultInstance = ((AppSettings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new AppSettings())));
@@ -34,13 +34,13 @@ namespace Bliss {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10000")]
-        public int LocationUpdateInterval {
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int DashBoardUpdateInterval {
             get {
-                return ((int)(this["LocationUpdateInterval"]));
+                return ((int)(this["DashBoardUpdateInterval"]));
             }
             set {
-                this["LocationUpdateInterval"] = value;
+                this["DashBoardUpdateInterval"] = value;
             }
         }
         
@@ -53,6 +53,114 @@ namespace Bliss {
             }
             set {
                 this["DBName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\FollowTheSun\\DB")]
+        public string DBLocation {
+            get {
+                return ((string)(this["DBLocation"]));
+            }
+            set {
+                this["DBLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        public double APCruise {
+            get {
+                return ((double)(this["APCruise"]));
+            }
+            set {
+                this["APCruise"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int APTurnVelocity {
+            get {
+                return ((int)(this["APTurnVelocity"]));
+            }
+            set {
+                this["APTurnVelocity"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int APDeviationAlarm {
+            get {
+                return ((int)(this["APDeviationAlarm"]));
+            }
+            set {
+                this["APDeviationAlarm"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int PilotSpeedIncrement {
+            get {
+                return ((int)(this["PilotSpeedIncrement"]));
+            }
+            set {
+                this["PilotSpeedIncrement"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int PilotTurnIncrement {
+            get {
+                return ((int)(this["PilotTurnIncrement"]));
+            }
+            set {
+                this["PilotTurnIncrement"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("80")]
+        public int PilotMaxPower {
+            get {
+                return ((int)(this["PilotMaxPower"]));
+            }
+            set {
+                this["PilotMaxPower"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("60")]
+        public int SpeedUpdateInterval {
+            get {
+                return ((int)(this["SpeedUpdateInterval"]));
+            }
+            set {
+                this["SpeedUpdateInterval"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        public int GPSAverageCount {
+            get {
+                return ((int)(this["GPSAverageCount"]));
+            }
+            set {
+                this["GPSAverageCount"] = value;
             }
         }
     }

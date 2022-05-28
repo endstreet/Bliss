@@ -1,4 +1,4 @@
-﻿using Bliss.Services;
+﻿
 using GMap.NET;
 using GMap.NET.MapProviders;
 using GMap.NET.WindowsForms;
@@ -12,15 +12,18 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
-using System.Windows.Forms;
+
+using Bliss.Component;
+using Bliss.Services;
+using SharpDX.DirectInput;
+using GMap.NET.CacheProviders;
 
 namespace Bliss
 {
     public partial class Dashboard : Form
     {
+
+        private PilotService pilot = new ();
         // layers
         readonly GMapOverlay _top = new GMapOverlay();
         internal readonly GMapOverlay Objects = new GMapOverlay("objects");
@@ -47,14 +50,21 @@ namespace Bliss
 
         public Dashboard()
         {
-            SQLite.Test();
+
+
             InitializeComponent();
+
+            MainMap.CacheLocation = AppSettings.Default.DBLocation;
+            //SQLite.Test();
+
             if (!GMapControl.IsDesignerHosted)
             {
                 // add your custom map db provider
-                //MsSQLPureImageCache ch = new MsSQLPureImageCache();
-                //ch.ConnectionString = @"data source = sql5040.site4now.net;User Id=DB_A3B2C9_GMapNET_admin; initial catalog = DB_A3B2C9_GMapNET; password = Usuario@2018;";                
-                //MainMap.Manager.SecondaryCache = ch;
+                MsSQLPureImageCache ch = new MsSQLPureImageCache();
+                string dbFile = Path.Combine(AppSettings.Default.DBLocation, AppSettings.Default.DBName);
+                // Create a new database connection:
+                ch.ConnectionString = $"Data Source={dbFile}.db; Version = 3; New = True; Compress = True;";
+                MainMap.Manager.SecondaryCache = ch;
 
                 // set your proxy here if need
                 //GMapProvider.IsSocksProxy = true;
@@ -210,8 +220,17 @@ namespace Bliss
             }
             //Timer
             GetLocation.Tick += MainMap_LocationUpdate;
-            GetLocation.Interval = AppSettings.Default.LocationUpdateInterval;
+            GetLocation.Interval = AppSettings.Default.DashBoardUpdateInterval * 1000;
             GetLocation.Start();
+
+            //Joystick
+            ScanJoysticks();
+
+            //Show the Commpass
+            pictureCompass.Image = Compass.DrawCompass(0, 0, 80, 0, 80, pictureCompass.Size);
+
+            //Show the PilotControls
+            ProcessPilotCommand(new PilotCommand() { Aux = false });
         }
 
         private void Dashboard_Load(object sender, EventArgs e)
@@ -347,13 +366,21 @@ namespace Bliss
         /// <param name="e"></param>
         void MainMap_LocationUpdate(object? sender, EventArgs e)
         {
-            if (!GPSSensor.IsValid) return;
-            if (MainMap.Position == GPSSensor.lastLocation) return;
-            _top.Markers.Clear();
-            DrawTrack(MainMap.Position, GPSSensor.lastLocation);
-            MainMap.Position = GPSSensor.lastLocation;
-            _currentMarker = new GMarkerGoogle(MainMap.Position, GMarkerGoogleType.red);
-            _top.Markers.Add(_currentMarker);
+
+            //if (!GPSSensor.IsValid) return;
+            if (Services.Shared.LastLocation != Services.Shared.CurrentLocation)
+            {
+                _top.Markers.Clear();
+                DrawTrack(Services.Shared.LastLocation, Services.Shared.CurrentLocation);
+                MainMap.Position = Services.Shared.CurrentLocation;
+                _currentMarker = new GMarkerGoogle(MainMap.Position, GMarkerGoogleType.red);
+                _top.Markers.Add(_currentMarker);
+            }
+            BearingLbl.Text = Services.Shared.Bearing.ToString();
+            SpeedLbl.Text = Services.Shared.Speed.ToString();
+            int degrees = (int)Math.Round(Services.Shared.Bearing, 0);
+            if (degrees == 360) { degrees = 0; }
+            pictureCompass.Image = Compass.DrawCompass(degrees, 0, 80, 0, 80, pictureCompass.Size);
         }
         //System.Windows.Forms.Timer _timerPerf = new System.Windows.Forms.Timer();
         
@@ -1367,22 +1394,67 @@ namespace Bliss
         }
         #endregion
 
-        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+
+        #region Joystick
+        private JoystickService Joystick;
+
+        private void ScanJoysticks()
         {
-            MainMap.Visible = true;
-            InstrumentPanel.Visible = false;
+            JoystickInputTimer.Enabled = false;
+            DirectInput _directInput = new DirectInput();
+            //var devices = _directInput.GetDevices();
+            //if(_directInput.GetDevices().Where(d => d.ProductName == "Motor").Any())
+            //{
+            //    DeviceInstance motor = _directInput.GetDevices().Where(d => d.ProductName == "Motor").First();
+            //    var ss = motor.UsagePage;
+            //}
+            
+            checkConnect.Checked = _directInput.GetDevices().Where(d => d.ProductName == "USB Game Controllers").Any();
+            if (checkConnect.Checked)
+            {
+                DeviceInstance firstJoystickInstance = _directInput.GetDevices().Where(d => d.ProductName == "USB Game Controllers").First();
+                Joystick = new JoystickService(_directInput, firstJoystickInstance);
+                Joystick.Acquire();
+                JoystickInputTimer.Enabled = true;
+            }
 
         }
 
-        private void dashToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ProcessPilotCommands()
         {
-            MainMap.Visible = false;
-            InstrumentPanel.Visible = true;
+            if (!Services.Shared.PilotCommands.Any()) return;
+            ProcessPilotCommand(Services.Shared.PilotCommands.Dequeue());
+        }
+        private void ProcessPilotCommand(PilotCommand input)
+        {
+            Left.BackColor = input.TurnLeft ? Color.Red : Color.White;
+            Right.BackColor = input.TurnRight ? Color.Red : Color.White;
+            Up.BackColor = input.SpeedUp ? Color.Red : Color.White;
+            Down.BackColor = input.SpeedDown ? Color.Red : Color.White;
+            Reverse.BackColor = input.Reverse ? Color.Red : Color.White;
+            Stop.BackColor = input.Stop ? Color.Red : Color.White;
+            Aux.BackColor = input.Aux ? Color.Red : Color.White;
+        }
+        private void JoystickInputTimer_Tick(object sender, EventArgs e)
+        {
+            try { 
+                Joystick.Update();
+                ProcessPilotCommands();
+            }
+            catch (Exception ex)
+            {
+                ///Device unplugged?
+                checkConnect.Checked = false;
+            }
+            if (!checkConnect.Checked)
+            {
+                //Re-connect
+                ScanJoysticks();
+            }
         }
 
-        private void dashToolStripMenuItem_Click_1(object sender, EventArgs e)
-        {
 
-        }
+        #endregion
+
     }
 }

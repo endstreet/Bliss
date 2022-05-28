@@ -3,14 +3,12 @@ using System.Globalization;
 using System.IO.Ports;
 using GMap.NET;
 
-namespace Bliss
+namespace Bliss.Services
 {
     public sealed class GPSSensor: IDisposable
     {
-        public static string[] AvailablePortNames => SerialPort.GetPortNames();
 
-        public static PointLatLng lastLocation;
-        public static bool IsValid;
+        public bool IsValid;
         public bool IsDisposed { get; private set; }
         public bool IsInUse { get; private set; }
         
@@ -18,13 +16,15 @@ namespace Bliss
         private readonly object _mutex;
         private SerialPort? _port;
 
-        public event Action<GPSSensor, string>? OnDataError;
-        public event Action<GPSSensor, SerialError>? OnError;
-        public event Action<GPSSensor>? OnStart;
-        public event Action<GPSSensor>? OnStop;
-        public event Action<GPSSensor, string>? OnRawDataReceived;
-        public event Action<GPSSensor, NMEA0183Data>? OnValidDataReceived;
-        public event Action<GPSSensor, NMEA0183Error, string>? OnInvalidDataReceived;
+        private SerialPortService serial;
+
+        //public event Action<GPSSensor, string>? OnDataError;
+        //public event Action<GPSSensor, SerialError>? OnError;
+        //public event Action<GPSSensor>? OnStart;
+        //public event Action<GPSSensor>? OnStop;
+        //public event Action<GPSSensor, string>? OnRawDataReceived;
+        //public event Action<GPSSensor, NMEA0183Data>? OnValidDataReceived;
+        //public event Action<GPSSensor, NMEA0183Error, string>? OnInvalidDataReceived;
 
 
         public GPSSensor()
@@ -32,36 +32,56 @@ namespace Bliss
             _mutex = new();
             _read_task = new Task(ReadTask);
             _read_task.Start();
+            serial = new SerialPortService();
+            serial.OnGPSComm += Serial_OnGPSComm;
+            serial.ScanDevices();
+        }
+
+        private void Serial_OnGPSComm(string port)
+        {
+            serial.OnPilotComm -= Serial_OnGPSComm;
+            Stop();
+            Start(port);
         }
 
         private async void ReadTask()
         {
             while (!IsDisposed)
+            {
                 try
                 {
                     if (IsInUse && _port is { IsOpen: true } p)
                     {
                         string message = p.ReadLine();
-                        OnRawDataReceived?.Invoke(this, message);
-                        NMEA0183Data result = ProcessNMEA0183(message);
-                        OnValidDataReceived?.Invoke(this, result);
+                        //OnRawDataReceived?.Invoke(this, message);
+                        NMEA0183Data? result = ProcessNMEA0183(message);
+                        //if (IsValid)
+                        //{
+                        //    OnValidDataReceived?.Invoke(this, result);
+                        //}
                     }
                     else
+                    {
+                        Stop();
                         await Task.Delay(300);
+                        serial.OnGPSComm += Serial_OnGPSComm;
+                        serial.ScanDevices();
+                    }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
+                    //DataError
                     IsValid = false;
-                    //OnDataError?.Invoke(this, ex.Message);
                 }
-
+            }
             _read_task?.Dispose();
         }
 
         private void Port_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
         {
-            OnError?.Invoke(this, e.EventType);
+            //OnError?.Invoke(this, e.EventType);
             Stop();
+            serial.ScanDevices();
         }
 
         public bool Start(string port)
@@ -85,7 +105,7 @@ namespace Bliss
 
                 _port.Open();
                 IsInUse = true;
-                OnStart?.Invoke(this);
+                //OnStart?.Invoke(this);
             }
 
             return IsInUse;
@@ -94,7 +114,7 @@ namespace Bliss
         public void Stop()
         {
             IsInUse = false;
-
+            
             lock (_mutex)
                 if (_port is { })
                 {
@@ -102,7 +122,7 @@ namespace Bliss
                     _port.Close();
                     _port.Dispose();
                     _port = null;
-                    OnStop?.Invoke(this);
+                    //OnStop?.Invoke(this);
                 }
         }
 
@@ -118,58 +138,77 @@ namespace Bliss
             GC.SuppressFinalize(this);
         }
 
-        internal static unsafe NMEA0183Data ProcessNMEA0183(string message)
-        {
-            message = message.Trim();
-
-            fixed (char* cptr = message)
-            {
-                if (message.Length < 9)
-                    throw new System.Exception("MessageTooShort");
-                else if (cptr[0] != '$')
-                    throw new System.Exception("InvalidMessageStart");
-
-                string talker = message[1..3];
-                string type = message[3..6];
-                int eot_index = message.IndexOf('*');
-
-                if (eot_index != message.Length - 3)
-                    throw new System.Exception("InvalidMessageEnd");
-
-                byte checksum = byte.Parse(message[(eot_index + 1)..], NumberStyles.HexNumber);
-
-                for (int i = 1; i < eot_index; ++i)
-                    checksum ^= (byte)cptr[i];
-
-                if (checksum != 0)
-                    throw new System.Exception("InvalidChecksum");
-
-                string raw_data = message[6..eot_index];
-                string[] data = Array.Empty<string>();
-
-                if (raw_data.Length > 0)
-                    if (raw_data[0] != ',')
-                        throw new System.Exception("InvalidDataStart");
-                    else
-                        data = raw_data[1..].Split(',');
-
-                IsValid = true;
-                return ProcessNMEA0183(talker.ToUpperInvariant(), type.ToUpperInvariant(), data);
-            }
-        }
-
-        private static unsafe NMEA0183Data ProcessNMEA0183(string talker, string type, string[] data)
+        internal unsafe NMEA0183Data? ProcessNMEA0183(string message)
         {
             try
             {
+
+                message = message.Trim();
+
+                fixed (char* cptr = message)
+                {
+                    if (message.Length < 9)
+                        throw new System.Exception("MessageTooShort");
+                    else if (cptr[0] != '$')
+                        throw new System.Exception("InvalidMessageStart");
+
+                    string talker = message[1..3];
+                    string type = message[3..6];
+                    int eot_index = message.IndexOf('*');
+
+                    if (eot_index != message.Length - 3)
+                        throw new System.Exception("InvalidMessageEnd");
+
+                    byte checksum = byte.Parse(message[(eot_index + 1)..], NumberStyles.HexNumber);
+
+                    for (int i = 1; i < eot_index; ++i)
+                        checksum ^= (byte)cptr[i];
+
+                    if (checksum != 0)
+                        throw new System.Exception("InvalidChecksum");
+
+                    string raw_data = message[6..eot_index];
+                    string[] data = Array.Empty<string>();
+
+                    if (raw_data.Length > 0)
+                    {
+                        if (raw_data[0] != ',')
+                        {
+                            throw new System.Exception("InvalidDataStart");
+                        }
+                        else
+                        {
+                            data = raw_data[1..].Split(',');
+                        }
+                    }
+
+                    NMEA0183Data? NMEAdata =  ProcessNMEA0183(talker.ToUpperInvariant(), type.ToUpperInvariant(), data);
+                    IsValid = NMEAdata != null;
+                    return IsValid ? NMEAdata : null;
+
+                }
+            }
+            catch(Exception ex)
+            {
+                var ss = ex.Message;
+                IsValid = false;
+                return null;
+            }
+        }
+
+        private unsafe NMEA0183Data? ProcessNMEA0183(string talker, string type, string[] data)
+        {
+
                 switch (type)
                 {
                     case "GGA":
                         {
                             DateTime utc = ParseTime(data[0]);
+                            IsValid = data[5] == "1";
+                            if (!IsValid) throw new Exception("Invalid location data.");
                             double lat = ParseLatLon(data[1].TrimStart('0'));
                             double lon = ParseLatLon(data[3].TrimStart('0'));
-                            lastLocation = new PointLatLng(lat * (data[2] == "S" ? -1 : 1), lon * (data[4] == "W" ? -1 : 1));
+                            AverageLocation(new PointLatLng(lat * (data[2] == "S" ? -1 : 1), lon * (data[4] == "W" ? -1 : 1)));
                             //-25.839225, 28.033462
                             return new NMEA0183Data.GNSSData.GPSFixData(
                                 talker,
@@ -191,7 +230,7 @@ namespace Bliss
                             DateTime utc = ParseTime(data[4]);
                             double lat = ParseLatLon(data[0].TrimStart('0'));
                             double lon = ParseLatLon(data[2].TrimStart('0'));
-                            lastLocation = new PointLatLng(lat * (data[1] == "S" ? -1 : 1), lon * (data[3] == "W" ? -1 : 1));
+                        //AverageLocation( new PointLatLng(lat * (data[1] == "S" ? -1 : 1), lon * (data[3] == "W" ? -1 : 1)));
                             return new NMEA0183Data.GNSSData.GeographicPosition(
                                 talker,
                                 utc,
@@ -211,8 +250,9 @@ namespace Bliss
                             DateTime utc = ParseTime(data[8] + data[0]);
                             double lat = ParseLatLon(data[2].TrimStart('0'));
                             double lon = ParseLatLon(data[4].TrimStart('0'));
-                            lastLocation = new PointLatLng(lat * (data[3] == "S" ? -1 : 1), lon * (data[5] == "W" ? -1 : 1));
-                            if (string.IsNullOrEmpty(data[7]))data[7] = "0";
+                            AverageLocation( new PointLatLng(lat * (data[3] == "S" ? -1 : 1), lon * (data[5] == "W" ? -1 : 1)));
+                        
+                        if (string.IsNullOrEmpty(data[7]))data[7] = "0";
                             return new NMEA0183Data.GNSSData.RecommendedMinimumSpecificGNSSData(
                                 talker,
                                 utc,
@@ -247,18 +287,12 @@ namespace Bliss
                             data[2].ToString(),
                             data[3].ToString()
                             );
-                    default:
-                        throw new System.Exception("UnknownMessageType");
-                }
-                return null;
-                //throw new System.Exception("NOT_YET_IMPLEMENTED");
+                default:
+                    return null;
             }
-            catch(Exception ex)
-            {
-                throw new System.Exception(ex.Message);
-            }
+            return null;
         }
-        private static DateTime ParseTime(string data, DateTimeStyles style = DateTimeStyles.AssumeUniversal)
+        private DateTime ParseTime(string data, DateTimeStyles style = DateTimeStyles.AssumeUniversal)
         {
             if(string.IsNullOrEmpty(data))return DateTime.MinValue;
             int idx = data.IndexOf('.');
@@ -275,11 +309,33 @@ namespace Bliss
             }
             
         }
-
-        private static double ParseLatLon(string data)
+        private double ParseLatLon(string data)
         {
             if (string.IsNullOrEmpty(data))throw new Exception("Invalid location data.");
             return double.Parse(data[..2]) + double.Parse(data[2..]) / 60d;
+        }
+
+        private List<PointLatLng> recents = new();
+        private double Latitude;
+        private double Longtitude;
+
+        public void AverageLocation(PointLatLng reading)
+        {
+
+            if (recents.Count < AppSettings.Default.GPSAverageCount)//collect more data
+            {
+                recents.Add(reading);
+                return;
+            }
+            foreach(PointLatLng rec in recents)
+            {
+                Latitude += rec.Lat;
+                Longtitude += rec.Lng;
+            }
+            Shared.SetCurrentLocation(new PointLatLng(Latitude / recents.Count, Longtitude / recents.Count));
+            recents.Clear();
+            Latitude = 0;
+            Longtitude = 0;
         }
 
     }
@@ -374,4 +430,6 @@ namespace Bliss
         DifferentialMode = 'D',
         Estimated = 'E',
     }
+
+
 }

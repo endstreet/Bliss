@@ -152,9 +152,8 @@ namespace GMap.NET.CacheProviders
                     Directory.CreateDirectory(_dir);
                 }
 
-#if !MONO
+
                 SQLiteConnection.ClearAllPools();
-#endif
                 // make empty db
                 {
                     _db = _dir + "Data.gmdb";

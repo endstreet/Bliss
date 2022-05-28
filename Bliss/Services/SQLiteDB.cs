@@ -12,19 +12,21 @@ namespace Bliss.Services
 
         public static void Test()
         {
-            //SQLiteConnection sqlite_conn;
-            //sqlite_conn = CreateConnection();
-            //CreateTable(sqlite_conn);
-            //InsertData(sqlite_conn);
-            //ReadData(sqlite_conn);
+            SQLiteConnection sqlite_conn;
+            sqlite_conn = CreateConnection();
+            CreateTable(sqlite_conn);
+            InsertData(sqlite_conn);
+            ReadData(sqlite_conn);
         }
 
         static SQLiteConnection CreateConnection()
         {
 
             SQLiteConnection sqlite_conn;
+
+            string dbFile = Path.Combine(AppSettings.Default.DBLocation, AppSettings.Default.DBName);
             // Create a new database connection:
-            sqlite_conn = new SQLiteConnection($"Data Source={AppSettings.Default.DBName}.db; Version = 3; New = True; Compress = True; ");
+            sqlite_conn = new SQLiteConnection($"Data Source={dbFile}.db; Version = 3; New = True; Compress = True; ");
            // Open the connection:
          try
             {

@@ -131,17 +131,10 @@ namespace GMap.NET.Internals
             set
             {
                 _cache = value;
-#if SQLite
                 if (ImageCache is SQLitePureImageCache)
                 {
                     (ImageCache as SQLitePureImageCache).CacheLocation = value;
                 }
-#else
-            if(ImageCache is MsSQLCePureImageCache)
-            {
-               (ImageCache as MsSQLCePureImageCache).CacheLocation = value;
-            }
-#endif
                 CacheLocator.Delay = true;
             }
         }
@@ -150,13 +143,7 @@ namespace GMap.NET.Internals
 
         private Cache()
         {
-#if SQLite
             ImageCache = new SQLitePureImageCache();
-#else
-         // you can use $ms stuff if you like too ;}
-         ImageCache = new MsSQLCePureImageCache();
-#endif
-
             {
                 string newCache = CacheLocator.Location;
 
