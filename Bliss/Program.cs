@@ -1,4 +1,6 @@
 using Bliss.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,17 +22,39 @@ namespace Bliss
 {
     internal static class Program
     {
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
         [STAThread]
         static void Main()
         {
-            //Set Up the db
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
 
-            ApplicationConfiguration.Initialize();
-            Application.Run(new Dashboard());
+            var services = new ServiceCollection();
+
+            ConfigureServices(services);
+
+            using (ServiceProvider serviceProvider = services.BuildServiceProvider())
+            {
+                var form1 = serviceProvider.GetRequiredService<Dashboard> ();
+                Application.Run(form1);
+            }
         }
+
+        private static void ConfigureServices(ServiceCollection services)
+        {
+            services.AddScoped<Dashboard, Dashboard>();
+        }
+        ///// <summary>
+        /////  The main entry point for the application.
+        ///// </summary>
+        //[STAThread]
+        //static void Main()
+        //{
+        //    //Set Up the db
+
+        //    ApplicationConfiguration.Initialize();
+        //    Application.Run(new Dashboard());
+        //}
     }
         class IpInfo
         {
@@ -139,7 +163,7 @@ namespace Bliss
             }
         }
 
-#if !MONO
+
 
         #region Managed IP Helper API
 
@@ -369,5 +393,5 @@ namespace Bliss
 
         #endregion
 
-#endif
+
     }

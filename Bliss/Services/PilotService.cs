@@ -9,8 +9,6 @@ namespace Bliss.Services
 {
     public sealed class PilotService : IDisposable
     {
-
-        public bool IsValid;
         public bool IsDisposed { get; private set; }
         public bool IsInUse { get; private set; }
 

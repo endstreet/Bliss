@@ -11,13 +11,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Update="Compass.cs">
-      <SubType>UserControl</SubType>
-      <CustomToolNamespace>Bliss.Controls</CustomToolNamespace>
-    </Compile>
-    <Compile Update="AquaGauge.cs">
-      <CustomToolNamespace>Bliss.Controls</CustomToolNamespace>
-    </Compile>
+    <PackageReference Include="GeoCoordinate.NetCore" Version="1.0.0.1" />
+    <PackageReference Include="GMap.NET.Core" Version="2.1.4" />
+    <PackageReference Include="GMap.NET.WinForms" Version="2.1.4" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bliss.Shared\Bliss.Shared.csproj" />
   </ItemGroup>
 
 </Project>

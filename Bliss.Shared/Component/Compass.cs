@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace Bliss.Component
 {
@@ -14,16 +15,16 @@ namespace Bliss.Component
 
             double maxRadius = s.Width > s.Height ? s.Height / 2 : s.Width / 2;
 
-            double sizeMultiplier = maxRadius / 200;
+            double sizeMultiplier = maxRadius / 180;
             double relativepitch = pitch / maxpitch;
             double relativetilt = tilt / maxtilt;
 
             Bitmap result = null;
-            SolidBrush drawBrushWhite = new SolidBrush(Color.FromArgb(255, 244, 255));
-            SolidBrush drawBrushRed = new SolidBrush(Color.FromArgb(240, 255, 0, 0));
-            SolidBrush drawBrushOrange = new SolidBrush(Color.FromArgb(240, 255, 150, 0));
-            SolidBrush drawBrushBlue = new SolidBrush(Color.FromArgb(100, 0, 250, 255));
-            SolidBrush drawBrushWhiteGrey = new SolidBrush(Color.FromArgb(20, 255, 255, 255));
+            SolidBrush drawBrushWhite = new SolidBrush(Color.Yellow);
+            SolidBrush drawBrushRed = new SolidBrush(Color.Red);
+            SolidBrush drawBrushOrange = new SolidBrush(Color.Red);
+            SolidBrush drawBrushBlue = new SolidBrush(Color.DodgerBlue);
+            SolidBrush drawBrushWhiteGrey = new SolidBrush(Color.DodgerBlue);
             double outerradius = (((maxRadius - sizeMultiplier * 60) / maxRadius) * maxRadius);
             double innerradius = (((maxRadius - sizeMultiplier * 90) / maxRadius) * maxRadius);
             double degreeRadius = outerradius + 37 * sizeMultiplier;
@@ -33,15 +34,15 @@ namespace Bliss.Component
             if (s.Width * s.Height > 0)
             {
                 result = new Bitmap(s.Width, s.Height);
-                using (Font font2 = new Font("Arial", (float)(16 * sizeMultiplier)))
+                using (Font font2 = new Font("Copperplate Gothic Bold", (float)(17 * sizeMultiplier)))
                 {
-                    using (Font font1 = new Font("Arial", (float)(14 * sizeMultiplier)))
+                    using (Font font1 = new Font("Copperplate Gothic Bold", (float)(14 * sizeMultiplier)))
                     {
-                        using (Pen penblue = new Pen(Color.FromArgb(100, 0, 250, 255), ((int)(sizeMultiplier) < 4 ? 4 : (int)(sizeMultiplier))))
+                        using (Pen penblue = new Pen(Color.DodgerBlue, ((int)(sizeMultiplier) < 4 ? 4 : (int)(sizeMultiplier))))
                         {
-                            using (Pen penorange = new Pen(Color.FromArgb(255, 150, 0), ((int)(sizeMultiplier) < 1 ? 1 : (int)(sizeMultiplier))))
+                            using (Pen penorange = new Pen(Color.Red, ((int)(sizeMultiplier) < 1 ? 1 : (int)(sizeMultiplier))))
                             {
-                                using (Pen penred = new Pen(Color.FromArgb(255, 0, 0), ((int)(sizeMultiplier) < 1 ? 1 : (int)(sizeMultiplier))))
+                                using (Pen penred = new Pen(Color.Red, ((int)(sizeMultiplier) < 1 ? 1 : (int)(sizeMultiplier))))
                                 {
 
                                     using (Pen pen1 = new Pen(Color.FromArgb(255, 255, 255), (int)(sizeMultiplier * 4)))
@@ -80,21 +81,21 @@ namespace Bliss.Component
                                                     double[] Cos = new double[360];
                                                     double[] Sin = new double[360];
 
-                                                    //draw centercross
-                                                    g.DrawLine(pen2, new Point(((int)(xcenterpoint - (PitchTiltRadius - sizeMultiplier * 50))), ycenterpoint), new Point(((int)(xcenterpoint + (PitchTiltRadius - sizeMultiplier * 50))), ycenterpoint));
-                                                    g.DrawLine(pen2, new Point(xcenterpoint, (int)(ycenterpoint - (PitchTiltRadius - sizeMultiplier * 50))), new Point(xcenterpoint, ((int)(ycenterpoint + (PitchTiltRadius - sizeMultiplier * 50)))));
+                                                    ////draw centercross
+                                                    //g.DrawLine(pen2, new Point(((int)(xcenterpoint - (PitchTiltRadius - sizeMultiplier * 50))), ycenterpoint), new Point(((int)(xcenterpoint + (PitchTiltRadius - sizeMultiplier * 50))), ycenterpoint));
+                                                    //g.DrawLine(pen2, new Point(xcenterpoint, (int)(ycenterpoint - (PitchTiltRadius - sizeMultiplier * 50))), new Point(xcenterpoint, ((int)(ycenterpoint + (PitchTiltRadius - sizeMultiplier * 50)))));
 
 
                                                     //draw pitchtiltcross
-                                                    Point PitchTiltCenter = new Point((int)(xcenterpoint + PitchTiltRadius * relativetilt), (int)(ycenterpoint - PitchTiltRadius * relativepitch));
-                                                    int rad = (int)(sizeMultiplier * 8);
-                                                    int rad2 = (int)(sizeMultiplier * 25);
+                                                    //Point PitchTiltCenter = new Point((int)(xcenterpoint + PitchTiltRadius * relativetilt), (int)(ycenterpoint - PitchTiltRadius * relativepitch));
+                                                    //int rad = (int)(sizeMultiplier * 8);
+                                                    //int rad2 = (int)(sizeMultiplier * 25);
 
-                                                    Rectangle r = new Rectangle((int)(PitchTiltCenter.X - rad2), (int)(PitchTiltCenter.Y - rad2), (int)(rad2 * 2), (int)(rad2 * 2));
-                                                    g.DrawEllipse(pen3, r);
-                                                    g.FillEllipse(drawBrushWhiteGrey, r);
-                                                    g.DrawLine(penorange, PitchTiltCenter.X - rad, PitchTiltCenter.Y, PitchTiltCenter.X + rad, PitchTiltCenter.Y);
-                                                    g.DrawLine(penorange, PitchTiltCenter.X, PitchTiltCenter.Y - rad, PitchTiltCenter.X, PitchTiltCenter.Y + rad);
+                                                    //Rectangle r = new Rectangle((int)(PitchTiltCenter.X - rad2), (int)(PitchTiltCenter.Y - rad2), (int)(rad2 * 2), (int)(rad2 * 2));
+                                                    //g.DrawEllipse(pen3, r);
+                                                    //g.FillEllipse(drawBrushWhiteGrey, r);
+                                                    //g.DrawLine(penorange, PitchTiltCenter.X - rad, PitchTiltCenter.Y, PitchTiltCenter.X + rad, PitchTiltCenter.Y);
+                                                    //g.DrawLine(penorange, PitchTiltCenter.X, PitchTiltCenter.Y - rad, PitchTiltCenter.X, PitchTiltCenter.Y + rad);
 
 
                                                     //prep here because need before and after for red triangle.
@@ -118,6 +119,7 @@ namespace Bliss.Component
                                                         //Draw Degree labels
                                                         if (d % 30 == 0)
                                                         {
+                                                            //line every 30 deg
                                                             g.DrawLine(penblue, p1, p2);
 
                                                             Point p3 = new Point((int)(degreeRadius * Cos[d]) + xcenterpoint, (int)(degreeRadius * Sin[d]) + ycenterpoint);
@@ -142,13 +144,13 @@ namespace Bliss.Component
                                                                 p = penred;
                                                                 b = drawBrushRed;
                                                             }
-                                                            Point[] a = new Point[] { pA, pB, pC };
+                                                            //Point[] a = new Point[] { pA, pB, pC };
 
-                                                            g.DrawPolygon(p, a);
-                                                            g.FillPolygon(b, a);
+                                                            //g.DrawPolygon(p, a);
+                                                            //g.FillPolygon(b, a);
                                                         }
-                                                        else if (d % 2 == 0)
-                                                            g.DrawLine(pen2, p1, p2);
+                                                        //else if (d % 2 == 0)
+                                                        //    g.DrawLine(pen2, p1, p2);
 
                                                         //draw N,E,S,W
                                                         if (d % 90 == 0)
@@ -174,14 +176,10 @@ namespace Bliss.Component
                                                     //draw course
 
                                                     //g.DrawLine(pen1, new Point(xcenterpoint, ycenterpoint - (int)innerradius), new Point(xcenterpoint, ycenterpoint - ((int)outerradius + (int)(sizeMultiplier * 50))));
-
-
-
-
-                                                    String deg = Math.Round(degree, 2).ToString("0.00") + "°";
+                                                    String deg = Math.Round(degree, 1).ToString("0.0") + "°";
                                                     SizeF s3 = g.MeasureString(deg, font1);
-
-                                                    g.DrawString(deg, font2, drawBrushOrange, new Point(xcenterpoint - (int)(s3.Width / 2), ycenterpoint - (int)(sizeMultiplier * 40)));
+                                                    //Draw degrees in center
+                                                    g.DrawString(deg, font2, drawBrushOrange, new Point(xcenterpoint - (int)(s3.Width / 2), ycenterpoint - (int)(sizeMultiplier * 20)));// 
 
                                                 }
                                             }

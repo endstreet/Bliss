@@ -12,8 +12,6 @@ namespace Bliss.Services
 {
     internal class SimulationService
     {
-        public double Bearing;
-        public double Speed;
         System.Timers.Timer PositionUpdateTimer;
 
         public SimulationService()
@@ -26,8 +24,7 @@ namespace Bliss.Services
 
         private void OnPositionTimer(object? sender, ElapsedEventArgs args)
         {
-
-            double distance = (Speed / 24 / 60) * 1000;
+            double distance = (Shared.Speed / 24 / 60) * 1000;
             if (distance < 0) distance *= -1;
             Resultposition(distance);
         }
@@ -36,36 +33,36 @@ namespace Bliss.Services
         {
             if (command.SpeedUp)
             { 
-                if((int)Speed < 10)
+                if((int)Shared.Speed < 10)
                 {
-                    Shared.OnReverse(Speed, Speed + 1,Bearing);
-                    Speed += 1;
+                    Shared.OnReverse(Shared.Speed, Shared.Speed + 1, Shared.Bearing);
+                    Shared.Speed += 1;
                 }
             }
             if (command.SpeedDown)
             {
-                if ((int)Speed > -10)
+                if ((int)Shared.Speed > -10)
                 {
-                    Shared.OnReverse(Speed, Speed - 1,Bearing);
-                    Speed -= 1;
+                    Shared.OnReverse(Shared.Speed, Shared.Speed - 1, Shared.Bearing);
+                    Shared.Speed -= 1;
 
                 }
             }
             if (command.TurnLeft)
             {
-                Bearing = Bearing - (1 * Speed);
-                if (Bearing < 0)
+                Shared.Bearing = Shared.Bearing - (1 * Shared.Speed);
+                if (Shared.Bearing < 0)
                 {
-                    Bearing = Bearing + 359;
+                    Shared.Bearing = Shared.Bearing + 359;
                 }
 
             }
             if (command.TurnRight)
             {
-                Bearing = Bearing + (1 * Speed);
-                if(Bearing > 359)
+                Shared.Bearing = Shared.Bearing + (1 * Shared.Speed);
+                if(Shared.Bearing > 359)
                 {
-                    Bearing = Bearing - 359;
+                    Shared.Bearing = Shared.Bearing - 359;
                 }
             }
 
@@ -74,7 +71,7 @@ namespace Bliss.Services
 
         private void Resultposition(double distance)
         {
-            double rad = Bearing * Math.PI / 180; //to radians
+            double rad = Shared.Bearing * Math.PI / 180; //to radians
             double lat1 = Shared.CurrentLocation.Lat * Math.PI / 180; //to radians
             double lng1 = Shared.CurrentLocation.Lng * Math.PI / 180; //to radians
             double lat = Math.Asin(Math.Sin(lat1) * Math.Cos(distance / 6378137) + Math.Cos(lat1) * Math.Sin(distance / 6378137) * Math.Cos(rad));
@@ -84,12 +81,12 @@ namespace Bliss.Services
             Shared.CurrentLocation = new PointLatLng(lat * 180 / Math.PI, lng * 180 / Math.PI); // to degrees  
         }
 
-        public double GetDistance(PointLatLng fromPoint, PointLatLng toPoint)
-        {
-            var sCoord = new GeoCoordinate(fromPoint.Lat, fromPoint.Lng);
-            var eCoord = new GeoCoordinate(toPoint.Lat, toPoint.Lng);
-            return sCoord.GetDistanceTo(eCoord);
-        }
+        //public double GetDistance(PointLatLng fromPoint, PointLatLng toPoint)
+        //{
+        //    var sCoord = new GeoCoordinate(fromPoint.Lat, fromPoint.Lng);
+        //    var eCoord = new GeoCoordinate(toPoint.Lat, toPoint.Lng);
+        //    return sCoord.GetDistanceTo(eCoord);
+        //}
 
     }
 }
