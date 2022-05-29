@@ -1,22 +1,7 @@
-﻿
-using GMap.NET;
-using GMap.NET.MapProviders;
-using GMap.NET.WindowsForms;
-using GMap.NET.WindowsForms.Markers;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Reflection;
-
-using Bliss.Component;
+﻿using Bliss.Component;
 using Bliss.Services;
 using SharpDX.DirectInput;
-using GMap.NET.CacheProviders;
+using System.Data;
 
 namespace Bliss
 {
@@ -25,8 +10,7 @@ namespace Bliss
 
         //private PilotService pilot = new ();
         private SimulationService pilot = new();
-
-
+        private JoystickService? Joystick;
         System.Windows.Forms.Timer GetLocation = new System.Windows.Forms.Timer();
 
         public Dashboard()
@@ -60,7 +44,7 @@ namespace Bliss
             {
                 if (component is Panel)
                 {
-                    
+
                     component.BackColor = ColorScheme.BG;
                     component.ForeColor = ColorScheme.FG;
                     component.Font = ColorScheme.LargeFont;
@@ -71,7 +55,7 @@ namespace Bliss
                     component.ForeColor = ColorScheme.FG;
                     component.Font = ColorScheme.SmallFont;
                 }
-                if(component.HasChildren)
+                if (component.HasChildren)
                 {
                     ChangeTheme(component.Controls);
                 }
@@ -90,19 +74,14 @@ namespace Bliss
         /// </summary>
         private void MainMap_LocationUpdate(object? sender, EventArgs e)
         {
-            BearingLbl.Text = Services.Shared.Bearing.ToString();
-            SpeedLbl.Text = Services.Shared.Speed.ToString();
-            int degrees = (int)Math.Round(Services.Shared.Bearing, 0);
-            if (degrees == 360) { degrees = 0; }
-            pictureCompass.Image = Compass.DrawCompass(degrees, 0, 80, 0, 80, pictureCompass.Size);
+            BearingLbl.Text = Services.Info.Bearing.ToString();
+            SpeedLbl.Text = Services.Info.Speed.ToString();
+            pictureCompass.Image = Compass.DrawCompass((int)Math.Round(Info.Bearing, 0), 0, 80, 0, 80, pictureCompass.Size);
+            pictureCompassM.Image = Compass.DrawCompass((int)Math.Round(Info.Bearing, 0), 0, 80, 0, 80, pictureCompass.Size);
             blissMap1.MainMap_LocationUpdate();
         }
 
-
-
         #region Joystick
-        private JoystickService Joystick;
-
         private void ScanJoysticks()
         {
             JoystickInputTimer.Enabled = false;
@@ -113,49 +92,49 @@ namespace Bliss
             //    DeviceInstance motor = _directInput.GetDevices().Where(d => d.ProductName == "Motor").First();
             //    var ss = motor.UsagePage;
             //}
-            
-            
+
+
             if (_directInput.GetDevices().Where(d => d.ProductName == "USB Game Controllers").Any())
             {
                 DeviceInstance firstJoystickInstance = _directInput.GetDevices().Where(d => d.ProductName == "USB Game Controllers").First();
                 Joystick = new JoystickService(_directInput, firstJoystickInstance);
                 Joystick.Acquire();
                 JoystickInputTimer.Enabled = true;
-                joystickActive.BackColor = ColorScheme.Active;
+                //joystickActive.BackColor = ColorScheme.Active;
             }
-
         }
 
         private void ProcessPilotCommands()
         {
-            if (!Services.Shared.PilotCommands.Any()) return;
-            ProcessPilotCommand(Services.Shared.PilotCommands.Dequeue());
+            if (!Info.PilotCommands.Any()) return;
+            ProcessPilotCommand(Info.PilotCommands.Dequeue());
         }
         private void ProcessPilotCommand(PilotCommand input)
         {
-            Left.BackColor = input.TurnLeft ? Color.Red : Color.Transparent;
-            Right.BackColor = input.TurnRight ? Color.Red : Color.Transparent;
-            Up.BackColor = input.SpeedUp ? Color.Red : Color.Transparent;
-            Down.BackColor = input.SpeedDown ? Color.Red : Color.Transparent;
-            Reverse.BackColor = input.Reverse ? Color.Red : Color.Transparent;
-            Stop.BackColor = input.Stop ? Color.Red : Color.Transparent;
-            Aux.BackColor = input.Aux ? Color.Red : Color.Transparent;
+            btnLeft.BackColor = input.TurnLeft ? Color.Red : Color.Transparent;
+            btnRight.BackColor = input.TurnRight ? Color.Red : Color.Transparent;
+            btnSpeedUp.BackColor = input.SpeedUp ? Color.Red : Color.Transparent;
+            btnSpeedDown.BackColor = input.SpeedDown ? Color.Red : Color.Transparent;
+            btnAlarm.BackColor = input.Reverse ? Color.Red : Color.Transparent;
+            btnStop.BackColor = input.Stop ? Color.Red : Color.Transparent;
+            btnCancel.BackColor = input.Aux ? Color.Red : Color.Transparent;
 
             pilot.OnPilotCommand(input);
         }
         private void JoystickInputTimer_Tick(object sender, EventArgs e)
         {
-            try { 
+            try
+            {
                 Joystick.Update();
                 ProcessPilotCommands();
             }
             catch (Exception ex)
             {
                 ///Device unplugged?
-                joystickActive.BackColor = ColorScheme.BG;
-            }
-            if (joystickActive.BackColor == ColorScheme.BG)
-            {
+            //    joystickActive.BackColor = ColorScheme.BG;
+            //}
+            //if (joystickActive.BackColor == ColorScheme.BG)
+            //{
                 //Re-connect
                 ScanJoysticks();
             }
@@ -186,6 +165,18 @@ namespace Bliss
             if (button.Tag == null) return;
             button.ForeColor = ColorScheme.Busy;
 
+        }
+
+        private void groupBox2_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonMapO_Click(object sender, EventArgs e)
+        {
+            Button button = (Button)sender;
+            button.Text = button.Text == "map orientation bearing" ? "map orientation north" : "map orientation bearing";
+            Info.MapShowBearing = button.Text == "map orientation bearing";
         }
     }
 }

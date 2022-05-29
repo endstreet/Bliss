@@ -12,7 +12,7 @@
       <Value Profile="(Default)">Bliss</Value>
     </Setting>
     <Setting Name="DBLocation" Type="System.String" Scope="User">
-      <Value Profile="(Default)">D:\FollowTheSun\DB</Value>
+      <Value Profile="(Default)">D:\FollowTheSun</Value>
     </Setting>
     <Setting Name="APCruise" Type="System.Double" Scope="User">
       <Value Profile="(Default)">3</Value>

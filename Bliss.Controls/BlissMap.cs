@@ -29,10 +29,10 @@ namespace Bliss.Controls
         //readonly Random _rnd = new Random();
         //readonly DescendingComparer _comparerIpStatus = new DescendingComparer();
         //GMapMarkerRect _curentRectMarker;
-        string _mobileGpsLog = string.Empty;
-        bool _isMouseDown;
-        PointLatLng _start;
-        PointLatLng _end;
+        //string _mobileGpsLog = string.Empty;
+        //bool _isMouseDown;
+        //PointLatLng _start;
+        //PointLatLng _end;
         public BlissMap()
         {
             InitializeComponent();
@@ -197,10 +197,10 @@ namespace Bliss.Controls
             }
         }
 
-        private void DrawTrack(PointLatLng from, PointLatLng to)
+        public void DrawTrack(PointLatLng from, PointLatLng to,Brush brushColor)
         {
             GMapRoute track_layer = new GMapRoute("track_layer");
-            track_layer.Stroke = new Pen(Brushes.Green, 2); //width and color of line
+            track_layer.Stroke = new Pen(brushColor, 2); //width and color of line
             if (!Tracks.Routes.Contains(track_layer))
             {
                 Tracks.Routes.Add(track_layer);
@@ -228,14 +228,21 @@ namespace Bliss.Controls
         public void MainMap_LocationUpdate()
         {
             //if (!GPSSensor.IsValid) return;
-            if (Services.Shared.LastLocation == Services.Shared.CurrentLocation) return;
+            if (Services.Info.LastLocation == Services.Info.CurrentLocation) return;
 
             _top.Markers.Clear();
-            DrawTrack(Services.Shared.LastLocation, Services.Shared.CurrentLocation);
-            MainMap.Position = Services.Shared.CurrentLocation;
+            DrawTrack(Services.Info.LastLocation, Services.Info.CurrentLocation,Brushes.Green);
+            MainMap.Position = Services.Info.CurrentLocation;
             _currentMarker = new GMarkerGoogle(MainMap.Position, GMarkerGoogleType.red);
             _top.Markers.Add(_currentMarker);
-            MainMap.Bearing = (float)Services.Shared.Bearing;
+            if (Services.Info.MapShowBearing)
+            {
+                MainMap.Bearing = (float)Services.Info.Bearing;
+            }
+            else
+            {
+                MainMap.Bearing = 0;
+            }
         }
 
         //#region -- map events --

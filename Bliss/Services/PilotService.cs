@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Ports;
-using GMap.NET;
-using GeoCoordinatePortable;
+﻿using System.IO.Ports;
 using System.Timers;
 
 namespace Bliss.Services
@@ -45,82 +41,82 @@ namespace Bliss.Services
         {
             if (command.SpeedUp)
             {
-                if (Shared.PowerRight + AppSettings.Default.PilotSpeedIncrement > AppSettings.Default.PilotMaxPower)
+                if (Info.PowerRight + AppSettings.Default.PilotSpeedIncrement > AppSettings.Default.PilotMaxPower)
                 {
-                    Shared.PowerRight = AppSettings.Default.PilotMaxPower;
+                    Info.PowerRight = AppSettings.Default.PilotMaxPower;
                     //Send right max
                 }
                 else
                 {
-                    Shared.PowerRight += AppSettings.Default.PilotSpeedIncrement;
+                    Info.PowerRight += AppSettings.Default.PilotSpeedIncrement;
                     //Send right
                 }
-                if (Shared.PowerLeft + AppSettings.Default.PilotSpeedIncrement > AppSettings.Default.PilotMaxPower)
+                if (Info.PowerLeft + AppSettings.Default.PilotSpeedIncrement > AppSettings.Default.PilotMaxPower)
                 {
-                    Shared.PowerLeft = AppSettings.Default.PilotMaxPower;
+                    Info.PowerLeft = AppSettings.Default.PilotMaxPower;
                     //Send left max
                 }
                 else
                 {
-                    Shared.PowerLeft += AppSettings.Default.PilotSpeedIncrement;
+                    Info.PowerLeft += AppSettings.Default.PilotSpeedIncrement;
                     //Send left - 
                 }
             }
             if (command.SpeedDown)
             {
-                if (Shared.PowerRight < AppSettings.Default.PilotSpeedIncrement)
+                if (Info.PowerRight < AppSettings.Default.PilotSpeedIncrement)
                 {
-                    Shared.PowerRight = 0;
+                    Info.PowerRight = 0;
                     //Send right stop
                 }
                 else
                 {
-                    Shared.PowerRight -= AppSettings.Default.PilotSpeedIncrement;
+                    Info.PowerRight -= AppSettings.Default.PilotSpeedIncrement;
                     //Send right
                 }
-                if (Shared.PowerLeft < AppSettings.Default.PilotSpeedIncrement)
+                if (Info.PowerLeft < AppSettings.Default.PilotSpeedIncrement)
                 {
-                    Shared.PowerLeft = 0;
+                    Info.PowerLeft = 0;
                     //Send left stop
                 }
                 else
                 {
-                    Shared.PowerLeft -= AppSettings.Default.PilotSpeedIncrement;
+                    Info.PowerLeft -= AppSettings.Default.PilotSpeedIncrement;
                     //Send left - 
                 }
             }
             if (command.TurnLeft)
             {
-                if (Shared.PowerLeft < AppSettings.Default.PilotSpeedIncrement)
+                if (Info.PowerLeft < AppSettings.Default.PilotSpeedIncrement)
                 {
-                    Shared.PowerLeft = 0;
+                    Info.PowerLeft = 0;
                     //Send stop
                 }
                 else
                 {
-                    Shared.PowerLeft -= AppSettings.Default.PilotSpeedIncrement;
+                    Info.PowerLeft -= AppSettings.Default.PilotSpeedIncrement;
                     //Send left - 
                 }
 
             }
             if (command.TurnRight)
             {
-                if (Shared.PowerRight < AppSettings.Default.PilotSpeedIncrement)
+                if (Info.PowerRight < AppSettings.Default.PilotSpeedIncrement)
                 {
-                    Shared.PowerRight = 0;
+                    Info.PowerRight = 0;
                     //Send stop
                 }
                 else
                 {
-                    Shared.PowerRight -= AppSettings.Default.PilotSpeedIncrement;
+                    Info.PowerRight -= AppSettings.Default.PilotSpeedIncrement;
                     //Send right
                 }
             }
             if (command.Stop)
             {
-                Shared.PowerLeft = 0;
+                Info.PowerLeft = 0;
                 //Send stop
-                Shared.PowerRight = 0;
+                Info.PowerRight = 0;
                 //Send stop
             }
 
@@ -208,7 +204,7 @@ namespace Bliss.Services
         public void Stop()
         {
             IsInUse = false;
-            
+
             lock (_mutex)
                 if (_port is { })
                 {
@@ -238,7 +234,7 @@ namespace Bliss.Services
         private void OnPositionTimer(object? sender, ElapsedEventArgs args)
         {
             //Update the speed
-            Shared.CalculateSpeed(m_Timer.Interval);
+            Info.CalculateSpeed(m_Timer.Interval);
         }
 
         /// <summary>

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Linq;
+﻿using System.Runtime.InteropServices;
 
 
 
 namespace Bliss.Services
 {
-    public class SerialPortService 
+    public class SerialPortService
     {
         private string gpsPortName = "";
         private string pilotPortName = "";
@@ -41,14 +38,14 @@ namespace Bliss.Services
                             gpsPortName = device.FriendlyName.Substring(device.FriendlyName.IndexOf('(') + 1, 4);
                             if (!string.IsNullOrEmpty(gpsPortName))
                             {
-                                OnGPSComm?.Invoke( gpsPortName);
+                                OnGPSComm?.Invoke(gpsPortName);
                             }
                             break;
                         case "USB-SERIAL CH340":
                             pilotPortName = device.FriendlyName.Substring(device.FriendlyName.IndexOf('(') + 1, 4);
                             if (!string.IsNullOrEmpty(pilotPortName))
                             {
-                                OnPilotComm?.Invoke( pilotPortName);
+                                OnPilotComm?.Invoke(pilotPortName);
                             }
                             break;
                         default:

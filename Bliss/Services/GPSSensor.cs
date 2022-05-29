@@ -1,17 +1,16 @@
-﻿using System.Threading.Tasks;
+﻿using GMap.NET;
 using System.Globalization;
 using System.IO.Ports;
-using GMap.NET;
 
 namespace Bliss.Services
 {
-    public sealed class GPSSensor: IDisposable
+    public sealed class GPSSensor : IDisposable
     {
 
         public bool IsValid;
         public bool IsDisposed { get; private set; }
         public bool IsInUse { get; private set; }
-        
+
         private readonly Task _read_task;
         private readonly object _mutex;
         private SerialPort? _port;
@@ -114,7 +113,7 @@ namespace Bliss.Services
         public void Stop()
         {
             IsInUse = false;
-            
+
             lock (_mutex)
                 if (_port is { })
                 {
@@ -182,13 +181,13 @@ namespace Bliss.Services
                         }
                     }
 
-                    NMEA0183Data? NMEAdata =  ProcessNMEA0183(talker.ToUpperInvariant(), type.ToUpperInvariant(), data);
+                    NMEA0183Data? NMEAdata = ProcessNMEA0183(talker.ToUpperInvariant(), type.ToUpperInvariant(), data);
                     IsValid = NMEAdata != null;
                     return IsValid ? NMEAdata : null;
 
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 var ss = ex.Message;
                 IsValid = false;
@@ -199,94 +198,94 @@ namespace Bliss.Services
         private unsafe NMEA0183Data? ProcessNMEA0183(string talker, string type, string[] data)
         {
 
-                switch (type)
-                {
-                    case "GGA":
-                        {
-                            DateTime utc = ParseTime(data[0]);
-                            IsValid = data[5] == "1";
-                            if (!IsValid) throw new Exception("Invalid location data.");
-                            double lat = ParseLatLon(data[1].TrimStart('0'));
-                            double lon = ParseLatLon(data[3].TrimStart('0'));
-                            AverageLocation(new PointLatLng(lat * (data[2] == "S" ? -1 : 1), lon * (data[4] == "W" ? -1 : 1)));
-                            //-25.839225, 28.033462
-                            return new NMEA0183Data.GNSSData.GPSFixData(
-                                talker,
-                                utc,
-                                new WGS84Coordinates(
-                                    lat * (data[2] == "S" ? -1 : 1),
-                                    lon * (data[4] == "W" ? -1 : 1)
-                                ),
-                                (GPSQualityIndicator)byte.Parse(data[5]),
-                                int.Parse(data[6]),
-                                double.Parse(data[7]),
-                                double.Parse(data[8]),
-                                double.Parse(data[10]),
-                                int.TryParse(data[13], out int sid) ? sid : null
-                            );
-                        }
-                    case "GLL":
-                        {
-                            DateTime utc = ParseTime(data[4]);
-                            double lat = ParseLatLon(data[0].TrimStart('0'));
-                            double lon = ParseLatLon(data[2].TrimStart('0'));
-                        //AverageLocation( new PointLatLng(lat * (data[1] == "S" ? -1 : 1), lon * (data[3] == "W" ? -1 : 1)));
-                            return new NMEA0183Data.GNSSData.GeographicPosition(
-                                talker,
-                                utc,
-                                new WGS84Coordinates(
-                                    lat * (data[1] == "S" ? -1 : 1),
-                                    lon * (data[3] == "W" ? -1 : 1)
-                                ),
-                                data[5] == "A"
-                            );
-                        }
-                    case "GSA":
-                        break;
-                    case "GSV":
-                        break;
-                    case "RMC":
-                        {
-                            DateTime utc = ParseTime(data[8] + data[0]);
-                            double lat = ParseLatLon(data[2].TrimStart('0'));
-                            double lon = ParseLatLon(data[4].TrimStart('0'));
-                            AverageLocation( new PointLatLng(lat * (data[3] == "S" ? -1 : 1), lon * (data[5] == "W" ? -1 : 1)));
-                        
-                        if (string.IsNullOrEmpty(data[7]))data[7] = "0";
-                            return new NMEA0183Data.GNSSData.RecommendedMinimumSpecificGNSSData(
-                                talker,
-                                utc,
-                                new WGS84Coordinates(
-                                    lat * (data[3] == "S" ? -1 : 1),
-                                    lon * (data[5] == "W" ? -1 : 1)
-                                ),
-                                data[1] == "A",
-                                double.Parse(data[6]) * 1.852,
-                                double.Parse(data[7]),
-                                (RMCModeIndicator)data[11][0]
-                            );
-                        }
-                    case "VTG":
-                        if (string.IsNullOrEmpty(data[0])) data[0] = "0"; //set true coarse to 0 for null
-                        if (string.IsNullOrEmpty(data[2])) data[2] = "0"; //set magnetic coarse to 0 for null
-                        return new NMEA0183Data.CourseOverGround(
+            switch (type)
+            {
+                case "GGA":
+                    {
+                        DateTime utc = ParseTime(data[0]);
+                        IsValid = data[5] == "1";
+                        if (!IsValid) throw new Exception("Invalid location data.");
+                        double lat = ParseLatLon(data[1].TrimStart('0'));
+                        double lon = ParseLatLon(data[3].TrimStart('0'));
+                        AverageLocation(new PointLatLng(lat * (data[2] == "S" ? -1 : 1), lon * (data[4] == "W" ? -1 : 1)));
+                        //-25.839225, 28.033462
+                        return new NMEA0183Data.GNSSData.GPSFixData(
                             talker,
-                            double.Parse(data[0]),
-                            double.Parse(data[2]),
-                            double.Parse(data[4]),
-                            double.Parse(data[4])
+                            utc,
+                            new WGS84Coordinates(
+                                lat * (data[2] == "S" ? -1 : 1),
+                                lon * (data[4] == "W" ? -1 : 1)
+                            ),
+                            (GPSQualityIndicator)byte.Parse(data[5]),
+                            int.Parse(data[6]),
+                            double.Parse(data[7]),
+                            double.Parse(data[8]),
+                            double.Parse(data[10]),
+                            int.TryParse(data[13], out int sid) ? sid : null
                         );
-                    case "ZDA":
+                    }
+                case "GLL":
+                    {
+                        DateTime utc = ParseTime(data[4]);
+                        double lat = ParseLatLon(data[0].TrimStart('0'));
+                        double lon = ParseLatLon(data[2].TrimStart('0'));
+                        //AverageLocation( new PointLatLng(lat * (data[1] == "S" ? -1 : 1), lon * (data[3] == "W" ? -1 : 1)));
+                        return new NMEA0183Data.GNSSData.GeographicPosition(
+                            talker,
+                            utc,
+                            new WGS84Coordinates(
+                                lat * (data[1] == "S" ? -1 : 1),
+                                lon * (data[3] == "W" ? -1 : 1)
+                            ),
+                            data[5] == "A"
+                        );
+                    }
+                case "GSA":
+                    break;
+                case "GSV":
+                    break;
+                case "RMC":
+                    {
+                        DateTime utc = ParseTime(data[8] + data[0]);
+                        double lat = ParseLatLon(data[2].TrimStart('0'));
+                        double lon = ParseLatLon(data[4].TrimStart('0'));
+                        AverageLocation(new PointLatLng(lat * (data[3] == "S" ? -1 : 1), lon * (data[5] == "W" ? -1 : 1)));
 
-                        break;
-                    case "TXT":
-                        return new NMEA0183Data.Text(
-                                                        talker,
-                            data[0].ToString(),
-                            data[1].ToString(),
-                            data[2].ToString(),
-                            data[3].ToString()
-                            );
+                        if (string.IsNullOrEmpty(data[7])) data[7] = "0";
+                        return new NMEA0183Data.GNSSData.RecommendedMinimumSpecificGNSSData(
+                            talker,
+                            utc,
+                            new WGS84Coordinates(
+                                lat * (data[3] == "S" ? -1 : 1),
+                                lon * (data[5] == "W" ? -1 : 1)
+                            ),
+                            data[1] == "A",
+                            double.Parse(data[6]) * 1.852,
+                            double.Parse(data[7]),
+                            (RMCModeIndicator)data[11][0]
+                        );
+                    }
+                case "VTG":
+                    if (string.IsNullOrEmpty(data[0])) data[0] = "0"; //set true coarse to 0 for null
+                    if (string.IsNullOrEmpty(data[2])) data[2] = "0"; //set magnetic coarse to 0 for null
+                    return new NMEA0183Data.CourseOverGround(
+                        talker,
+                        double.Parse(data[0]),
+                        double.Parse(data[2]),
+                        double.Parse(data[4]),
+                        double.Parse(data[4])
+                    );
+                case "ZDA":
+
+                    break;
+                case "TXT":
+                    return new NMEA0183Data.Text(
+                                                    talker,
+                        data[0].ToString(),
+                        data[1].ToString(),
+                        data[2].ToString(),
+                        data[3].ToString()
+                        );
                 default:
                     return null;
             }
@@ -294,24 +293,24 @@ namespace Bliss.Services
         }
         private DateTime ParseTime(string data, DateTimeStyles style = DateTimeStyles.AssumeUniversal)
         {
-            if(string.IsNullOrEmpty(data))return DateTime.MinValue;
+            if (string.IsNullOrEmpty(data)) return DateTime.MinValue;
             int idx = data.IndexOf('.');
             //050422094919.00
 
             string format = $"{(idx > 6 ? "ddMMyy" : "")}HHmmss.{new string('f', data.Length - 1 - idx)}";
             if (format == "ddMMyyHHmmss.ff")
             {
-                return DateTime.ParseExact(data, format,CultureInfo.InvariantCulture);
+                return DateTime.ParseExact(data, format, CultureInfo.InvariantCulture);
             }
             else
             {
                 return DateTime.ParseExact(data, format, null, style);
             }
-            
+
         }
         private double ParseLatLon(string data)
         {
-            if (string.IsNullOrEmpty(data))throw new Exception("Invalid location data.");
+            if (string.IsNullOrEmpty(data)) throw new Exception("Invalid location data.");
             return double.Parse(data[..2]) + double.Parse(data[2..]) / 60d;
         }
 
@@ -327,12 +326,12 @@ namespace Bliss.Services
                 recents.Add(reading);
                 return;
             }
-            foreach(PointLatLng rec in recents)
+            foreach (PointLatLng rec in recents)
             {
                 Latitude += rec.Lat;
                 Longtitude += rec.Lng;
             }
-            Shared.SetCurrentLocation(new PointLatLng(Latitude / recents.Count, Longtitude / recents.Count));
+            Info.SetCurrentLocation(new PointLatLng(Latitude / recents.Count, Longtitude / recents.Count));
             recents.Clear();
             Latitude = 0;
             Longtitude = 0;

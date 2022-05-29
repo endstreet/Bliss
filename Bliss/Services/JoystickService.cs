@@ -43,7 +43,7 @@ namespace Bliss.Services
 
             foreach (JoystickUpdate joystickUpdate in Joystick.GetBufferedData())
             {
-                
+
                 if ("PointOfViewControllers0|Buttons0|Buttons1|Buttons3".Contains(joystickUpdate.Offset.ToString()))
                 {
                     //updatedStates = new List<PilotCommand>();
@@ -84,7 +84,7 @@ namespace Bliss.Services
                             break;
 
                     }
-                    Shared.PilotCommands.Enqueue(command);
+                    Info.PilotCommands.Enqueue(command);
                 }
             }
         }
@@ -104,5 +104,5 @@ namespace Bliss.Services
             Joystick.Acquire();
         }
     }
-    
+
 }

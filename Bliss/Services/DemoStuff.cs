@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using GMap.NET;
+using GMap.NET.MapProviders;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Net;
-using System.Text;
-using GMap.NET;
-using GMap.NET.MapProviders;
 using System.Net.NetworkInformation;
+using System.Text;
 
 namespace Bliss
 {
@@ -141,21 +138,21 @@ namespace Bliss
                             {
                                 var log = new GpsLog();
                                 {
-                                    log.TimeUTC = (DateTime) rd["TimeUTC"];
-                                    log.SessionCounter = (long) rd["SessionCounter"];
+                                    log.TimeUTC = (DateTime)rd["TimeUTC"];
+                                    log.SessionCounter = (long)rd["SessionCounter"];
                                     log.Delta = rd["Delta"] as double?;
                                     log.Speed = rd["Speed"] as double?;
                                     log.SeaLevelAltitude = rd["SeaLevelAltitude"] as double?;
                                     log.EllipsoidAltitude = rd["EllipsoidAltitude"] as double?;
                                     log.SatellitesInView = rd["SatellitesInView"] as Byte?;
                                     log.SatelliteCount = rd["SatelliteCount"] as Byte?;
-                                    log.Position = new PointLatLng((double) rd["Lat"], (double) rd["Lng"]);
+                                    log.Position = new PointLatLng((double)rd["Lat"], (double)rd["Lng"]);
                                     log.PositionDilutionOfPrecision = rd["PositionDilutionOfPrecision"] as double?;
                                     log.HorizontalDilutionOfPrecision = rd["HorizontalDilutionOfPrecision"] as double?;
                                     log.VerticalDilutionOfPrecision = rd["VerticalDilutionOfPrecision"] as double?;
-                                    log.FixQuality = (FixQuality) ((byte) rd["FixQuality"]);
-                                    log.FixType = (FixType) ((byte) rd["FixType"]);
-                                    log.FixSelection = (FixSelection) ((byte) rd["FixSelection"]);
+                                    log.FixQuality = (FixQuality)((byte)rd["FixQuality"]);
+                                    log.FixType = (FixType)((byte)rd["FixType"]);
+                                    log.FixSelection = (FixSelection)((byte)rd["FixSelection"]);
                                 }
 
                                 if (log.SessionCounter - lastSessionCounter != 1 && points.Count > 0)
@@ -220,7 +217,7 @@ namespace Bliss
                     bounds.Left,
                     bounds.Right));
 
-                var items = response.Split(new[] {"\n,"}, StringSplitOptions.RemoveEmptyEntries);
+                var items = response.Split(new[] { "\n," }, StringSplitOptions.RemoveEmptyEntries);
 
                 //int i = 0;
                 foreach (string it in items)

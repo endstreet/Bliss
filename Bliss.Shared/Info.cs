@@ -4,11 +4,11 @@ using GMap.NET;
 
 namespace Bliss.Services
 {
-    public static class Shared
+    public static class Info
     {
         //Pilot controls
         public static double Speed = 0;
-        public static double Bearing = 0;
+        private static double bearing = 0;
         public static bool Reverse = false;
         public static int PowerLeft = 0;
         public static int PowerRight = 0;
@@ -42,15 +42,64 @@ namespace Bliss.Services
         //Motor Temperature
         //Motor RPM
 
-        //Navigation
+        
         public static PointLatLng LastLocation = new PointLatLng(-28.804256, 32.043904);
         public static PointLatLng CurrentLocation = new PointLatLng(-28.804256, 32.043904);
-        //Cruise (Name)
+
+        public static bool MapShowBearing = false;
+
+        public static double Bearing
+        {
+            get
+            {
+                return bearing;
+            }
+            set
+            {
+                if (value > 359)
+                {
+                    if (value == 360)
+                    {
+                        bearing = 0;
+                    }
+                    else
+                    {
+                        bearing = value - 359;
+                        
+                    }
+                    
+                }
+                else if(value < 0)
+                {
+                    if (value == -1)
+                    {
+                        bearing = 359;
+                    }
+                    else 
+                    {
+                        bearing = value + 359;
+                    }
+                }
+                else
+                {
+                    bearing = value;
+                }
+            }
+        }
+        //Navigation
+        //Destination
+        //ETA
+        //Cruise Time
         //Remaining Cruise Time
-        //Remaining Cruise Distance
-        //Remaining Time to Waypoint
-        //Remaining Distance to Waypoint
-        //Waypoint Deviation
+        //Total Distance
+        //Remaining Distance
+
+        //Waypoint
+        //ETA
+        //Cruise Time
+        //Remaining Cruise Time
+        //Total Distance
+        //Remaining Distance
 
         public static void CalculateSpeed(double duration)
         {
@@ -70,8 +119,8 @@ namespace Bliss.Services
 
         public static void SetCurrentLocation(PointLatLng CurrentLocation)
         {
-            LastLocation = Shared.CurrentLocation;
-            Shared.CurrentLocation = CurrentLocation;
+            LastLocation = Info.CurrentLocation;
+            Info.CurrentLocation = CurrentLocation;
         }
         static void CalculateBearing()
         {

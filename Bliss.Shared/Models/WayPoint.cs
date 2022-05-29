@@ -7,26 +7,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bliss.Shared
+namespace Bliss.Models
 {
-    internal class WayPoint
+    public class WayPoint
     {
         [Key]
         public int Id { get; set; }
         public int CruiseId { get; set; }
         public int Sequence { get; set; }
-        public PointLatLng StartPoint { get; set; }
-        public PointLatLng EndPoint { get; set; }
+        public double StartLat { get; set; }
+        public double StartLng { get; set; }
+        public double EndLat { get; set; }
+        public double EndLng { get; set; }
         public DateTime? Departure { get; set; }
         public DateTime? Arrival { get; set; }
 
         [NotMapped]
-        public bool IsSelected { get;set; } 
+        public bool IsSelected { get; set; }
 
         public WayPoint(int sequence)
         {
 
         }
 
+        [NotMapped]
+        public PointLatLng Start
+        {
+            get { return new PointLatLng(StartLat, StartLng); }
+        }
+        [NotMapped]
+        public PointLatLng End
+        {
+            get { return new PointLatLng(EndLat, EndLng); }
+        }
     }
 }

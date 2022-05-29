@@ -58,7 +58,7 @@ namespace Bliss {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("D:\\FollowTheSun\\DB")]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\FollowTheSun")]
         public string DBLocation {
             get {
                 return ((string)(this["DBLocation"]));
