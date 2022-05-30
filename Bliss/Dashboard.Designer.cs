@@ -106,7 +106,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.InstrumentPanel);
             this.splitContainer1.Panel2MinSize = 440;
-            this.splitContainer1.Size = new System.Drawing.Size(1099, 515);
+            this.splitContainer1.Size = new System.Drawing.Size(1099, 666);
             this.splitContainer1.SplitterDistance = 440;
             this.splitContainer1.TabIndex = 6;
             // 
@@ -118,7 +118,7 @@
             this.blissMap1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.blissMap1.Location = new System.Drawing.Point(0, 0);
             this.blissMap1.Name = "blissMap1";
-            this.blissMap1.Size = new System.Drawing.Size(440, 515);
+            this.blissMap1.Size = new System.Drawing.Size(440, 666);
             this.blissMap1.TabIndex = 0;
             // 
             // InstrumentPanel
@@ -139,7 +139,7 @@
             this.InstrumentPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.InstrumentPanel.Location = new System.Drawing.Point(0, 0);
             this.InstrumentPanel.Name = "InstrumentPanel";
-            this.InstrumentPanel.Size = new System.Drawing.Size(655, 515);
+            this.InstrumentPanel.Size = new System.Drawing.Size(655, 666);
             this.InstrumentPanel.TabIndex = 4;
             // 
             // labelAlarms
@@ -147,7 +147,7 @@
             this.labelAlarms.AutoSize = true;
             this.labelAlarms.BackColor = System.Drawing.Color.Transparent;
             this.labelAlarms.ForeColor = System.Drawing.Color.Red;
-            this.labelAlarms.Location = new System.Drawing.Point(16, 456);
+            this.labelAlarms.Location = new System.Drawing.Point(16, 635);
             this.labelAlarms.MaximumSize = new System.Drawing.Size(620, 0);
             this.labelAlarms.MinimumSize = new System.Drawing.Size(620, 0);
             this.labelAlarms.Name = "labelAlarms";
@@ -185,13 +185,12 @@
             this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Font = new System.Drawing.Font("Copperplate Gothic Bold", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.groupBox2.ForeColor = System.Drawing.Color.DeepSkyBlue;
-            this.groupBox2.Location = new System.Drawing.Point(377, 215);
+            this.groupBox2.Location = new System.Drawing.Point(377, 394);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(263, 224);
             this.groupBox2.TabIndex = 46;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "navigation";
-            this.groupBox2.Enter += new System.EventHandler(this.groupBox2_Enter);
             // 
             // buttonMapOrientation
             // 
@@ -411,7 +410,7 @@
             this.groupBox1.Controls.Add(this.btnMotorLeft);
             this.groupBox1.Font = new System.Drawing.Font("Copperplate Gothic Bold", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.groupBox1.ForeColor = System.Drawing.Color.DeepSkyBlue;
-            this.groupBox1.Location = new System.Drawing.Point(16, 348);
+            this.groupBox1.Location = new System.Drawing.Point(16, 527);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(355, 91);
             this.groupBox1.TabIndex = 39;
@@ -468,7 +467,7 @@
             this.groupPilot.Controls.Add(this.btnAutopilot);
             this.groupPilot.Font = new System.Drawing.Font("Copperplate Gothic Bold", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.groupPilot.ForeColor = System.Drawing.Color.DeepSkyBlue;
-            this.groupPilot.Location = new System.Drawing.Point(16, 215);
+            this.groupPilot.Location = new System.Drawing.Point(16, 394);
             this.groupPilot.Name = "groupPilot";
             this.groupPilot.Size = new System.Drawing.Size(355, 127);
             this.groupPilot.TabIndex = 27;
@@ -513,7 +512,7 @@
             this.btnAlarm.TabIndex = 43;
             this.btnAlarm.Text = "alarm";
             this.btnAlarm.UseVisualStyleBackColor = true;
-            this.btnAlarm.Click += new System.EventHandler(this.MouseClickButton);
+            this.btnAlarm.Click += new System.EventHandler(this.buttonAlarm_Click);
             this.btnAlarm.MouseLeave += new System.EventHandler(this.MouseLeaveButton);
             this.btnAlarm.MouseHover += new System.EventHandler(this.MouseOverButton);
             // 
@@ -665,7 +664,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1099, 515);
+            this.ClientSize = new System.Drawing.Size(1099, 666);
             this.Controls.Add(this.splitContainer1);
             this.Name = "Dashboard";
             this.Text = "Dashboard";

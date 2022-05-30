@@ -14,9 +14,20 @@ namespace Bliss
         private System.Windows.Forms.Timer GetLocation = new System.Windows.Forms.Timer();
 
         private string AlarmText = "";
-        private string ScrollText = "";
 
         private readonly DbService dbs;
+
+        private string ScrollText
+        {
+            get
+            {
+                return labelAlarms.Text.Substring(1, 129) + labelAlarms.Text.Substring(0, 1); ; 
+            }
+            set
+            {
+                labelAlarms.Text = value;
+            }
+        }
 
         public Dashboard(DbService db)
         {
@@ -82,20 +93,19 @@ namespace Bliss
 
             if(State.Alarm)
             {
-                if (AlarmText != State.ToString())
+                if (AlarmText != State.ToString())//New alarm
                 {
                     AlarmText = State.ToString();
-                    ScrollText = AlarmText.PadRight(130);
-                    btnAlarm.ForeColor = ColorScheme.Busy;
+                    labelAlarms.Text = AlarmText.PadRight(130);
                 }
-                ScrollText = ScrollText.Substring(1, 129) + ScrollText.Substring(0, 1);
+                btnAlarm.ForeColor = ColorScheme.Busy;
                 labelAlarms.Text = ScrollText;
             }
             else
             {
                 AlarmText = "";
-                ScrollText = "";
-                labelAlarms.Text = ScrollText;
+                labelAlarms.Text = "";
+                btnAlarm.ForeColor = ColorScheme.FG;
             }
         }
         //private void OnAlarm(object? sender, EventArgs e)
@@ -181,33 +191,34 @@ namespace Bliss
             Button button = (Button)sender;
             button.Tag = button.Tag == null ? "Active" : null;
             if (button.Tag == null) return;
-            switch(button.Name)
-            {
-                case "btnAlarm":
-                    if (State.Alarm)
-                    {
-                        State.Alarms.Dequeue();
-                        AlarmText = State.ToString();
-                        ScrollText = AlarmText.PadRight(130);
-                        button.Tag = null;
-                        button.ForeColor = ColorScheme.FG;
-                    }
-                    return;
-            }
             button.ForeColor = ColorScheme.Busy;
 
         }
-
-        private void groupBox2_Enter(object sender, EventArgs e)
-        {
-
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonMapO_Click(object sender, EventArgs e)
         {
             Button button = (Button)sender;
-            button.Text = button.Text == "map orientation bearing" ? "map orientation north" : "map orientation bearing";
-            Info.MapShowBearing = button.Text == "map orientation bearing";
+            button.Text = button.Text == "Map Orientation BEARING" ? "Map Orientation NORTH" : "Map Orientation BEARING";
+            Info.MapShowBearing = button.Text == "Map Orientation BEARING";
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonAlarm_Click(object sender, EventArgs e)
+        {
+            if (State.Alarm)//If there are alarms dequeue one
+            {
+                State.Alarms.Dequeue();
+                btnAlarm.ForeColor = ColorScheme.FG;
+            }
+        }
+
     }
 }
