@@ -1,6 +1,6 @@
 ﻿using GeoCoordinatePortable;
 using GMap.NET;
-
+using System.Text;
 
 namespace Bliss.Services
 {
@@ -157,8 +157,32 @@ namespace Bliss.Services
         public bool TurnLeft { get; set; }
         public bool TurnRight { get; set; }
         public bool Stop { get; set; }
-        public bool Reverse { get; set; }
-        public bool Aux { get; set; }
+        public bool Cancel { get; set; }
+        public bool Alarm { get; set; }
 
+    }
+
+    public static class State
+    {
+        public static bool AutoPilot;
+        public static bool AutopilotCommand;
+        public static bool Alarm
+        {
+            get
+            {
+                return Alarms.Count > 0;
+            }
+        }
+        public static Queue<string> Alarms = new Queue<string>();
+
+        public static new string ToString() 
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach(string alarm in Alarms )
+            {
+                sb.Append( alarm + " | ");
+            }
+            return sb.ToString();
+        }
     }
 }

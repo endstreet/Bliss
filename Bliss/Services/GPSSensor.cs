@@ -71,6 +71,7 @@ namespace Bliss.Services
                 {
                     //DataError
                     IsValid = false;
+                    State.Alarms.Enqueue("gps invalid");
                 }
             }
             _read_task?.Dispose();
@@ -78,7 +79,7 @@ namespace Bliss.Services
 
         private void Port_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
         {
-            //OnError?.Invoke(this, e.EventType);
+            State.Alarms.Enqueue("gps port error");
             Stop();
             serial.ScanDevices();
         }

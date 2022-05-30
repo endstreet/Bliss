@@ -55,6 +55,7 @@ namespace Bliss.Services
             if (command.TurnRight)
             {
                 Info.Bearing = Info.Bearing + (1 * Info.Speed);
+                
             }
 
 

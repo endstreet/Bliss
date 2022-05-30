@@ -2,7 +2,7 @@
 
 namespace Bliss.Services
 {
-    internal class DbService
+    public class DbService
     {
         BlissContext db;
         public DbService()

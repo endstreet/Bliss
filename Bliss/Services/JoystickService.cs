@@ -74,13 +74,13 @@ namespace Bliss.Services
                             }
                             break;
                         case "Buttons0":
-                            command.Aux = joystickUpdate.Value > 0;
+                            command.Cancel = joystickUpdate.Value > 0;
                             break;
                         case "Buttons1":
                             command.Stop = joystickUpdate.Value > 0;
                             break;
                         case "Buttons3":
-                            command.Reverse = joystickUpdate.Value > 0;
+                            command.Stop = joystickUpdate.Value > 0;
                             break;
 
                     }

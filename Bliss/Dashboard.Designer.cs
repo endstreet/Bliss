@@ -32,6 +32,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.blissMap1 = new Bliss.Controls.BlissMap();
             this.InstrumentPanel = new System.Windows.Forms.Panel();
+            this.labelAlarms = new System.Windows.Forms.Label();
             this.pictureCompassM = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.buttonMapOrientation = new System.Windows.Forms.Button();
@@ -74,6 +75,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.JoystickInputTimer = new System.Windows.Forms.Timer(this.components);
+            this.pilotServiceBindingSource = new System.Windows.Forms.BindingSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -84,6 +86,7 @@
             this.groupBox1.SuspendLayout();
             this.groupPilot.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureCompass)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pilotServiceBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -103,7 +106,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.InstrumentPanel);
             this.splitContainer1.Panel2MinSize = 440;
-            this.splitContainer1.Size = new System.Drawing.Size(1099, 458);
+            this.splitContainer1.Size = new System.Drawing.Size(1099, 515);
             this.splitContainer1.SplitterDistance = 440;
             this.splitContainer1.TabIndex = 6;
             // 
@@ -115,7 +118,7 @@
             this.blissMap1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.blissMap1.Location = new System.Drawing.Point(0, 0);
             this.blissMap1.Name = "blissMap1";
-            this.blissMap1.Size = new System.Drawing.Size(440, 458);
+            this.blissMap1.Size = new System.Drawing.Size(440, 515);
             this.blissMap1.TabIndex = 0;
             // 
             // InstrumentPanel
@@ -123,6 +126,7 @@
             this.InstrumentPanel.AutoSize = true;
             this.InstrumentPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.InstrumentPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(64)))));
+            this.InstrumentPanel.Controls.Add(this.labelAlarms);
             this.InstrumentPanel.Controls.Add(this.pictureCompassM);
             this.InstrumentPanel.Controls.Add(this.groupBox2);
             this.InstrumentPanel.Controls.Add(this.groupBox1);
@@ -135,8 +139,20 @@
             this.InstrumentPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.InstrumentPanel.Location = new System.Drawing.Point(0, 0);
             this.InstrumentPanel.Name = "InstrumentPanel";
-            this.InstrumentPanel.Size = new System.Drawing.Size(655, 458);
+            this.InstrumentPanel.Size = new System.Drawing.Size(655, 515);
             this.InstrumentPanel.TabIndex = 4;
+            // 
+            // labelAlarms
+            // 
+            this.labelAlarms.AutoSize = true;
+            this.labelAlarms.BackColor = System.Drawing.Color.Transparent;
+            this.labelAlarms.ForeColor = System.Drawing.Color.Red;
+            this.labelAlarms.Location = new System.Drawing.Point(16, 456);
+            this.labelAlarms.MaximumSize = new System.Drawing.Size(620, 0);
+            this.labelAlarms.MinimumSize = new System.Drawing.Size(620, 0);
+            this.labelAlarms.Name = "labelAlarms";
+            this.labelAlarms.Size = new System.Drawing.Size(620, 15);
+            this.labelAlarms.TabIndex = 48;
             // 
             // pictureCompassM
             // 
@@ -641,11 +657,15 @@
             // 
             this.JoystickInputTimer.Tick += new System.EventHandler(this.JoystickInputTimer_Tick);
             // 
+            // pilotServiceBindingSource
+            // 
+            this.pilotServiceBindingSource.DataSource = typeof(Bliss.Services.PilotService);
+            // 
             // Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1099, 458);
+            this.ClientSize = new System.Drawing.Size(1099, 515);
             this.Controls.Add(this.splitContainer1);
             this.Name = "Dashboard";
             this.Text = "Dashboard";
@@ -663,6 +683,7 @@
             this.groupBox1.ResumeLayout(false);
             this.groupPilot.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureCompass)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pilotServiceBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -713,5 +734,7 @@
         private Label label19;
         private PictureBox pictureCompassM;
         private Button buttonMapOrientation;
+        private Label labelAlarms;
+        private BindingSource pilotServiceBindingSource;
     }
 }

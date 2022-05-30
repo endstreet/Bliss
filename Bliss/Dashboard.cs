@@ -8,21 +8,26 @@ namespace Bliss
     public partial class Dashboard : Form
     {
 
-        //private PilotService pilot = new ();
-        private SimulationService pilot = new();
+        private PilotService pilot = new ();
+        //private SimulationService pilot = new();
         private JoystickService? Joystick;
-        System.Windows.Forms.Timer GetLocation = new System.Windows.Forms.Timer();
+        private System.Windows.Forms.Timer GetLocation = new System.Windows.Forms.Timer();
 
-        public Dashboard()
+        private string AlarmText = "";
+        private string ScrollText = "";
+
+        private readonly DbService dbs;
+
+        public Dashboard(DbService db)
         {
-
-
             InitializeComponent();
 
             blissMap1.ApiKey = AppSettings.Default.GoogleMapApiKey;
             blissMap1.DBFile = AppSettings.Default.DBLocation;
 
-            ChangeTheme(this.Controls);
+            dbs = db;
+
+            ChangeTheme(splitContainer1.Panel2.Controls);
 
             //Timer
             GetLocation.Tick += MainMap_LocationUpdate;
@@ -31,12 +36,6 @@ namespace Bliss
 
             //Joystick
             ScanJoysticks();
-
-            //Show the Commpass
-            pictureCompass.Image = Compass.DrawCompass(0, 0, 80, 0, 80, pictureCompass.Size);
-
-            //Show the PilotControls
-            ProcessPilotCommand(new PilotCommand() { Aux = false });
         }
         public void ChangeTheme(Control.ControlCollection components)
         {
@@ -60,6 +59,7 @@ namespace Bliss
                     ChangeTheme(component.Controls);
                 }
             }
+            labelAlarms.ForeColor = Color.Red;
         }
         private void Dashboard_Load(object sender, EventArgs e)
         {
@@ -74,25 +74,40 @@ namespace Bliss
         /// </summary>
         private void MainMap_LocationUpdate(object? sender, EventArgs e)
         {
-            BearingLbl.Text = Services.Info.Bearing.ToString();
-            SpeedLbl.Text = Services.Info.Speed.ToString();
+            BearingLbl.Text = Info.Bearing.ToString();
+            SpeedLbl.Text = Info.Speed.ToString();
             pictureCompass.Image = Compass.DrawCompass((int)Math.Round(Info.Bearing, 0), 0, 80, 0, 80, pictureCompass.Size);
             pictureCompassM.Image = Compass.DrawCompass((int)Math.Round(Info.Bearing, 0), 0, 80, 0, 80, pictureCompass.Size);
             blissMap1.MainMap_LocationUpdate();
-        }
 
+            if(State.Alarm)
+            {
+                if (AlarmText != State.ToString())
+                {
+                    AlarmText = State.ToString();
+                    ScrollText = AlarmText.PadRight(130);
+                    btnAlarm.ForeColor = ColorScheme.Busy;
+                }
+                ScrollText = ScrollText.Substring(1, 129) + ScrollText.Substring(0, 1);
+                labelAlarms.Text = ScrollText;
+            }
+            else
+            {
+                AlarmText = "";
+                ScrollText = "";
+                labelAlarms.Text = ScrollText;
+            }
+        }
+        //private void OnAlarm(object? sender, EventArgs e)
+        //{
+        //    ScrollText = ScrollText.Substring(1, 129) + ScrollText.Substring(0, 1);
+        //    labelAlarms.Text = ScrollText;
+        //}
         #region Joystick
         private void ScanJoysticks()
         {
             JoystickInputTimer.Enabled = false;
             DirectInput _directInput = new DirectInput();
-            //var devices = _directInput.GetDevices();
-            //if(_directInput.GetDevices().Where(d => d.ProductName == "Motor").Any())
-            //{
-            //    DeviceInstance motor = _directInput.GetDevices().Where(d => d.ProductName == "Motor").First();
-            //    var ss = motor.UsagePage;
-            //}
-
 
             if (_directInput.GetDevices().Where(d => d.ProductName == "USB Game Controllers").Any())
             {
@@ -103,9 +118,12 @@ namespace Bliss
                 //joystickActive.BackColor = ColorScheme.Active;
             }
         }
-
         private void ProcessPilotCommands()
         {
+            if(State.Alarm)
+            {
+
+            }
             if (!Info.PilotCommands.Any()) return;
             ProcessPilotCommand(Info.PilotCommands.Dequeue());
         }
@@ -115,9 +133,9 @@ namespace Bliss
             btnRight.BackColor = input.TurnRight ? Color.Red : Color.Transparent;
             btnSpeedUp.BackColor = input.SpeedUp ? Color.Red : Color.Transparent;
             btnSpeedDown.BackColor = input.SpeedDown ? Color.Red : Color.Transparent;
-            btnAlarm.BackColor = input.Reverse ? Color.Red : Color.Transparent;
+            btnAlarm.BackColor = input.Alarm ? Color.Red : Color.Transparent;
             btnStop.BackColor = input.Stop ? Color.Red : Color.Transparent;
-            btnCancel.BackColor = input.Aux ? Color.Red : Color.Transparent;
+            btnCancel.BackColor = input.Cancel ? Color.Red : Color.Transparent;
 
             pilot.OnPilotCommand(input);
         }
@@ -163,6 +181,19 @@ namespace Bliss
             Button button = (Button)sender;
             button.Tag = button.Tag == null ? "Active" : null;
             if (button.Tag == null) return;
+            switch(button.Name)
+            {
+                case "btnAlarm":
+                    if (State.Alarm)
+                    {
+                        State.Alarms.Dequeue();
+                        AlarmText = State.ToString();
+                        ScrollText = AlarmText.PadRight(130);
+                        button.Tag = null;
+                        button.ForeColor = ColorScheme.FG;
+                    }
+                    return;
+            }
             button.ForeColor = ColorScheme.Busy;
 
         }

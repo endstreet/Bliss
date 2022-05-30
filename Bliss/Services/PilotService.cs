@@ -59,7 +59,7 @@ namespace Bliss.Services
                 else
                 {
                     Info.PowerLeft += AppSettings.Default.PilotSpeedIncrement;
-                    //Send left - 
+                    //Send left 
                 }
             }
             if (command.SpeedDown)
