@@ -11,21 +11,27 @@ namespace Bliss.Services
         public bool IsDisposed { get; private set; }
 
 
-        private readonly Task _read_task;
+        private Task _read_task;
         NMEA0183Data.GNSSData.GPSFixData? result;
 
         private SerialPortService serial;
 
         public GPSSensor(SerialPortService _serial)
         {
+            serial = _serial;
+
+            SwitchState();
+        }
+
+        public void SwitchState()
+        {
             if (!State.IsSimulating)
             {
-                serial = _serial;
                 _read_task = new Task(ReadTask);
                 _read_task.Start();
             }
-        }
 
+        }
         private async void ReadTask()
         {
             while (!IsDisposed)
@@ -60,7 +66,6 @@ namespace Bliss.Services
             }
             _read_task?.Dispose();
         }
-
 
         internal unsafe NMEA0183Data? ProcessNMEA0183(string message)
         {

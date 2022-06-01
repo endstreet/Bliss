@@ -1,4 +1,5 @@
-﻿using GMap.NET;
+﻿using Bliss.Models;
+using GMap.NET;
 using System.IO.Ports;
 using System.Timers;
 
@@ -6,47 +7,54 @@ namespace Bliss.Services
 {
     public sealed class PilotService : IDisposable
     {
-        public bool IsDisposed { get; private set; }
+        
 
         private SerialPortService serial;
         private Queue<string> SerialCommand = new Queue<string>();
+        public WayPoint? Target { get; set; }
 
 
         public GPSSensor gps;
-        private readonly Task _read_task;
+        private Task? _read_task;
 
-        private string _direction;
+        private string _direction = "";
 
         System.Timers.Timer PositionUpdateTimer;
         System.Timers.Timer SteerCancelTimer;
+
+        public bool IsDisposed { get; private set; }
 
         public PilotService(GPSSensor _gps,SerialPortService _serial)
         {
             serial = _serial;
             gps = _gps;
 
-
             PositionUpdateTimer = new System.Timers.Timer();
-            PositionUpdateTimer.Enabled = true;
-            if(State.IsSimulating)
+
+            SwitchState();
+
+            SteerCancelTimer = new System.Timers.Timer();
+            SteerCancelTimer.Enabled = true;
+            SteerCancelTimer.Interval = AppSettings.Default.PilotCancelTurn;
+            SteerCancelTimer.Elapsed += OnCancelTurnTimer;
+        }
+
+        public void SwitchState()
+        {
+            PositionUpdateTimer.Elapsed -= OnPositionTimer;
+            PositionUpdateTimer.Enabled = false;
+            if (State.IsSimulating)
             {
                 PositionUpdateTimer.Interval = 1000;
             }
             else
             {
                 PositionUpdateTimer.Interval = AppSettings.Default.SpeedUpdateInterval * 1000;
+                _read_task = new Task(SerialTask);
+                _read_task.Start();
             }
-            
+            PositionUpdateTimer.Enabled = true;
             PositionUpdateTimer.Elapsed += OnPositionTimer;
-
-            SteerCancelTimer = new System.Timers.Timer();
-            SteerCancelTimer.Enabled = true;
-            SteerCancelTimer.Interval = AppSettings.Default.PilotCancelTurn;
-            SteerCancelTimer.Elapsed += OnCancelTurnTimer;
-
-            _read_task = new Task(SerialTask);
-            _read_task.Start();
-
         }
 
         /// <summary>
@@ -59,24 +67,10 @@ namespace Bliss.Services
 
             if (command.SpeedUp)
             {
-                if (Info.PowerRight + AppSettings.Default.PilotSpeedIncrement > AppSettings.Default.PilotMaxPower)
-                {
-                    Info.PowerRight = AppSettings.Default.PilotMaxPower;
-                }
-                else
-                {
-                    Info.PowerRight += AppSettings.Default.PilotSpeedIncrement;
-                }
+                Info.PowerRight = Info.PowerRight + AppSettings.Default.PilotSpeedIncrement > AppSettings.Default.PilotMaxPower ? Info.PowerRight = AppSettings.Default.PilotMaxPower : Info.PowerRight += AppSettings.Default.PilotSpeedIncrement;
                 EnqueueCommand("R", Info.PowerRight);
-                if (Info.PowerLeft + AppSettings.Default.PilotSpeedIncrement > AppSettings.Default.PilotMaxPower)
-                {
-                    Info.PowerLeft = AppSettings.Default.PilotMaxPower;
-                }
-                else
-                {
-                    Info.PowerLeft += AppSettings.Default.PilotSpeedIncrement;
-                }
-                EnqueueCommand("L", Info.PowerLeft);
+                Info.PowerLeft = Info.PowerLeft + AppSettings.Default.PilotSpeedIncrement > AppSettings.Default.PilotMaxPower ? AppSettings.Default.PilotMaxPower: Info.PowerLeft += AppSettings.Default.PilotSpeedIncrement;
+                 EnqueueCommand("L", Info.PowerLeft);
                 if(State.IsSimulating)
                 {
                     if ((int)Info.Speed < AppSettings.Default.PilotMaxPower/10)
@@ -86,66 +80,37 @@ namespace Bliss.Services
                     }
                 }
             }
-            if (command.SpeedDown)
+
+            if (command.TurnLeft || command.SpeedDown)
             {
-                if (Info.PowerRight - AppSettings.Default.PilotSpeedIncrement < AppSettings.Default.PilotMinPower)
-                {
-                    Info.PowerRight = AppSettings.Default.PilotMinPower;
-                }
-                else
-                {
-                    Info.PowerRight -= AppSettings.Default.PilotSpeedIncrement;
-                }
-                EnqueueCommand("R", Info.PowerRight);
-                if (Info.PowerLeft - AppSettings.Default.PilotSpeedIncrement < AppSettings.Default.PilotMinPower)
-                {
-                    Info.PowerLeft = AppSettings.Default.PilotMinPower;
-                }
-                else
-                {
-                    Info.PowerLeft -= AppSettings.Default.PilotSpeedIncrement;
-                }
+                Info.PowerLeft = Info.PowerLeft - AppSettings.Default.PilotSpeedIncrement < AppSettings.Default.PilotMinPower ? AppSettings.Default.PilotMinPower : Info.PowerLeft -= AppSettings.Default.PilotSpeedIncrement;
                 EnqueueCommand("L", Info.PowerLeft);
+
+                if(State.IsSimulating)
+                {
+                    if ((int)Info.Speed < AppSettings.Default.PilotMaxPower / 10)
+                    {
+                        Info.OnReverse(Info.Speed, Info.Speed - 1, Info.Bearing);//Switch bearing 180 if change
+                        Info.Speed -= 0.5;
+                    }
+                    Info.Bearing = Info.Bearing - (1 * (Info.Speed == 0 ? 1 : Info.Speed));
+                }
+            }
+            if (command.TurnRight || command.SpeedDown)
+            {
+                Info.PowerRight = Info.PowerRight - AppSettings.Default.PilotSpeedIncrement < AppSettings.Default.PilotMinPower ? AppSettings.Default.PilotMinPower: Info.PowerRight -= AppSettings.Default.PilotSpeedIncrement;
+                EnqueueCommand("R", Info.PowerRight);
 
                 if (State.IsSimulating)
                 {
-                    if ((int)Info.Speed > AppSettings.Default.PilotMinPower/10)
-                    {
-                        Info.OnReverse(Info.Speed, Info.Speed + 1, Info.Bearing);
-                        Info.Speed -= 1;
-                    }
-                }
-            }
-            if (command.TurnLeft)
-            {
-                if (Info.PowerLeft - AppSettings.Default.PilotSpeedIncrement < AppSettings.Default.PilotMinPower)
-                {
-                    Info.PowerLeft = AppSettings.Default.PilotMinPower;
-                }
-                else
-                {
-                    Info.PowerLeft -= AppSettings.Default.PilotSpeedIncrement;
-                }
-                EnqueueCommand("L", Info.PowerLeft);
-                if(State.IsSimulating)
-                {
-                    Info.Bearing = Info.Bearing - (1 * Info.Speed);
-                }
-            }
-            if (command.TurnRight)
-            {
-                if (Info.PowerRight - AppSettings.Default.PilotSpeedIncrement < AppSettings.Default.PilotMinPower)
-                {
-                    Info.PowerRight = AppSettings.Default.PilotMinPower;
-                }
-                else
-                {
-                    Info.PowerRight -= AppSettings.Default.PilotSpeedIncrement;
-                }
-                EnqueueCommand("R", Info.PowerRight);
-                if (State.IsSimulating)
-                {
-                    Info.Bearing = Info.Bearing + (1 * Info.Speed);
+  
+                        if ((int)Info.Speed < AppSettings.Default.PilotMaxPower / 10)
+                        {
+                            Info.OnReverse(Info.Speed, Info.Speed - 1, Info.Bearing);//Switch bearing 180 if change
+                            Info.Speed -= 0.5;
+                        }
+
+                        Info.Bearing = Info.Bearing + (1 * (Info.Speed == 0 ? 1 : Info.Speed));
                 }
             }
             if (command.Stop)
@@ -248,7 +213,7 @@ namespace Bliss.Services
             
         }
 
-        private void OnCancelTurnTimer(object? sender, ElapsedEventArgs args)
+        public void OnCancelTurnTimer(object? sender, ElapsedEventArgs args)
         {
             if (Info.PowerLeft == Info.PowerRight) return;
             if(Info.PowerLeft > Info.PowerRight)
@@ -260,8 +225,19 @@ namespace Bliss.Services
             {
                 Info.PowerLeft = Info.PowerRight;
                 EnqueueCommand("L", Info.PowerLeft);
+
             }
-            SendCommands();
+
+            if (State.IsSimulating)
+            {
+                Info.OnReverse(Info.Speed, Info.PowerLeft / 10, Info.Bearing);
+                Info.Speed = Info.PowerLeft / 10;
+            }
+            else
+            { 
+                SendCommands();
+            }
+
         }
         private void EnqueueCommand(string motorId,int speed)
         {
