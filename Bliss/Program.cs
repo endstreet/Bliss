@@ -31,8 +31,11 @@ namespace Bliss
 
         private static void ConfigureServices(ServiceCollection services)
         {
-            services.AddScoped<Dashboard, Dashboard>();
+            services.AddSingleton<SerialPortService,SerialPortService>();
+            services.AddSingleton<GPSSensor, GPSSensor>();
+            services.AddSingleton<PilotService, PilotService>();
             services.AddSingleton<DbService, DbService>();
+            services.AddScoped<Dashboard, Dashboard>();
         }
         ///// <summary>
         /////  The main entry point for the application.

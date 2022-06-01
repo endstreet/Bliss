@@ -1,4 +1,5 @@
-﻿using System.IO.Ports;
+﻿using GMap.NET;
+using System.IO.Ports;
 using System.Timers;
 
 namespace Bliss.Services
@@ -6,221 +7,225 @@ namespace Bliss.Services
     public sealed class PilotService : IDisposable
     {
         public bool IsDisposed { get; private set; }
-        public bool IsInUse { get; private set; }
 
-        private readonly object? _mutex;
-        private SerialPort? _port;
+        private SerialPortService serial;
+        private Queue<string> SerialCommand = new Queue<string>();
 
-        private SerialPortService? serial;
 
         public GPSSensor gps;
+        private readonly Task _read_task;
 
-        public PilotService()
+        private string _direction;
+
+        System.Timers.Timer PositionUpdateTimer;
+        System.Timers.Timer SteerCancelTimer;
+
+        public PilotService(GPSSensor _gps,SerialPortService _serial)
         {
-            gps = new();
-
-            //_mutex = new();
-            //_read_task = new Task(ReadTask);
-            //_read_task.Start();
-
-            m_Timer = new System.Timers.Timer();
-            m_Timer.Enabled = true;
-            m_Timer.Interval = AppSettings.Default.SpeedUpdateInterval * 1000;
-            m_Timer.Elapsed += OnPositionTimer;
+            serial = _serial;
+            gps = _gps;
 
 
-            //serial = new SerialPortService();
-            //serial.OnPilotComm += Serial_OnPilotComm;
-            //serial.ScanDevices();
+            PositionUpdateTimer = new System.Timers.Timer();
+            PositionUpdateTimer.Enabled = true;
+            if(State.IsSimulating)
+            {
+                PositionUpdateTimer.Interval = 1000;
+            }
+            else
+            {
+                PositionUpdateTimer.Interval = AppSettings.Default.SpeedUpdateInterval * 1000;
+            }
+            
+            PositionUpdateTimer.Elapsed += OnPositionTimer;
+
+            SteerCancelTimer = new System.Timers.Timer();
+            SteerCancelTimer.Enabled = true;
+            SteerCancelTimer.Interval = AppSettings.Default.PilotCancelTurn;
+            SteerCancelTimer.Elapsed += OnCancelTurnTimer;
+
+            _read_task = new Task(SerialTask);
+            _read_task.Start();
+
         }
+
         /// <summary>
         /// Simulation code ...
         /// </summary>
         /// <param name="command"></param>
         public void OnPilotCommand(PilotCommand command)
         {
+            SerialCommand = new Queue<string>();
+
             if (command.SpeedUp)
             {
                 if (Info.PowerRight + AppSettings.Default.PilotSpeedIncrement > AppSettings.Default.PilotMaxPower)
                 {
                     Info.PowerRight = AppSettings.Default.PilotMaxPower;
-                    //Send right max
                 }
                 else
                 {
                     Info.PowerRight += AppSettings.Default.PilotSpeedIncrement;
-                    //Send right
                 }
+                EnqueueCommand("R", Info.PowerRight);
                 if (Info.PowerLeft + AppSettings.Default.PilotSpeedIncrement > AppSettings.Default.PilotMaxPower)
                 {
                     Info.PowerLeft = AppSettings.Default.PilotMaxPower;
-                    //Send left max
                 }
                 else
                 {
                     Info.PowerLeft += AppSettings.Default.PilotSpeedIncrement;
-                    //Send left 
+                }
+                EnqueueCommand("L", Info.PowerLeft);
+                if(State.IsSimulating)
+                {
+                    if ((int)Info.Speed < AppSettings.Default.PilotMaxPower/10)
+                    {
+                        Info.OnReverse(Info.Speed, Info.Speed + 1, Info.Bearing);
+                        Info.Speed += 1;
+                    }
                 }
             }
             if (command.SpeedDown)
             {
-                if (Info.PowerRight < AppSettings.Default.PilotSpeedIncrement)
+                if (Info.PowerRight - AppSettings.Default.PilotSpeedIncrement < AppSettings.Default.PilotMinPower)
                 {
-                    Info.PowerRight = 0;
-                    //Send right stop
+                    Info.PowerRight = AppSettings.Default.PilotMinPower;
                 }
                 else
                 {
                     Info.PowerRight -= AppSettings.Default.PilotSpeedIncrement;
-                    //Send right
                 }
-                if (Info.PowerLeft < AppSettings.Default.PilotSpeedIncrement)
+                EnqueueCommand("R", Info.PowerRight);
+                if (Info.PowerLeft - AppSettings.Default.PilotSpeedIncrement < AppSettings.Default.PilotMinPower)
                 {
-                    Info.PowerLeft = 0;
-                    //Send left stop
+                    Info.PowerLeft = AppSettings.Default.PilotMinPower;
                 }
                 else
                 {
                     Info.PowerLeft -= AppSettings.Default.PilotSpeedIncrement;
-                    //Send left - 
+                }
+                EnqueueCommand("L", Info.PowerLeft);
+
+                if (State.IsSimulating)
+                {
+                    if ((int)Info.Speed > AppSettings.Default.PilotMinPower/10)
+                    {
+                        Info.OnReverse(Info.Speed, Info.Speed + 1, Info.Bearing);
+                        Info.Speed -= 1;
+                    }
                 }
             }
             if (command.TurnLeft)
             {
-                if (Info.PowerLeft < AppSettings.Default.PilotSpeedIncrement)
+                if (Info.PowerLeft - AppSettings.Default.PilotSpeedIncrement < AppSettings.Default.PilotMinPower)
                 {
-                    Info.PowerLeft = 0;
-                    //Send stop
+                    Info.PowerLeft = AppSettings.Default.PilotMinPower;
                 }
                 else
                 {
                     Info.PowerLeft -= AppSettings.Default.PilotSpeedIncrement;
-                    //Send left - 
                 }
-
+                EnqueueCommand("L", Info.PowerLeft);
+                if(State.IsSimulating)
+                {
+                    Info.Bearing = Info.Bearing - (1 * Info.Speed);
+                }
             }
             if (command.TurnRight)
             {
-                if (Info.PowerRight < AppSettings.Default.PilotSpeedIncrement)
+                if (Info.PowerRight - AppSettings.Default.PilotSpeedIncrement < AppSettings.Default.PilotMinPower)
                 {
-                    Info.PowerRight = 0;
-                    //Send stop
+                    Info.PowerRight = AppSettings.Default.PilotMinPower;
                 }
                 else
                 {
                     Info.PowerRight -= AppSettings.Default.PilotSpeedIncrement;
-                    //Send right
+                }
+                EnqueueCommand("R", Info.PowerRight);
+                if (State.IsSimulating)
+                {
+                    Info.Bearing = Info.Bearing + (1 * Info.Speed);
                 }
             }
             if (command.Stop)
             {
-                Info.PowerLeft = 0;
-                //Send stop
                 Info.PowerRight = 0;
-                //Send stop
-            }
+                EnqueueCommand("R", Info.PowerRight);
+                Info.PowerLeft = 0;
+                EnqueueCommand("L", Info.PowerLeft);
 
-        }
-
-        //private void Serial_OnPilotComm(string port)
-        //{
-        //    m_Timer.Stop();
-        //    serial.OnPilotComm -= Serial_OnPilotComm;
-        //    Stop();
-        //    Start(port);
-        //    //InitialPosition
-        //    Shared.LastLocation = Shared.CurrentLocation;
-        //    Shared.CurrentLocation = gps.CurrentLocation;
-
-        //    m_Timer.Start();
-        //}
-
-        //Always running
-        //private async void ReadTask()
-        //{
-        //    while (!IsDisposed)
-        //        try
-        //        {
-        //            if (IsInUse && _port is { IsOpen: true } p) //Normal
-        //            {
-        //                string message = p.ReadLine();
-        //                //if valid pilot comman
-        //                if (!string.IsNullOrEmpty(message))
-        //                {
-        //                    //process message then..
-        //                    _port.Write("Ok\r\n");
-        //                }
-        //            }
-        //            else
-        //            {
-        //                await Task.Delay(300);
-        //                serial.OnPilotComm += Serial_OnPilotComm;
-        //                serial.ScanDevices();
-        //            }
-        //        }
-        //        catch (Exception ex)//Data error
-        //        {
-        //            IsValid = false;
-        //            //OnDataError?.Invoke(this, ex.Message);
-        //        }
-
-        //    _read_task?.Dispose();
-        //}
-
-        private void Port_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
-        {
-            //OnError?.Invoke(this, e.EventType);
-            Stop();
-            serial.ScanDevices();
-        }
-
-        public bool Start(string port)
-        {
-            if (IsDisposed)
-                throw new ObjectDisposedException(nameof(PilotService));
-            else if (IsInUse)
-                return false;
-
-            lock (_mutex)
-            {
-                _port = new SerialPort(port, 9600)
+                if (State.IsSimulating)
                 {
-                    DataBits = 8,
-                    Parity = Parity.None,
-                    StopBits = StopBits.One,
-                    Handshake = Handshake.None,
-                    NewLine = "\r\n",
-                };
-                _port.ErrorReceived += Port_ErrorReceived;
-
-                _port.Open();
-                IsInUse = true;
-                //OnStart?.Invoke(this);
-                _port.Write("Ok\r\n");//Kickstart the arduino
-            }
-
-            return IsInUse;
-        }
-        public void Stop()
-        {
-            IsInUse = false;
-
-            lock (_mutex)
-                if (_port is { })
-                {
-                    _port.ErrorReceived -= Port_ErrorReceived;
-                    _port.Close();
-                    _port.Dispose();
-                    _port = null;
-                    //OnStop?.Invoke(this);
+                    Info.Speed = 0;
                 }
+            }
+            if (!State.IsSimulating)
+            {
+                SendCommands();
+            }
+        }
+
+        private void SendCommands()
+        {
+            try
+            {
+                if (serial.ports.ContainsKey("pilotPort"))
+                {
+                    while (SerialCommand.Count > 0)
+                    {
+                        serial.ports["pilotPort"].WriteLine(SerialCommand.Dequeue());
+                    }
+                }
+                else
+                {
+                    State.Alarms.Enqueue("PilotPort not available. Command ignored.");
+                }
+            }
+            catch
+            {
+                State.Alarms.Enqueue("PilotPort comm error. Command ignored.");
+            }
+        }
+        //Always running
+        private async void SerialTask()
+        {
+            while (!IsDisposed)
+            {
+                try
+                {
+                    if (serial.ports.ContainsKey("pilotPort"))
+                    {
+                        string message = serial.ports["pilotPort"].ReadLine();
+                        if(message != "OK")
+                        {
+                            State.Alarms.Enqueue(message);
+                        }
+                    }
+                    else
+                    {
+                        serial.ScanDevices();
+                        await Task.Delay(500);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (serial.ports.ContainsKey("pilotPort"))
+                    {
+                        State.Alarms.Enqueue("Pilot dongle Unplugged");
+                        serial.Stop(serial.ports["pilotPort"]);
+                        serial.ports.Remove("pilotPort");
+                    }
+                }
+            }
+            _read_task?.Dispose();
         }
 
         public void Dispose()
         {
             if (!IsDisposed)
             {
-                Stop();
+                //Stop();
 
                 IsDisposed = true;
             }
@@ -229,39 +234,73 @@ namespace Bliss.Services
         }
 
         #region speed and bearing
-        private readonly System.Timers.Timer m_Timer;
 
         private void OnPositionTimer(object? sender, ElapsedEventArgs args)
         {
-            //Update the speed
-            Info.CalculateSpeed(m_Timer.Interval);
+            if(State.IsSimulating)
+            {
+                Resultposition();
+            }
+            else
+            {
+                Info.CalculateSpeed(PositionUpdateTimer.Interval);
+            }
+            
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="lat1"></param>
-        /// <param name="lon1"></param>
-        /// <param name="lat2"></param>
-        /// <param name="lon2"></param>
-        /// <returns></returns>
+        private void OnCancelTurnTimer(object? sender, ElapsedEventArgs args)
+        {
+            if (Info.PowerLeft == Info.PowerRight) return;
+            if(Info.PowerLeft > Info.PowerRight)
+            {
+                Info.PowerRight = Info.PowerLeft;
+                EnqueueCommand("R", Info.PowerRight);
+            }
+            if (Info.PowerRight > Info.PowerLeft)
+            {
+                Info.PowerLeft = Info.PowerRight;
+                EnqueueCommand("L", Info.PowerLeft);
+            }
+            SendCommands();
+        }
+        private void EnqueueCommand(string motorId,int speed)
+        {
+            switch(motorId)
+            {
+                case "R":
+                    Info.RightReverse = speed < 0;
+                    break;
+                case "L":
+                    Info.LeftReverse = speed < 0;
+                    break;
+            }
+            _direction = speed < 0 ? "REVERSE" : "FORWARD";
+            speed = speed < 0 ? speed*-1 : speed;
+            SerialCommand.Enqueue($"{motorId}|{_direction}|{speed * 4096 / 100}");
+        }
 
-        //public double GetBearingX(PointLatLng fromPoint, PointLatLng toPoint)
-        //{
-        //    double x = Math.Cos(DegreesToRadians(fromPoint.Lat)) * Math.Sin(DegreesToRadians(toPoint.Lat)) - Math.Sin(DegreesToRadians(fromPoint.Lat)) * Math.Cos(DegreesToRadians(toPoint.Lat)) * Math.Cos(DegreesToRadians(toPoint.Lng - fromPoint.Lng));
-        //    double y = Math.Sin(DegreesToRadians(toPoint.Lng - fromPoint.Lng)) * Math.Cos(DegreesToRadians(toPoint.Lat));
+        #endregion
 
-        //    // Math.Atan2 can return negative value, 0 <= output value < 2*PI expected 
-        //    return Math.Round((Math.Atan2(y, x) + Math.PI * 2) % (Math.PI * 2), 2);
+        #region Simulation
+        double rad;// = Info.Bearing * Math.PI / 180; //to radians
+        double lat1;// = Info.CurrentLocation.Lat * Math.PI / 180; //to radians
+        double lng1;// = Info.CurrentLocation.Lng * Math.PI / 180; //to radians
+        double lat;//= Math.Asin(Math.Sin(lat1) * Math.Cos(distance / 6378137) + Math.Cos(lat1) * Math.Sin(distance / 6378137) * Math.Cos(rad));
+        double lng;
+        private void Resultposition()
+        {
+            double distance = (Info.Speed / 24 / 60) * 1000;
+            if (distance < 0) distance *= -1;
 
-        //}
+            rad = Info.Bearing * Math.PI / 180; //to radians
+            lat1 = Info.CurrentLocation.Lat * Math.PI / 180; //to radians
+            lng1 = Info.CurrentLocation.Lng * Math.PI / 180; //to radians
+            lat = Math.Asin(Math.Sin(lat1) * Math.Cos(distance / 6378137) + Math.Cos(lat1) * Math.Sin(distance / 6378137) * Math.Cos(rad));
+            lng = lng1 + Math.Atan2(Math.Sin(rad) * Math.Sin(distance / 6378137) * Math.Cos(lat1), Math.Cos(distance / 6378137) - Math.Sin(lat1) * Math.Sin(lat));
 
-        //private double DegreesToRadians(double angle)
-        //{
-        //    return angle * Math.PI / 180.0d;
-        //}
-
-
+            Info.LastLocation = Info.CurrentLocation;
+            Info.CurrentLocation = new PointLatLng(lat * 180 / Math.PI, lng * 180 / Math.PI); // to degrees  
+        }
         #endregion
     }
 }

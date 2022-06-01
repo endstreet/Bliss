@@ -55,10 +55,10 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.progressBar2 = new System.Windows.Forms.ProgressBar();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.btnMotorRight = new System.Windows.Forms.Button();
-            this.btnMotorLeft = new System.Windows.Forms.Button();
+            this.progressRightPower = new System.Windows.Forms.ProgressBar();
+            this.progressLeftPower = new System.Windows.Forms.ProgressBar();
+            this.btnRightReverse = new System.Windows.Forms.Button();
+            this.btnLeftReverse = new System.Windows.Forms.Button();
             this.groupPilot = new System.Windows.Forms.GroupBox();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnSpeedDown = new System.Windows.Forms.Button();
@@ -404,10 +404,10 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.progressBar2);
-            this.groupBox1.Controls.Add(this.progressBar1);
-            this.groupBox1.Controls.Add(this.btnMotorRight);
-            this.groupBox1.Controls.Add(this.btnMotorLeft);
+            this.groupBox1.Controls.Add(this.progressRightPower);
+            this.groupBox1.Controls.Add(this.progressLeftPower);
+            this.groupBox1.Controls.Add(this.btnRightReverse);
+            this.groupBox1.Controls.Add(this.btnLeftReverse);
             this.groupBox1.Font = new System.Drawing.Font("Copperplate Gothic Bold", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.groupBox1.ForeColor = System.Drawing.Color.DeepSkyBlue;
             this.groupBox1.Location = new System.Drawing.Point(16, 527);
@@ -417,42 +417,42 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "drive motors";
             // 
-            // progressBar2
+            // progressRightPower
             // 
-            this.progressBar2.Location = new System.Drawing.Point(241, 53);
-            this.progressBar2.Name = "progressBar2";
-            this.progressBar2.Size = new System.Drawing.Size(108, 27);
-            this.progressBar2.TabIndex = 44;
+            this.progressRightPower.Location = new System.Drawing.Point(241, 53);
+            this.progressRightPower.Name = "progressRightPower";
+            this.progressRightPower.Size = new System.Drawing.Size(108, 27);
+            this.progressRightPower.TabIndex = 44;
             // 
-            // progressBar1
+            // progressLeftPower
             // 
-            this.progressBar1.Location = new System.Drawing.Point(12, 53);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(108, 27);
-            this.progressBar1.TabIndex = 43;
-            this.progressBar1.Value = 50;
+            this.progressLeftPower.Location = new System.Drawing.Point(12, 53);
+            this.progressLeftPower.Name = "progressLeftPower";
+            this.progressLeftPower.Size = new System.Drawing.Size(108, 27);
+            this.progressLeftPower.TabIndex = 43;
+            this.progressLeftPower.Value = 50;
             // 
-            // btnMotorRight
+            // btnRightReverse
             // 
-            this.btnMotorRight.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnMotorRight.ForeColor = System.Drawing.SystemColors.Control;
-            this.btnMotorRight.Location = new System.Drawing.Point(241, 20);
-            this.btnMotorRight.Name = "btnMotorRight";
-            this.btnMotorRight.Size = new System.Drawing.Size(108, 27);
-            this.btnMotorRight.TabIndex = 42;
-            this.btnMotorRight.Text = "right";
-            this.btnMotorRight.UseVisualStyleBackColor = true;
+            this.btnRightReverse.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRightReverse.ForeColor = System.Drawing.SystemColors.Control;
+            this.btnRightReverse.Location = new System.Drawing.Point(241, 20);
+            this.btnRightReverse.Name = "btnRightReverse";
+            this.btnRightReverse.Size = new System.Drawing.Size(108, 27);
+            this.btnRightReverse.TabIndex = 42;
+            this.btnRightReverse.Text = "reverse";
+            this.btnRightReverse.UseVisualStyleBackColor = true;
             // 
-            // btnMotorLeft
+            // btnLeftReverse
             // 
-            this.btnMotorLeft.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnMotorLeft.ForeColor = System.Drawing.SystemColors.Control;
-            this.btnMotorLeft.Location = new System.Drawing.Point(12, 20);
-            this.btnMotorLeft.Name = "btnMotorLeft";
-            this.btnMotorLeft.Size = new System.Drawing.Size(108, 27);
-            this.btnMotorLeft.TabIndex = 40;
-            this.btnMotorLeft.Text = "left";
-            this.btnMotorLeft.UseVisualStyleBackColor = true;
+            this.btnLeftReverse.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnLeftReverse.ForeColor = System.Drawing.SystemColors.Control;
+            this.btnLeftReverse.Location = new System.Drawing.Point(12, 20);
+            this.btnLeftReverse.Name = "btnLeftReverse";
+            this.btnLeftReverse.Size = new System.Drawing.Size(108, 27);
+            this.btnLeftReverse.TabIndex = 40;
+            this.btnLeftReverse.Text = "reverse";
+            this.btnLeftReverse.UseVisualStyleBackColor = true;
             // 
             // groupPilot
             // 
@@ -708,10 +708,10 @@
         private Button btnSpeedUp;
         private Button btnAutopilot;
         private GroupBox groupBox1;
-        private ProgressBar progressBar2;
-        private ProgressBar progressBar1;
-        private Button btnMotorRight;
-        private Button btnMotorLeft;
+        private ProgressBar progressRightPower;
+        private ProgressBar progressLeftPower;
+        private Button btnRightReverse;
+        private Button btnLeftReverse;
         private GroupBox groupBox2;
         private Label label11;
         private Label label12;

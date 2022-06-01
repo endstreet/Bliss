@@ -8,7 +8,7 @@ namespace Bliss
     public partial class Dashboard : Form
     {
 
-        private PilotService pilot = new ();
+        private PilotService pilot;
         //private SimulationService pilot = new();
         private JoystickService? Joystick;
         private System.Windows.Forms.Timer GetLocation = new System.Windows.Forms.Timer();
@@ -21,7 +21,7 @@ namespace Bliss
         {
             get
             {
-                return labelAlarms.Text.Substring(1, 129) + labelAlarms.Text.Substring(0, 1); ; 
+                return labelAlarms.Text.Substring(1, 124) + labelAlarms.Text.Substring(0, 1); ; 
             }
             set
             {
@@ -29,14 +29,15 @@ namespace Bliss
             }
         }
 
-        public Dashboard(DbService db)
+        public Dashboard(PilotService _pilot,DbService _db)
         {
             InitializeComponent();
 
             blissMap1.ApiKey = AppSettings.Default.GoogleMapApiKey;
             blissMap1.DBFile = AppSettings.Default.DBLocation;
 
-            dbs = db;
+            pilot = _pilot;
+            dbs = _db;
 
             ChangeTheme(splitContainer1.Panel2.Controls);
 
@@ -44,6 +45,7 @@ namespace Bliss
             GetLocation.Tick += MainMap_LocationUpdate;
             GetLocation.Interval = AppSettings.Default.DashBoardUpdateInterval * 1000;
             GetLocation.Start();
+
 
             //Joystick
             ScanJoysticks();
@@ -90,13 +92,17 @@ namespace Bliss
             pictureCompass.Image = Compass.DrawCompass((int)Math.Round(Info.Bearing, 0), 0, 80, 0, 80, pictureCompass.Size);
             pictureCompassM.Image = Compass.DrawCompass((int)Math.Round(Info.Bearing, 0), 0, 80, 0, 80, pictureCompass.Size);
             blissMap1.MainMap_LocationUpdate();
+            progressLeftPower.Value = Info.PowerLeft > 0 ? Info.PowerLeft : Info.PowerLeft * -1;
+            progressRightPower.Value = Info.PowerRight > 0 ? Info.PowerRight : Info.PowerRight * -1;
+            btnLeftReverse.ForeColor = Info.LeftReverse ? ColorScheme.Busy : ColorScheme.FG;
+            btnRightReverse.ForeColor = Info.RightReverse ? ColorScheme.Busy : ColorScheme.FG;
 
-            if(State.Alarm)
+            if (State.Alarm)
             {
                 if (AlarmText != State.ToString())//New alarm
                 {
                     AlarmText = State.ToString();
-                    labelAlarms.Text = AlarmText.PadRight(130);
+                    labelAlarms.Text = AlarmText.PadRight(125);
                 }
                 btnAlarm.ForeColor = ColorScheme.Busy;
                 labelAlarms.Text = ScrollText;
@@ -148,6 +154,8 @@ namespace Bliss
             btnCancel.BackColor = input.Cancel ? Color.Red : Color.Transparent;
 
             pilot.OnPilotCommand(input);
+
+
         }
         private void JoystickInputTimer_Tick(object sender, EventArgs e)
         {
@@ -158,12 +166,10 @@ namespace Bliss
             }
             catch (Exception ex)
             {
-                ///Device unplugged?
-            //    joystickActive.BackColor = ColorScheme.BG;
-            //}
-            //if (joystickActive.BackColor == ColorScheme.BG)
-            //{
-                //Re-connect
+                if (JoystickInputTimer.Enabled)
+                {
+                    State.Alarms.Enqueue("Joystick unplugged |");
+                }
                 ScanJoysticks();
             }
         }

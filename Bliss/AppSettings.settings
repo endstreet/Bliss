@@ -26,9 +26,6 @@
     <Setting Name="PilotSpeedIncrement" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
-    <Setting Name="PilotTurnIncrement" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">10</Value>
-    </Setting>
     <Setting Name="PilotMaxPower" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">80</Value>
     </Setting>
@@ -37,6 +34,12 @@
     </Setting>
     <Setting Name="GPSAverageCount" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">30</Value>
+    </Setting>
+    <Setting Name="PilotMinPower" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">-30</Value>
+    </Setting>
+    <Setting Name="PilotCancelTurn" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">5000</Value>
     </Setting>
   </Settings>
 </SettingsFile>

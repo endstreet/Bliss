@@ -4,43 +4,26 @@ using System.IO.Ports;
 
 namespace Bliss.Services
 {
-    public sealed class GPSSensor : IDisposable
+    public sealed class GPSSensor 
     {
 
         public bool IsValid;
         public bool IsDisposed { get; private set; }
-        public bool IsInUse { get; private set; }
+
 
         private readonly Task _read_task;
-        private readonly object _mutex;
-        private SerialPort? _port;
+        NMEA0183Data.GNSSData.GPSFixData? result;
 
         private SerialPortService serial;
 
-        //public event Action<GPSSensor, string>? OnDataError;
-        //public event Action<GPSSensor, SerialError>? OnError;
-        //public event Action<GPSSensor>? OnStart;
-        //public event Action<GPSSensor>? OnStop;
-        //public event Action<GPSSensor, string>? OnRawDataReceived;
-        //public event Action<GPSSensor, NMEA0183Data>? OnValidDataReceived;
-        //public event Action<GPSSensor, NMEA0183Error, string>? OnInvalidDataReceived;
-
-
-        public GPSSensor()
+        public GPSSensor(SerialPortService _serial)
         {
-            _mutex = new();
-            _read_task = new Task(ReadTask);
-            _read_task.Start();
-            serial = new SerialPortService();
-            serial.OnGPSComm += Serial_OnGPSComm;
-            serial.ScanDevices();
-        }
-
-        private void Serial_OnGPSComm(string port)
-        {
-            serial.OnPilotComm -= Serial_OnGPSComm;
-            Stop();
-            Start(port);
+            if (!State.IsSimulating)
+            {
+                serial = _serial;
+                _read_task = new Task(ReadTask);
+                _read_task.Start();
+            }
         }
 
         private async void ReadTask()
@@ -49,94 +32,35 @@ namespace Bliss.Services
             {
                 try
                 {
-                    if (IsInUse && _port is { IsOpen: true } p)
+                    if (serial.ports.ContainsKey("gpsPort"))
                     {
-                        string message = p.ReadLine();
-                        //OnRawDataReceived?.Invoke(this, message);
+                        string message = serial.ports["gpsPort"].ReadLine();
                         NMEA0183Data? result = ProcessNMEA0183(message);
-                        //if (IsValid)
-                        //{
-                        //    OnValidDataReceived?.Invoke(this, result);
-                        //}
+                        if (result != null && result.GetType() == typeof(NMEA0183Data.GNSSData.GPSFixData) )
+                        {
+                            result = (NMEA0183Data.GNSSData.GPSFixData?)ProcessNMEA0183(message);
+                            AverageLocation(new PointLatLng(((NMEA0183Data.GNSSData.GPSFixData)result).Coordinates.Latitude, ((NMEA0183Data.GNSSData.GPSFixData)result).Coordinates.Longitude));// should go here
+                        }
                     }
                     else
                     {
-                        Stop();
-                        await Task.Delay(300);
-                        serial.OnGPSComm += Serial_OnGPSComm;
                         serial.ScanDevices();
+                        await Task.Delay(500);
                     }
                 }
                 catch (Exception ex)
                 {
-                    //DataError
-                    IsValid = false;
-                    State.Alarms.Enqueue("gps invalid");
+                    if (serial.ports.ContainsKey("gpsPort"))
+                    {
+                        State.Alarms.Enqueue("GPS Unplugged");
+                        serial.Stop(serial.ports["gpsPort"]);
+                        serial.ports.Remove("gpsPort");
+                    }
                 }
             }
             _read_task?.Dispose();
         }
 
-        private void Port_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
-        {
-            State.Alarms.Enqueue("gps port error");
-            Stop();
-            serial.ScanDevices();
-        }
-
-        public bool Start(string port)
-        {
-            if (IsDisposed)
-                throw new ObjectDisposedException(nameof(GPSSensor));
-            else if (IsInUse)
-                return false;
-
-            lock (_mutex)
-            {
-                _port = new SerialPort(port, 4800)
-                {
-                    DataBits = 8,
-                    Parity = Parity.None,
-                    StopBits = StopBits.One,
-                    Handshake = Handshake.None,
-                    NewLine = "\r\n",
-                };
-                _port.ErrorReceived += Port_ErrorReceived;
-
-                _port.Open();
-                IsInUse = true;
-                //OnStart?.Invoke(this);
-            }
-
-            return IsInUse;
-        }
-
-        public void Stop()
-        {
-            IsInUse = false;
-
-            lock (_mutex)
-                if (_port is { })
-                {
-                    _port.ErrorReceived -= Port_ErrorReceived;
-                    _port.Close();
-                    _port.Dispose();
-                    _port = null;
-                    //OnStop?.Invoke(this);
-                }
-        }
-
-        public void Dispose()
-        {
-            if (!IsDisposed)
-            {
-                Stop();
-
-                IsDisposed = true;
-            }
-
-            GC.SuppressFinalize(this);
-        }
 
         internal unsafe NMEA0183Data? ProcessNMEA0183(string message)
         {
@@ -190,7 +114,7 @@ namespace Bliss.Services
             }
             catch (Exception ex)
             {
-                var ss = ex.Message;
+                State.Alarms.Enqueue($"gps : {ex.Message}");
                 IsValid = false;
                 return null;
             }
@@ -205,10 +129,10 @@ namespace Bliss.Services
                     {
                         DateTime utc = ParseTime(data[0]);
                         IsValid = data[5] == "1";
-                        if (!IsValid) throw new Exception("Invalid location data.");
+                        if (!IsValid) return null; //throw new Exception("Invalid location data.");
                         double lat = ParseLatLon(data[1].TrimStart('0'));
                         double lon = ParseLatLon(data[3].TrimStart('0'));
-                        AverageLocation(new PointLatLng(lat * (data[2] == "S" ? -1 : 1), lon * (data[4] == "W" ? -1 : 1)));
+                        //AverageLocation(new PointLatLng(lat * (data[2] == "S" ? -1 : 1), lon * (data[4] == "W" ? -1 : 1)));
                         //-25.839225, 28.033462
                         return new NMEA0183Data.GNSSData.GPSFixData(
                             talker,
@@ -250,7 +174,7 @@ namespace Bliss.Services
                         DateTime utc = ParseTime(data[8] + data[0]);
                         double lat = ParseLatLon(data[2].TrimStart('0'));
                         double lon = ParseLatLon(data[4].TrimStart('0'));
-                        AverageLocation(new PointLatLng(lat * (data[3] == "S" ? -1 : 1), lon * (data[5] == "W" ? -1 : 1)));
+                        //AverageLocation(new PointLatLng(lat * (data[3] == "S" ? -1 : 1), lon * (data[5] == "W" ? -1 : 1)));
 
                         if (string.IsNullOrEmpty(data[7])) data[7] = "0";
                         return new NMEA0183Data.GNSSData.RecommendedMinimumSpecificGNSSData(

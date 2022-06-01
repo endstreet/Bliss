@@ -1,26 +1,22 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.IO.Ports;
+using System.Runtime.InteropServices;
 
 
 
 namespace Bliss.Services
 {
-    public class SerialPortService
+    public class SerialPortService:IDisposable
     {
-        private string gpsPortName = "";
-        private string pilotPortName = "";
-        private string stickPortName = "";
+        public Dictionary<string,SerialPort> ports = new Dictionary<string,SerialPort>();
         public bool IsDisposed { get; private set; }
-
-        public event Action<string>? OnGPSComm;
-        public event Action<string>? OnPilotComm;
-
+        //public bool IsInUse;
+        private readonly object _mutex = new();
+        DeviceTree deviceTree;
         public void ScanDevices()
         {
             if (IsDisposed) { throw new ObjectDisposedException(nameof(SerialPortService)); }
 
-
-
-            var deviceTree = new DeviceTree();
+            deviceTree = new DeviceTree();
 
             foreach (var deviceClass in Win32.DeviceClasses)
             {
@@ -35,17 +31,20 @@ namespace Bliss.Services
                             break;
                         case "USB Serial Device":
                         case "Prolific USB-to-Serial Comm Port":
-                            gpsPortName = device.FriendlyName.Substring(device.FriendlyName.IndexOf('(') + 1, 4);
-                            if (!string.IsNullOrEmpty(gpsPortName))
+                            string gpsPort = device.FriendlyName.Substring(device.FriendlyName.IndexOf('(') + 1, 4);
+                            if (!ports.ContainsKey("gpsPort"))
                             {
-                                OnGPSComm?.Invoke(gpsPortName);
+                                if (!State.IsSimulating)
+                                {
+                                    Start(gpsPort, "gpsPort", 4800);
+                                }
                             }
                             break;
                         case "USB-SERIAL CH340":
-                            pilotPortName = device.FriendlyName.Substring(device.FriendlyName.IndexOf('(') + 1, 4);
-                            if (!string.IsNullOrEmpty(pilotPortName))
+                            string pilotPort = device.FriendlyName.Substring(device.FriendlyName.IndexOf('(') + 1, 4);
+                            if (!ports.ContainsKey("pilotPort"))
                             {
-                                OnPilotComm?.Invoke(pilotPortName);
+                                Start(pilotPort, "pilotPort",115000);
                             }
                             break;
                         default:
@@ -54,7 +53,88 @@ namespace Bliss.Services
                 }
             }
         }
+        public void Start(string port,string PortName,int speed)
+        {
+            if (IsDisposed)
+            {
+                throw new ObjectDisposedException(nameof(GPSSensor));
+            }
 
+            try
+            {
+                lock (_mutex)
+                {
+                    SerialPort _port = new SerialPort(port, speed)
+                    {
+                        DataBits = 8,
+                        Parity = Parity.None,
+                        StopBits = StopBits.One,
+                        Handshake = Handshake.None,
+                        NewLine = "\r\n",
+                    };
+                    _port.ErrorReceived += Port_ErrorReceived;
+
+                    _port.Open();
+                    ports.Add(PortName,_port);
+                }
+
+            }
+            catch(Exception ex)
+            {
+                State.Alarms.Enqueue($"Error starting {PortName} |");;
+            }
+        }
+        public void Stop(SerialPort? _port)
+        {
+            lock (_mutex)
+            {
+                if (_port is not null)
+                {
+                    _port.ErrorReceived -= Port_ErrorReceived;
+                    _port.Close();
+                    _port.Dispose();
+                    _port = null;
+                    Thread.Sleep(5000);
+                }
+            }
+        }
+        private void Port_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
+        {
+            State.Alarms.Enqueue($"{((SerialPort)sender).PortName} error |");
+        }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDisposed)
+            {
+                if (disposing)
+                {
+                    foreach(SerialPort port in ports.Values)
+                    {
+                        Stop(port);
+                    }
+                    ports.Clear();
+                    deviceTree.Dispose();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                IsDisposed = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~SerialPortService()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 
     public class DeviceTree : IDisposable

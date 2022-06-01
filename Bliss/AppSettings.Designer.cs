@@ -118,18 +118,6 @@ namespace Bliss {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10")]
-        public int PilotTurnIncrement {
-            get {
-                return ((int)(this["PilotTurnIncrement"]));
-            }
-            set {
-                this["PilotTurnIncrement"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("80")]
         public int PilotMaxPower {
             get {
@@ -161,6 +149,30 @@ namespace Bliss {
             }
             set {
                 this["GPSAverageCount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-30")]
+        public int PilotMinPower {
+            get {
+                return ((int)(this["PilotMinPower"]));
+            }
+            set {
+                this["PilotMinPower"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5000")]
+        public int PilotCancelTurn {
+            get {
+                return ((int)(this["PilotCancelTurn"]));
+            }
+            set {
+                this["PilotCancelTurn"] = value;
             }
         }
     }

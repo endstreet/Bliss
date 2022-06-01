@@ -9,13 +9,15 @@ namespace Bliss.Services
         //Pilot controls
         public static double Speed = 0;
         private static double bearing = 0;
-        public static bool Reverse = false;
+        public static bool LeftReverse = false;
+        public static bool RightReverse = false;
         public static int PowerLeft = 0;
         public static int PowerRight = 0;
         public static bool Autopilot = false;
         public static string PilotCommand = "Initialising";
         public static Queue<PilotCommand> PilotCommands = new Queue<PilotCommand>();
 
+        private static bool Reverse = false;
         public static void OnReverse(double fromSpeed, double toSpeed,double bearing)
         {
             bool forwardAfterReverse = fromSpeed < 0 && (toSpeed > 0 || toSpeed == 0);
@@ -164,6 +166,7 @@ namespace Bliss.Services
 
     public static class State
     {
+        public static bool IsSimulating = true;
         public static bool AutoPilot;
         public static bool AutopilotCommand;
         public static bool Alarm
@@ -178,9 +181,10 @@ namespace Bliss.Services
         public static new string ToString() 
         {
             StringBuilder sb = new StringBuilder();
-            foreach(string alarm in Alarms )
+            List<string> snap = Alarms.ToList();
+            foreach(string alarm in snap)
             {
-                sb.Append( alarm + " | ");
+                sb.Append( alarm + " |");
             }
             return sb.ToString();
         }
