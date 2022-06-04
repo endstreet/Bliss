@@ -33,7 +33,7 @@
       <Value Profile="(Default)">60</Value>
     </Setting>
     <Setting Name="GPSAverageCount" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">30</Value>
+      <Value Profile="(Default)">10</Value>
     </Setting>
     <Setting Name="PilotMinPower" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">-30</Value>

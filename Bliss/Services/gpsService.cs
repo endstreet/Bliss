@@ -4,22 +4,25 @@ using System.IO.Ports;
 
 namespace Bliss.Services
 {
-    public sealed class GPSSensor 
+    public sealed class gpsService :IDisposable
     {
 
         public bool IsValid;
         public bool IsDisposed { get; private set; }
 
 
-        private Task _read_task;
+        //private Task _read_task;
         NMEA0183Data.GNSSData.GPSFixData? result;
 
         private SerialPortService serial;
 
-        public GPSSensor(SerialPortService _serial)
+        public gpsService(SerialPortService _serial)
         {
             serial = _serial;
-
+            if (!serial.ports.ContainsKey("gpsPort"))
+            {
+                serial.ScanDevices();
+            }
             SwitchState();
         }
 
@@ -27,44 +30,20 @@ namespace Bliss.Services
         {
             if (!State.IsSimulating)
             {
-                _read_task = new Task(ReadTask);
-                _read_task.Start();
+                //_read_task = new Task(ReadTask);
+                //_read_task.Start();
+                serial.OnGpsData += ProcessData;
             }
-
         }
-        private async void ReadTask()
+
+        private void ProcessData(object? obj,EventArgs e)
         {
-            while (!IsDisposed)
+            string message = serial.ports["gpsPort"].ReadLine();
+            NMEA0183Data? result = ProcessNMEA0183(message);
+            if (result != null && result.GetType() == typeof(NMEA0183Data.GNSSData.GPSFixData))
             {
-                try
-                {
-                    if (serial.ports.ContainsKey("gpsPort"))
-                    {
-                        string message = serial.ports["gpsPort"].ReadLine();
-                        NMEA0183Data? result = ProcessNMEA0183(message);
-                        if (result != null && result.GetType() == typeof(NMEA0183Data.GNSSData.GPSFixData) )
-                        {
-                            result = (NMEA0183Data.GNSSData.GPSFixData?)ProcessNMEA0183(message);
-                            AverageLocation(new PointLatLng(((NMEA0183Data.GNSSData.GPSFixData)result).Coordinates.Latitude, ((NMEA0183Data.GNSSData.GPSFixData)result).Coordinates.Longitude));// should go here
-                        }
-                    }
-                    else
-                    {
-                        serial.ScanDevices();
-                        await Task.Delay(500);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (serial.ports.ContainsKey("gpsPort"))
-                    {
-                        State.Alarms.Enqueue("GPS Unplugged");
-                        serial.Stop(serial.ports["gpsPort"]);
-                        serial.ports.Remove("gpsPort");
-                    }
-                }
+                AverageLocation(new PointLatLng(((NMEA0183Data.GNSSData.GPSFixData)result).Coordinates.Latitude, ((NMEA0183Data.GNSSData.GPSFixData)result).Coordinates.Longitude));// should go here
             }
-            _read_task?.Dispose();
         }
 
         internal unsafe NMEA0183Data? ProcessNMEA0183(string message)
@@ -267,6 +246,17 @@ namespace Bliss.Services
             Longtitude = 0;
         }
 
+        public void Dispose()
+        {
+            if (!IsDisposed)
+            {
+                serial.Dispose();
+
+                IsDisposed = true;
+            }
+
+            GC.SuppressFinalize(this);
+        }
     }
 
     public record WGS84Coordinates(double Latitude, double Longitude)

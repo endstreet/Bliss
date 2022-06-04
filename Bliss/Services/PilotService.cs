@@ -14,17 +14,22 @@ namespace Bliss.Services
         public WayPoint? Target { get; set; }
 
 
-        public GPSSensor gps;
-        private Task? _read_task;
+        public gpsService gps;
+        
+        public List<string> ActivePorts
+        {
+            get { return serial.ports.Keys.ToList(); }
+        }
 
         private string _direction = "";
 
         System.Timers.Timer PositionUpdateTimer;
         System.Timers.Timer SteerCancelTimer;
+        System.Timers.Timer CompassTimer;
 
         public bool IsDisposed { get; private set; }
 
-        public PilotService(GPSSensor _gps,SerialPortService _serial)
+        public PilotService(gpsService _gps,SerialPortService _serial)
         {
             serial = _serial;
             gps = _gps;
@@ -50,8 +55,14 @@ namespace Bliss.Services
             else
             {
                 PositionUpdateTimer.Interval = AppSettings.Default.SpeedUpdateInterval * 1000;
-                _read_task = new Task(SerialTask);
-                _read_task.Start();
+                //_read_task = new Task(SerialTask);
+                //_read_task.Start();
+                serial.OnPilotData += ReceiveData;
+
+                CompassTimer = new System.Timers.Timer();
+                CompassTimer.Enabled = true;
+                CompassTimer.Interval = 500; ;
+                CompassTimer.Elapsed += OnCompassTimer;
             }
             PositionUpdateTimer.Enabled = true;
             PositionUpdateTimer.Elapsed += OnPositionTimer;
@@ -88,7 +99,7 @@ namespace Bliss.Services
 
                 if(State.IsSimulating)
                 {
-                    if ((int)Info.Speed < AppSettings.Default.PilotMaxPower / 10)
+                    if ((int)Info.Speed > AppSettings.Default.PilotMinPower / 10)
                     {
                         Info.OnReverse(Info.Speed, Info.Speed - 1, Info.Bearing);//Switch bearing 180 if change
                         Info.Speed -= 0.5;
@@ -104,12 +115,11 @@ namespace Bliss.Services
                 if (State.IsSimulating)
                 {
   
-                        if ((int)Info.Speed < AppSettings.Default.PilotMaxPower / 10)
+                        if ((int)Info.Speed > AppSettings.Default.PilotMinPower / 10)
                         {
                             Info.OnReverse(Info.Speed, Info.Speed - 1, Info.Bearing);//Switch bearing 180 if change
                             Info.Speed -= 0.5;
                         }
-
                         Info.Bearing = Info.Bearing + (1 * (Info.Speed == 0 ? 1 : Info.Speed));
                 }
             }
@@ -144,6 +154,7 @@ namespace Bliss.Services
                 }
                 else
                 {
+                    serial.ScanDevices();
                     State.Alarms.Enqueue("PilotPort not available. Command ignored.");
                 }
             }
@@ -153,44 +164,57 @@ namespace Bliss.Services
             }
         }
         //Always running
-        private async void SerialTask()
+
+        private void ReceiveData(object? obj, EventArgs e)
         {
-            while (!IsDisposed)
+            try
             {
-                try
-                {
-                    if (serial.ports.ContainsKey("pilotPort"))
-                    {
-                        string message = serial.ports["pilotPort"].ReadLine();
-                        if(message != "OK")
-                        {
-                            State.Alarms.Enqueue(message);
-                        }
-                    }
-                    else
-                    {
-                        serial.ScanDevices();
-                        await Task.Delay(500);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (serial.ports.ContainsKey("pilotPort"))
-                    {
-                        State.Alarms.Enqueue("Pilot dongle Unplugged");
-                        serial.Stop(serial.ports["pilotPort"]);
-                        serial.ports.Remove("pilotPort");
-                    }
-                }
+                Info.CompassBearing = serial.ports["compassPort"].ReadLine();
             }
-            _read_task?.Dispose();
+            catch (Exception ex)
+            {
+                State.Alarms.Enqueue("Compass read fail."); 
+            }
+
         }
+        //private async void SerialTask()
+        //{
+        //    while (!IsDisposed)
+        //    {
+        //        try
+        //        {
+        //            if (serial.ports.ContainsKey("pilotPort"))
+        //            {
+        //                //string message = serial.ports["pilotPort"].ReadLine();
+        //                //if(message != "OK")
+        //                //{
+        //                //    State.Alarms.Enqueue(message);
+        //                //}
+        //            }
+        //            else
+        //            {
+        //                serial.ScanDevices();
+        //                await Task.Delay(500);
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            if (serial.ports.ContainsKey("pilotPort"))
+        //            {
+        //                State.Alarms.Enqueue("Pilot dongle Unplugged");
+        //                serial.Stop(serial.ports["pilotPort"]);
+        //                serial.ports.Remove("pilotPort");
+        //            }
+        //        }
+        //    }
+        //    _read_task?.Dispose();
+        //}
 
         public void Dispose()
         {
             if (!IsDisposed)
             {
-                //Stop();
+                gps.Dispose();
 
                 IsDisposed = true;
             }
@@ -202,12 +226,22 @@ namespace Bliss.Services
 
         private void OnPositionTimer(object? sender, ElapsedEventArgs args)
         {
+
             if(State.IsSimulating)
             {
                 Resultposition();
             }
             else
             {
+                if (!serial.ports.ContainsKey("pilotPort"))
+                {
+                    serial.ScanDevices();
+                }
+                if (!serial.ports.ContainsKey("compassPort"))
+                {
+                    serial.ScanDevices();
+                }
+                
                 Info.CalculateSpeed(PositionUpdateTimer.Interval);
             }
             
@@ -239,6 +273,14 @@ namespace Bliss.Services
             }
 
         }
+
+        private void OnCompassTimer(object? sender, ElapsedEventArgs args)
+        {
+            if (serial.ports.ContainsKey("compassPort"))
+            {
+                serial.ports["compassPort"].WriteLine("Read");
+            }
+        }
         private void EnqueueCommand(string motorId,int speed)
         {
             switch(motorId)
@@ -250,9 +292,9 @@ namespace Bliss.Services
                     Info.LeftReverse = speed < 0;
                     break;
             }
-            _direction = speed < 0 ? "REVERSE" : "FORWARD";
+            _direction = speed < 0 ? "R" : "F";
             speed = speed < 0 ? speed*-1 : speed;
-            SerialCommand.Enqueue($"{motorId}|{_direction}|{speed * 4096 / 100}");
+            SerialCommand.Enqueue($"{motorId}{_direction}{speed * 4096 / 100}");
         }
 
         #endregion
@@ -263,6 +305,8 @@ namespace Bliss.Services
         double lng1;// = Info.CurrentLocation.Lng * Math.PI / 180; //to radians
         double lat;//= Math.Asin(Math.Sin(lat1) * Math.Cos(distance / 6378137) + Math.Cos(lat1) * Math.Sin(distance / 6378137) * Math.Cos(rad));
         double lng;
+        private string result;
+
         private void Resultposition()
         {
             double distance = (Info.Speed / 24 / 60) * 1000;

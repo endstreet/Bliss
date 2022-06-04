@@ -42,7 +42,7 @@ namespace Bliss
             ChangeTheme(splitContainer1.Panel2.Controls);
 
             //Timer
-            GetLocation.Tick += MainMap_LocationUpdate;
+            GetLocation.Tick += DashboardUpdate;
             GetLocation.Interval = AppSettings.Default.DashBoardUpdateInterval * 1000;
             GetLocation.Start();
 
@@ -63,6 +63,8 @@ namespace Bliss
                 }
                 else //(component is Button)
                 {
+                    if (component.Name.Contains("progress"))continue;
+                    if (component.Name.Contains("list")) continue;
                     component.BackColor = ColorScheme.BG;
                     component.ForeColor = ColorScheme.FG;
                     component.Font = ColorScheme.SmallFont;
@@ -73,6 +75,7 @@ namespace Bliss
                 }
             }
             labelAlarms.ForeColor = Color.Red;
+            //pictureCompass.BackColor = Color.White;
         }
         private void Dashboard_Load(object sender, EventArgs e)
         {
@@ -85,17 +88,23 @@ namespace Bliss
         /// <summary>
         ///  On Positionchanged
         /// </summary>
-        private void MainMap_LocationUpdate(object? sender, EventArgs e)
+        private void DashboardUpdate(object? sender, EventArgs e)
         {
             BearingLbl.Text = Info.Bearing.ToString();
             SpeedLbl.Text = Info.Speed.ToString();
-            pictureCompass.Image = Compass.DrawCompass((int)Math.Round(Info.Bearing, 0), 0, 80, 0, 80, pictureCompass.Size);
-            pictureCompassM.Image = Compass.DrawCompass((int)Math.Round(Info.Bearing, 0), 0, 80, 0, 80, pictureCompass.Size);
+            //pictureCompass.Image = Compass.DrawCompass((int)Math.Round(Info.Bearing, 0), 0, 80, 0, 80, pictureCompass.Size);
+            pictureCompass.BackgroundImage = Compass.DrawCompass(Info.Bearing.ToString());
+            pictureCompass.BackgroundImageLayout = ImageLayout.None;
+            pictureCompassM.BackgroundImage = Compass.DrawCompass(Info.CompassBearing);
+            pictureCompass.BackgroundImageLayout = ImageLayout.None;
             blissMap1.MainMap_LocationUpdate();
             progressLeftPower.Value = Info.PowerLeft > 0 ? Info.PowerLeft : Info.PowerLeft * -1;
             progressRightPower.Value = Info.PowerRight > 0 ? Info.PowerRight : Info.PowerRight * -1;
             btnLeftReverse.ForeColor = Info.LeftReverse ? ColorScheme.Busy : ColorScheme.FG;
             btnRightReverse.ForeColor = Info.RightReverse ? ColorScheme.Busy : ColorScheme.FG;
+
+            listPorts.DataSource = pilot.ActivePorts;
+
 
             if (State.Alarm)
             {
@@ -136,10 +145,6 @@ namespace Bliss
         }
         private void ProcessPilotCommands()
         {
-            if(State.Alarm)
-            {
-
-            }
             if (!Info.PilotCommands.Any()) return;
             ProcessPilotCommand(Info.PilotCommands.Dequeue());
         }
@@ -174,10 +179,6 @@ namespace Bliss
             }
         }
         #endregion
-        private void Right_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void MouseOverButton(object sender, EventArgs e)
         {
@@ -225,6 +226,8 @@ namespace Bliss
                 btnAlarm.ForeColor = ColorScheme.FG;
             }
         }
+
+
 
     }
 }

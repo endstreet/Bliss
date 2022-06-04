@@ -75,7 +75,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.JoystickInputTimer = new System.Windows.Forms.Timer(this.components);
-            this.pilotServiceBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.listPorts = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -86,11 +86,11 @@
             this.groupBox1.SuspendLayout();
             this.groupPilot.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureCompass)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pilotServiceBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
             // 
+            this.splitContainer1.BackColor = System.Drawing.Color.Transparent;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer1.IsSplitterFixed = true;
@@ -106,7 +106,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.InstrumentPanel);
             this.splitContainer1.Panel2MinSize = 440;
-            this.splitContainer1.Size = new System.Drawing.Size(1099, 666);
+            this.splitContainer1.Size = new System.Drawing.Size(1099, 659);
             this.splitContainer1.SplitterDistance = 440;
             this.splitContainer1.TabIndex = 6;
             // 
@@ -118,14 +118,16 @@
             this.blissMap1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.blissMap1.Location = new System.Drawing.Point(0, 0);
             this.blissMap1.Name = "blissMap1";
-            this.blissMap1.Size = new System.Drawing.Size(440, 666);
+            this.blissMap1.Size = new System.Drawing.Size(440, 659);
             this.blissMap1.TabIndex = 0;
             // 
             // InstrumentPanel
             // 
             this.InstrumentPanel.AutoSize = true;
             this.InstrumentPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.InstrumentPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(64)))));
+            this.InstrumentPanel.BackColor = System.Drawing.Color.Transparent;
+            this.InstrumentPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.InstrumentPanel.Controls.Add(this.listPorts);
             this.InstrumentPanel.Controls.Add(this.labelAlarms);
             this.InstrumentPanel.Controls.Add(this.pictureCompassM);
             this.InstrumentPanel.Controls.Add(this.groupBox2);
@@ -139,7 +141,7 @@
             this.InstrumentPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.InstrumentPanel.Location = new System.Drawing.Point(0, 0);
             this.InstrumentPanel.Name = "InstrumentPanel";
-            this.InstrumentPanel.Size = new System.Drawing.Size(655, 666);
+            this.InstrumentPanel.Size = new System.Drawing.Size(655, 659);
             this.InstrumentPanel.TabIndex = 4;
             // 
             // labelAlarms
@@ -156,9 +158,14 @@
             // 
             // pictureCompassM
             // 
-            this.pictureCompassM.Location = new System.Drawing.Point(229, 12);
+            this.pictureCompassM.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.pictureCompassM.Image = global::Bliss.Properties.Resources.CompassCover;
+            this.pictureCompassM.Location = new System.Drawing.Point(257, 12);
+            this.pictureCompassM.Margin = new System.Windows.Forms.Padding(0);
             this.pictureCompassM.Name = "pictureCompassM";
-            this.pictureCompassM.Size = new System.Drawing.Size(191, 179);
+            this.pictureCompassM.Padding = new System.Windows.Forms.Padding(15, 5, 0, 10);
+            this.pictureCompassM.Size = new System.Drawing.Size(220, 220);
+            this.pictureCompassM.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureCompassM.TabIndex = 47;
             this.pictureCompassM.TabStop = false;
             // 
@@ -602,9 +609,15 @@
             // 
             // pictureCompass
             // 
+            this.pictureCompass.BackColor = System.Drawing.Color.Transparent;
+            this.pictureCompass.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.pictureCompass.Image = global::Bliss.Properties.Resources.CompassCover;
             this.pictureCompass.Location = new System.Drawing.Point(16, 12);
+            this.pictureCompass.Margin = new System.Windows.Forms.Padding(0);
             this.pictureCompass.Name = "pictureCompass";
-            this.pictureCompass.Size = new System.Drawing.Size(191, 179);
+            this.pictureCompass.Padding = new System.Windows.Forms.Padding(15, 5, 0, 10);
+            this.pictureCompass.Size = new System.Drawing.Size(220, 220);
+            this.pictureCompass.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureCompass.TabIndex = 4;
             this.pictureCompass.TabStop = false;
             // 
@@ -613,7 +626,7 @@
             this.SpeedLbl.AutoSize = true;
             this.SpeedLbl.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.SpeedLbl.ForeColor = System.Drawing.Color.White;
-            this.SpeedLbl.Location = new System.Drawing.Point(527, 36);
+            this.SpeedLbl.Location = new System.Drawing.Point(157, 309);
             this.SpeedLbl.Name = "SpeedLbl";
             this.SpeedLbl.Size = new System.Drawing.Size(16, 15);
             this.SpeedLbl.TabIndex = 3;
@@ -625,7 +638,7 @@
             this.BearingLbl.AutoSize = true;
             this.BearingLbl.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.BearingLbl.ForeColor = System.Drawing.Color.White;
-            this.BearingLbl.Location = new System.Drawing.Point(527, 12);
+            this.BearingLbl.Location = new System.Drawing.Point(157, 285);
             this.BearingLbl.Name = "BearingLbl";
             this.BearingLbl.Size = new System.Drawing.Size(16, 15);
             this.BearingLbl.TabIndex = 2;
@@ -636,7 +649,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(445, 36);
+            this.label2.Location = new System.Drawing.Point(75, 309);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(39, 15);
             this.label2.TabIndex = 1;
@@ -646,7 +659,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(445, 12);
+            this.label1.Location = new System.Drawing.Point(75, 285);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(47, 15);
             this.label1.TabIndex = 0;
@@ -656,15 +669,22 @@
             // 
             this.JoystickInputTimer.Tick += new System.EventHandler(this.JoystickInputTimer_Tick);
             // 
-            // pilotServiceBindingSource
+            // listPorts
             // 
-            this.pilotServiceBindingSource.DataSource = typeof(Bliss.Services.PilotService);
+            this.listPorts.FormattingEnabled = true;
+            this.listPorts.ItemHeight = 15;
+            this.listPorts.Location = new System.Drawing.Point(501, 19);
+            this.listPorts.Name = "listPorts";
+            this.listPorts.Size = new System.Drawing.Size(120, 94);
+            this.listPorts.TabIndex = 49;
             // 
             // Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1099, 666);
+            this.BackgroundImage = global::Bliss.Properties.Resources.back;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.ClientSize = new System.Drawing.Size(1099, 659);
             this.Controls.Add(this.splitContainer1);
             this.Name = "Dashboard";
             this.Text = "Dashboard";
@@ -682,7 +702,6 @@
             this.groupBox1.ResumeLayout(false);
             this.groupPilot.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureCompass)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pilotServiceBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -734,6 +753,6 @@
         private PictureBox pictureCompassM;
         private Button buttonMapOrientation;
         private Label labelAlarms;
-        private BindingSource pilotServiceBindingSource;
+        private ListBox listPorts;
     }
 }

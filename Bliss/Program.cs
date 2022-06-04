@@ -20,6 +20,8 @@ namespace Bliss
 
             var services = new ServiceCollection();
 
+            State.IsSimulating = false;
+
             ConfigureServices(services);
 
             using (ServiceProvider serviceProvider = services.BuildServiceProvider())
@@ -32,7 +34,7 @@ namespace Bliss
         private static void ConfigureServices(ServiceCollection services)
         {
             services.AddSingleton<SerialPortService,SerialPortService>();
-            services.AddSingleton<GPSSensor, GPSSensor>();
+            services.AddSingleton<gpsService, gpsService>();
             services.AddSingleton<PilotService, PilotService>();
             services.AddSingleton<DbService, DbService>();
             services.AddScoped<Dashboard, Dashboard>();

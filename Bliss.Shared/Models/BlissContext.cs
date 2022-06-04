@@ -10,6 +10,7 @@ namespace Bliss.Models
     {
         public DbSet<Cruise> Cruises { get; set; }
         public DbSet<WayPoint> WayPoints { get; set; }
+        public DbSet<Device> Devices { get; set; }
         public BlissContext()
         {
         }

@@ -61,6 +61,36 @@ namespace Bliss.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap back {
+            get {
+                object obj = ResourceManager.GetObject("back", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CompassBack {
+            get {
+                object obj = ResourceManager.GetObject("CompassBack", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CompassCover {
+            get {
+                object obj = ResourceManager.GetObject("CompassCover", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Parameter {0} can&apos;t be null.
         /// </summary>
         internal static string IDS_ArgumentException {
@@ -113,6 +143,25 @@ namespace Bliss.Properties {
         internal static string IpCacheCreateDb {
             get {
                 return ResourceManager.GetString("IpCacheCreateDb", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string Needle {
+            get {
+                return ResourceManager.GetString("Needle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap needle1 {
+            get {
+                object obj = ResourceManager.GetObject("needle1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

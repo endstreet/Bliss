@@ -9,6 +9,7 @@ namespace Bliss.Services
         //Pilot controls
         public static double Speed = 0;
         private static double bearing = 0;
+        public static string CompassBearing = "0";
         public static bool LeftReverse = false;
         public static bool RightReverse = false;
         public static int PowerLeft = 0;
@@ -169,6 +170,7 @@ namespace Bliss.Services
         public static bool IsSimulating = true;
         public static bool AutoPilot;
         public static bool AutopilotCommand;
+
         public static bool Alarm
         {
             get

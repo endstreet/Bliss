@@ -142,7 +142,7 @@ namespace Bliss {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
         public int GPSAverageCount {
             get {
                 return ((int)(this["GPSAverageCount"]));

@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using Svg;
 
 namespace Bliss.Component
 {
     public class Compass
     {
-        public static Bitmap DrawCompass(double degree, double pitch, double maxpitch, double tilt, double maxtilt, Size s)
+        public static Bitmap DrawCompassX(double degree, double pitch, double maxpitch, double tilt, double maxtilt, Size s)
         {
 
 
@@ -20,7 +21,7 @@ namespace Bliss.Component
             double relativetilt = tilt / maxtilt;
 
             Bitmap result = null;
-            SolidBrush drawBrushWhite = new SolidBrush(Color.Yellow);
+            SolidBrush drawBrushWhite = new SolidBrush(Color.White);
             SolidBrush drawBrushRed = new SolidBrush(Color.Red);
             SolidBrush drawBrushOrange = new SolidBrush(Color.Red);
             SolidBrush drawBrushBlue = new SolidBrush(Color.DodgerBlue);
@@ -122,13 +123,13 @@ namespace Bliss.Component
                                                             //line every 30 deg
                                                             g.DrawLine(penblue, p1, p2);
 
-                                                            Point p3 = new Point((int)(degreeRadius * Cos[d]) + xcenterpoint, (int)(degreeRadius * Sin[d]) + ycenterpoint);
-                                                            SizeF s1 = g.MeasureString(d.ToString(), font1);
-                                                            p3.X = p3.X - (int)(s1.Width / 2);
-                                                            p3.Y = p3.Y - (int)(s1.Height / 2);
+                                                            //Point p3 = new Point((int)(degreeRadius * Cos[d]) + xcenterpoint, (int)(degreeRadius * Sin[d]) + ycenterpoint);
+                                                            //SizeF s1 = g.MeasureString(d.ToString(), font1);
+                                                            //p3.X = p3.X - (int)(s1.Width / 2);
+                                                            //p3.Y = p3.Y - (int)(s1.Height / 2);
 
-                                                            g.DrawString(d.ToString(), font1, drawBrushWhite, p3);
-                                                            Point pA = new Point((int)(TriRadius * Cos[d]) + xcenterpoint, (int)(TriRadius * Sin[d]) + ycenterpoint);
+                                                            //g.DrawString(d.ToString(), font1, drawBrushWhite, p3);
+                                                            //Point pA = new Point((int)(TriRadius * Cos[d]) + xcenterpoint, (int)(TriRadius * Sin[d]) + ycenterpoint);
 
                                                             int width = (int)(sizeMultiplier * 3);
                                                             int dp = d + width > 359 ? d + width - 360 : d + width;
@@ -192,6 +193,46 @@ namespace Bliss.Component
                 }
             }
             return result;
+        }
+
+
+        static string background = System.IO.File.ReadAllText(@"D:\FollowTheSun\AutoPilot\Bliss.Shared\Component\CompassBack.svg");
+
+        static string lastbearing;
+        static Bitmap bitmap;
+        public static Bitmap Needle;
+        //.Replace("[Bearing]", bearing.ToString());
+        public Compass()
+        {
+
+        }
+        //transform="translate(-2.4000511,-0.26726913) rotate([Bearing])">
+        //transform="translate(-4.3544497,-2.2826445)">
+        //Rotate
+        //The rotate(<a> [<x> <y>]) transform function specifies a rotation by a degrees about a given point.If optional parameters x and y are not supplied, the rotation is about the origin of the current user coordinate system.If optional parameters x and y are supplied, the rotation is about the point (x, y).
+        //transform= "rotate(100)"
+        public static Bitmap DrawCompass(string bearing)
+        {
+            if (bearing == lastbearing && bitmap is not null) return bitmap;
+            lastbearing = bearing;
+            var newcontent = background.Replace("[Bearing]", $"{bearing} 31 28.5");
+            var byteArray = Encoding.ASCII.GetBytes(newcontent);
+            using (Stream stream = new MemoryStream(byteArray))
+            {
+                var svgDocument = SvgDocument.Open<SvgDocument>(stream);
+                bitmap = svgDocument.Draw();
+            }
+            //if(Needle is null)
+            //{
+            //    byteArray = Encoding.ASCII.GetBytes(foreground);
+            //    using (Stream stream = new MemoryStream(byteArray))
+            //    {
+            //        var svgDocument = SvgDocument.Open<SvgDocument>(stream);
+            //        Needle = svgDocument.Draw();
+            //         //.Save(path, ImageFormat.Png);
+            //    }
+            //}
+            return bitmap;
         }
     }
 }
