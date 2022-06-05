@@ -12,6 +12,7 @@ namespace Bliss.Services
 
         public event EventHandler OnGpsData;
         public event EventHandler OnPilotData;
+        public event EventHandler OnCompassData;
 
         public void ScanDevices()
         {
@@ -120,12 +121,17 @@ namespace Bliss.Services
                         _port.DataReceived += gpsPortDataReceived;
                         //OnGpsData?.Invoke(null, EventArgs.Empty);
                     }
-                    if (PortName == "pilotPort" || PortName == "compassPort")
+                    if (PortName == "pilotPort" )
                     {
                         _port.DataReceived += pilotPortDataReceived;
                         //OnPilotData?.Invoke(null, EventArgs.Empty);
                     }
-                    
+                    if ( PortName == "compassPort")
+                    {
+                        _port.DataReceived += compassPortDataReceived;
+                        //OnPilotData?.Invoke(null, EventArgs.Empty);
+                    }
+
                     _port.ErrorReceived += Port_ErrorReceived;
 
                     _port.Open();
@@ -148,6 +154,11 @@ namespace Bliss.Services
         private void pilotPortDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             OnPilotData?.Invoke(null, EventArgs.Empty);
+        }
+
+        private void compassPortDataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            OnCompassData?.Invoke(null, EventArgs.Empty);
         }
 
         public void Stop(SerialPort? _port)

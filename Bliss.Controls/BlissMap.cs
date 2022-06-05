@@ -183,19 +183,19 @@ namespace Bliss.Controls
             //    }
             //}
         }
-        public T DeepClone<T>(T obj)
-        {
-            using (var ms = new MemoryStream())
-            {
-                var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+        //public T DeepClone<T>(T obj)
+        //{
+        //    using (var ms = new MemoryStream())
+        //    {
+        //        var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
 
-                formatter.Serialize(ms, obj);
+        //        formatter.Serialize(ms, obj);
 
-                ms.Position = 0;
+        //        ms.Position = 0;
 
-                return (T)formatter.Deserialize(ms);
-            }
-        }
+        //        return (T)formatter.Deserialize(ms);
+        //    }
+        //}
 
         public void DrawTrack(PointLatLng from, PointLatLng to,Brush brushColor)
         {

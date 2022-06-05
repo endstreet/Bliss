@@ -97,7 +97,10 @@ namespace Bliss
             pictureCompass.BackgroundImageLayout = ImageLayout.None;
             pictureCompassM.BackgroundImage = Compass.DrawCompass(Info.CompassBearing);
             pictureCompass.BackgroundImageLayout = ImageLayout.None;
-            blissMap1.MainMap_LocationUpdate();
+            if (Info.HasPosition)
+            {
+                blissMap1.MainMap_LocationUpdate();
+            }
             progressLeftPower.Value = Info.PowerLeft > 0 ? Info.PowerLeft : Info.PowerLeft * -1;
             progressRightPower.Value = Info.PowerRight > 0 ? Info.PowerRight : Info.PowerRight * -1;
             btnLeftReverse.ForeColor = Info.LeftReverse ? ColorScheme.Busy : ColorScheme.FG;
@@ -227,7 +230,9 @@ namespace Bliss
             }
         }
 
-
-
+        private void Dispose(object sender, FormClosingEventArgs e)
+        {
+            pilot.Dispose();
+        }
     }
 }

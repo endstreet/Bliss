@@ -32,6 +32,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.blissMap1 = new Bliss.Controls.BlissMap();
             this.InstrumentPanel = new System.Windows.Forms.Panel();
+            this.listPorts = new System.Windows.Forms.ListBox();
             this.labelAlarms = new System.Windows.Forms.Label();
             this.pictureCompassM = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -75,7 +76,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.JoystickInputTimer = new System.Windows.Forms.Timer(this.components);
-            this.listPorts = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -143,6 +143,15 @@
             this.InstrumentPanel.Name = "InstrumentPanel";
             this.InstrumentPanel.Size = new System.Drawing.Size(655, 659);
             this.InstrumentPanel.TabIndex = 4;
+            // 
+            // listPorts
+            // 
+            this.listPorts.FormattingEnabled = true;
+            this.listPorts.ItemHeight = 15;
+            this.listPorts.Location = new System.Drawing.Point(501, 19);
+            this.listPorts.Name = "listPorts";
+            this.listPorts.Size = new System.Drawing.Size(120, 94);
+            this.listPorts.TabIndex = 49;
             // 
             // labelAlarms
             // 
@@ -669,15 +678,6 @@
             // 
             this.JoystickInputTimer.Tick += new System.EventHandler(this.JoystickInputTimer_Tick);
             // 
-            // listPorts
-            // 
-            this.listPorts.FormattingEnabled = true;
-            this.listPorts.ItemHeight = 15;
-            this.listPorts.Location = new System.Drawing.Point(501, 19);
-            this.listPorts.Name = "listPorts";
-            this.listPorts.Size = new System.Drawing.Size(120, 94);
-            this.listPorts.TabIndex = 49;
-            // 
             // Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -688,6 +688,7 @@
             this.Controls.Add(this.splitContainer1);
             this.Name = "Dashboard";
             this.Text = "Dashboard";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Dispose);
             this.Load += new System.EventHandler(this.Dashboard_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);

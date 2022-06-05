@@ -46,8 +46,8 @@ namespace Bliss.Services
         //Motor RPM
 
         
-        public static PointLatLng LastLocation = new PointLatLng(-28.804256, 32.043904);
-        public static PointLatLng CurrentLocation = new PointLatLng(-28.804256, 32.043904);
+        public static PointLatLng LastLocation; //new PointLatLng(-28.804256, 32.043904);
+        public static PointLatLng CurrentLocation;//new PointLatLng(-28.804256, 32.043904);
 
         public static bool MapShowBearing = false;
 
@@ -89,6 +89,14 @@ namespace Bliss.Services
                 }
             }
         }
+
+        public static bool HasPosition
+        {
+            get 
+            { 
+                return LastLocation.Lng>0 && CurrentLocation.Lng > 0;
+            }
+        }
         //Navigation
         //Destination
         //ETA
@@ -106,6 +114,7 @@ namespace Bliss.Services
 
         public static void CalculateSpeed(double duration)
         {
+            if (!HasPosition) return;
             var sCoord = new GeoCoordinate(LastLocation.Lat, LastLocation.Lng);
             var eCoord = new GeoCoordinate(CurrentLocation.Lat, CurrentLocation.Lng);
             var distance = sCoord.GetDistanceTo(eCoord);//Returns meters
@@ -127,6 +136,7 @@ namespace Bliss.Services
         }
         static void CalculateBearing()
         {
+            if (!HasPosition) return;
             var dLon = ToRad(CurrentLocation.Lng - LastLocation.Lng);
             var dPhi = Math.Log(Math.Tan(ToRad(CurrentLocation.Lat) / 2 + Math.PI / 4) / Math.Tan(ToRad(LastLocation.Lat) / 2 + Math.PI / 4));
             if (Math.Abs(dLon) > Math.PI)

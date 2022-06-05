@@ -57,12 +57,13 @@ namespace Bliss.Services
                 PositionUpdateTimer.Interval = AppSettings.Default.SpeedUpdateInterval * 1000;
                 //_read_task = new Task(SerialTask);
                 //_read_task.Start();
-                serial.OnPilotData += ReceiveData;
+                serial.OnPilotData += ReceivePilotData;
 
                 CompassTimer = new System.Timers.Timer();
                 CompassTimer.Enabled = true;
                 CompassTimer.Interval = 500; ;
                 CompassTimer.Elapsed += OnCompassTimer;
+                serial.OnCompassData += ReceiveCompassData;
             }
             PositionUpdateTimer.Enabled = true;
             PositionUpdateTimer.Elapsed += OnPositionTimer;
@@ -165,57 +166,36 @@ namespace Bliss.Services
         }
         //Always running
 
-        private void ReceiveData(object? obj, EventArgs e)
+        private void ReceivePilotData(object? obj, EventArgs e)
         {
-            try
+
+
+        }
+
+        private void ReceiveCompassData(object? obj, EventArgs e)
+        {
+
+            ReadOnlySpan<char> command = serial.ports["compassPort"].ReadLine().AsSpan();
+            switch (command.Slice(0, 7).ToString())
             {
-                Info.CompassBearing = serial.ports["compassPort"].ReadLine();
-            }
-            catch (Exception ex)
-            {
-                State.Alarms.Enqueue("Compass read fail."); 
+                case "COMPASS":
+                    Info.CompassBearing = command.Slice(7).ToString().TrimEnd('\n');
+                    break;
+                default:
+                    //Todo: ignore startup..
+                    break;
             }
 
         }
-        //private async void SerialTask()
-        //{
-        //    while (!IsDisposed)
-        //    {
-        //        try
-        //        {
-        //            if (serial.ports.ContainsKey("pilotPort"))
-        //            {
-        //                //string message = serial.ports["pilotPort"].ReadLine();
-        //                //if(message != "OK")
-        //                //{
-        //                //    State.Alarms.Enqueue(message);
-        //                //}
-        //            }
-        //            else
-        //            {
-        //                serial.ScanDevices();
-        //                await Task.Delay(500);
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            if (serial.ports.ContainsKey("pilotPort"))
-        //            {
-        //                State.Alarms.Enqueue("Pilot dongle Unplugged");
-        //                serial.Stop(serial.ports["pilotPort"]);
-        //                serial.ports.Remove("pilotPort");
-        //            }
-        //        }
-        //    }
-        //    _read_task?.Dispose();
-        //}
 
         public void Dispose()
         {
             if (!IsDisposed)
             {
+                CompassTimer.Dispose();
+                PositionUpdateTimer.Dispose();
+                SteerCancelTimer.Dispose();
                 gps.Dispose();
-
                 IsDisposed = true;
             }
 
@@ -278,7 +258,7 @@ namespace Bliss.Services
         {
             if (serial.ports.ContainsKey("compassPort"))
             {
-                serial.ports["compassPort"].WriteLine("Read");
+                serial.ports["compassPort"].WriteLine("GET");
             }
         }
         private void EnqueueCommand(string motorId,int speed)
