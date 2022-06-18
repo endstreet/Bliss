@@ -150,7 +150,6 @@ namespace Bliss.NMEA
                 default:
                     return null;
             }
-            return null;
         }
         private DateTime ParseTime(string data, DateTimeStyles style = DateTimeStyles.AssumeUniversal)
         {

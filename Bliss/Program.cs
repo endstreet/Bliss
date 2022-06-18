@@ -1,4 +1,5 @@
 using Bliss.Services;
+using GoogleApi;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections;
 using System.Diagnostics;
@@ -26,18 +27,25 @@ namespace Bliss
 
             using (ServiceProvider serviceProvider = services.BuildServiceProvider())
             {
-                var form1 = serviceProvider.GetRequiredService<Dashboard>();
+                var form1 = serviceProvider.GetRequiredService<NewDash>();
                 Application.Run(form1);
             }
         }
 
         private static void ConfigureServices(ServiceCollection services)
         {
+            services.AddSingleton<DeviceService, DeviceService>();
             services.AddSingleton<SerialPortService,SerialPortService>();
             services.AddSingleton<gpsService, gpsService>();
+            services.AddSingleton<MotorService, MotorService>();
             services.AddSingleton<PilotService, PilotService>();
             services.AddSingleton<DbService, DbService>();
-            services.AddScoped<Dashboard, Dashboard>();
+            services.AddSingleton<GoogleMaps, GoogleMaps>();
+            services.AddSingleton<JoystickService, JoystickService>();
+            services.AddSingleton<CompassService, CompassService>();
+            //services.AddScoped<Dashboard, Dashboard>();
+            services.AddScoped<NewDash, NewDash>();
+
         }
         ///// <summary>
         /////  The main entry point for the application.

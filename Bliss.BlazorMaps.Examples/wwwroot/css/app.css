@@ -1,0 +1,173 @@
+﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+
+:root {
+    --navbar-height: 5rem;
+    --gray-one: #F0F0F0;
+    --gray-two: #DCDEE3;
+    --gray-three: #00000029;
+    --green-one: #CBE54E;
+    --green-two: #94B447;
+    --green-three: #55BB88;
+    --green-four: #D3DD18;
+    --blue-one: #006C8C;
+    --white: #FFFFFF;
+    --font-color-base: #3B5284;
+    --border-radius-base: 20px;
+    --horizontal-outer-padding: 2rem;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Open Sans', sans-serif;
+    color: var(--font-color-base);
+}
+
+app {
+    height: 100%;
+    position: relative;
+}
+
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid #26b050;
+}
+
+.invalid {
+    outline: 1px solid red;
+}
+
+.validation-message {
+    color: red;
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+.navbar {
+    height: var(--navbar-height);
+    background: var(--gray-one);
+    padding: 0 var(--horizontal-outer-padding);
+    display: flex;
+    justify-content: stretch;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+    .navbar .logo-wrapper {
+        margin-right: auto;
+    }
+
+        .navbar .logo-wrapper .logo {
+            height: 3rem;
+        }
+
+    .navbar .button-wrapper {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+        .navbar .button-wrapper .circle {
+            background: var(--green-one);
+            height: 1.3rem;
+            width: 1.3rem;
+            border-radius: var(--border-radius-base);
+        }
+
+        .navbar .button-wrapper .label {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--font-color-base);
+        }
+
+        .active .label {
+            color: var(--green-two)!important;
+        }
+
+.main {
+    height: calc(100% - var(--navbar-height));  
+    display: grid;
+    grid-template-rows: 0.1fr 0.9fr;
+    grid-template-columns: 1fr minmax(400px, 0.25fr);
+    gap: 1rem;
+    background: var(--gray-two);
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-bottom: 4rem;
+    padding-top: 1rem;
+}   
+
+    .main .top-container {
+        grid-column: 1/ span 2;
+        display: flex;
+        align-items: center;
+    }
+
+        .main .top-container .page-header {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-left: 0.5rem;
+            margin-bottom: 0 !important;
+            color: inherit;
+        }
+
+    .main .map-wrapper {
+        grid-row: 2;
+        grid-column: 1;
+        height: 100%;
+        position: relative;
+    }
+
+    .main .side-panel {
+        grid-row: 2;
+        grid-column: 2;
+        background: var(--white);
+        box-shadow: 0px 3px 6px var(--gray-three);
+        border-radius: var(--border-radius-base);
+        padding: 2rem var(--horizontal-outer-padding);
+    }
+
+        .main .side-panel .header{
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+#mapId {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: var(--border-radius-base) !important;
+}
+
+    #mapId > div.leaflet-control-container > div.leaflet-top.leaflet-left > div {
+        border: 1px solid #E9E9E9;
+        box-shadow: 0px 3px 6px #00000029;
+        border-radius: 8px;
+        background: var(--white);
+    }
+
+    #mapId > div.leaflet-control-container > div.leaflet-top.leaflet-left > div > a.leaflet-control-zoom-in,
+    #mapId > div.leaflet-control-container > div.leaflet-top.leaflet-left > div > a.leaflet-control-zoom-out {
+        color: var(--green-four);
+        background: transparent;
+    }
+
+

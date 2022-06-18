@@ -191,132 +191,132 @@ namespace Bliss
         static readonly Random R = new Random();
 
 
-        static string _sessionId = string.Empty;
+        //static string _sessionId = string.Empty;
 
-        public static void GetFlightRadarData(List<FlightRadarData> ret, RectLatLng bounds)
-        {
-            ret.Clear();
+//        public static void GetFlightRadarData(List<FlightRadarData> ret, RectLatLng bounds)
+//        {
+//            ret.Clear();
 
-            //if(resetSession || string.IsNullOrEmpty(sessionId))
-            //{
-            //   sessionId = GetFlightRadarContentUsingHttp("http://www.flightradar24.com/", location, zoom, string.Empty);
-            //}
+//            //if(resetSession || string.IsNullOrEmpty(sessionId))
+//            //{
+//            //   sessionId = GetFlightRadarContentUsingHttp("http://www.flightradar24.com/", location, zoom, string.Empty);
+//            //}
 
-            // get track for one object
-            //var tm = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalMilliseconds;
-            //var r = GetContentUsingHttp("http://www.flightradar24.com/FlightDataService.php?callsign=WZZ1MF&hex=47340F&date=" + tm, p1, 6, id);
-            //Debug.WriteLine(r);
+//            // get track for one object
+//            //var tm = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalMilliseconds;
+//            //var r = GetContentUsingHttp("http://www.flightradar24.com/FlightDataService.php?callsign=WZZ1MF&hex=47340F&date=" + tm, p1, 6, id);
+//            //Debug.WriteLine(r);
 
-            //if(!string.IsNullOrEmpty(sessionId))
-            {
-                //var response = GetFlightRadarContentUsingHttp("http://arn.data.fr24.com/zones/fcgi/feed.js?bounds=63.056845879294244,55.95299968262111,5.99853515625,28.54248046875&faa=1&mlat=1&flarm=1&adsb=1&gnd=1&air=1&vehicles=1&estimated=1&maxage=900&gliders=1&stats=1&", location, zoom, sessionId);
-                string response = GetFlightRadarContentUsingHttp(string.Format(CultureInfo.InvariantCulture,
-                    "http://arn.data.fr24.com/zones/fcgi/feed.js?bounds={0},{1},{2},{3}&faa=1&mlat=1&flarm=1&adsb=1&gnd=1&air=1&vehicles=1&estimated=1&maxage=900&gliders=1&stats=1&",
-                    bounds.Top,
-                    bounds.Bottom,
-                    bounds.Left,
-                    bounds.Right));
+////            if(!string.IsNullOrEmpty(sessionId))
+////            {
+////                //var response = GetFlightRadarContentUsingHttp("http://arn.data.fr24.com/zones/fcgi/feed.js?bounds=63.056845879294244,55.95299968262111,5.99853515625,28.54248046875&faa=1&mlat=1&flarm=1&adsb=1&gnd=1&air=1&vehicles=1&estimated=1&maxage=900&gliders=1&stats=1&", location, zoom, sessionId);
+////                string response = GetFlightRadarContentUsingHttp(string.Format(CultureInfo.InvariantCulture,
+////                    "http://arn.data.fr24.com/zones/fcgi/feed.js?bounds={0},{1},{2},{3}&faa=1&mlat=1&flarm=1&adsb=1&gnd=1&air=1&vehicles=1&estimated=1&maxage=900&gliders=1&stats=1&",
+////                    bounds.Top,
+////                    bounds.Bottom,
+////                    bounds.Left,
+////                    bounds.Right));
 
-                var items = response.Split(new[] { "\n," }, StringSplitOptions.RemoveEmptyEntries);
+////                var items = response.Split(new[] { "\n," }, StringSplitOptions.RemoveEmptyEntries);
 
-                //int i = 0;
-                foreach (string it in items)
-                {
-                    if (it.Length > 11 && !it.Contains("full_count") && !it.Contains("stats"))
-                    {
-                        string d = it.TrimEnd(']').Replace(":[", ",").Replace("\"", string.Empty);
+////                //int i = 0;
+////                foreach (string it in items)
+////                {
+////                    if (it.Length > 11 && !it.Contains("full_count") && !it.Contains("stats"))
+////                    {
+////                        string d = it.TrimEnd(']').Replace(":[", ",").Replace("\"", string.Empty);
 
-                        //Debug.WriteLine(++i + " -> " + d);
+////                        //Debug.WriteLine(++i + " -> " + d);
 
-                        // BAW576":["400803",48.9923,1.8083,"144","36950","462","0512","LFPO","A319","G-EUPC"
-                        var par = d.Split(',');
-                        if (par.Length >= 9)
-                        {
-                            int id = Convert.ToInt32(par[0], 16);
-                            string name = par[8] + "|" + par[9] + "|" + par[10];
-                            string lat = par[2];
-                            string lng = par[3];
-                            string bearing = par[4];
-                            string altitude = (int)(int.Parse(par[5]) * 0.3048) + "m";
-                            string speed = (int)(int.Parse(par[6]) * 1.852) + "km/h";
+////                        // BAW576":["400803",48.9923,1.8083,"144","36950","462","0512","LFPO","A319","G-EUPC"
+////                        var par = d.Split(',');
+////                        if (par.Length >= 9)
+////                        {
+////                            int id = Convert.ToInt32(par[0], 16);
+////                            string name = par[8] + "|" + par[9] + "|" + par[10];
+////                            string lat = par[2];
+////                            string lng = par[3];
+////                            string bearing = par[4];
+////                            string altitude = (int)(int.Parse(par[5]) * 0.3048) + "m";
+////                            string speed = (int)(int.Parse(par[6]) * 1.852) + "km/h";
 
-                            var fd = new FlightRadarData();
-                            fd.Name = name;
-                            fd.Bearing = int.Parse(bearing);
-                            fd.Altitude = altitude;
-                            fd.Speed = speed;
-                            fd.Point = new PointLatLng(double.Parse(lat, CultureInfo.InvariantCulture),
-                                double.Parse(lng, CultureInfo.InvariantCulture));
-                            fd.Id = id;
+////                            var fd = new FlightRadarData();
+////                            fd.Name = name;
+////                            fd.Bearing = int.Parse(bearing);
+////                            fd.Altitude = altitude;
+////                            fd.Speed = speed;
+////                            fd.Point = new PointLatLng(double.Parse(lat, CultureInfo.InvariantCulture),
+////                                double.Parse(lng, CultureInfo.InvariantCulture));
+////                            fd.Id = id;
 
-                            ret.Add(fd);
+////                            ret.Add(fd);
 
-                            //Debug.WriteLine("name: " + name);
-                            //Debug.WriteLine("hex: " + hex);
-                            //Debug.WriteLine("point: " + fd.point);
-                            //Debug.WriteLine("bearing: " + bearing);
-                            //Debug.WriteLine("altitude: " + altitude);
-                            //Debug.WriteLine("speed: " + speed);
-                        }
-                        else
-                        {
-#if DEBUG
-                            if (Debugger.IsAttached)
-                            {
-                                Debugger.Break();
-                            }
-#endif
-                        }
+////                            //Debug.WriteLine("name: " + name);
+////                            //Debug.WriteLine("hex: " + hex);
+////                            //Debug.WriteLine("point: " + fd.point);
+////                            //Debug.WriteLine("bearing: " + bearing);
+////                            //Debug.WriteLine("altitude: " + altitude);
+////                            //Debug.WriteLine("speed: " + speed);
+////                        }
+////                        else
+////                        {
+////#if DEBUG
+////                            if (Debugger.IsAttached)
+////                            {
+////                                Debugger.Break();
+////                            }
+////#endif
+////                        }
 
-                        //Debug.WriteLine("--------------");
-                    }
-                }
-            }
-        }
+////                        //Debug.WriteLine("--------------");
+////                    }
+////                }
+////            }
+//        }
 
-        static string GetFlightRadarContentUsingHttp(string url)
-        {
-            string ret;
+        //static string GetFlightRadarContentUsingHttp(string url)
+        //{
+        //    string ret;
 
-            var request = (HttpWebRequest)WebRequest.Create(url);
+        //    var request = (HttpWebRequest)WebRequest.Create(url);
 
-            request.UserAgent = GMapProvider.UserAgent;
-            request.Timeout = GMapProvider.TimeoutMs;
-            request.ReadWriteTimeout = GMapProvider.TimeoutMs * 6;
-            request.Accept = "*/*";
-            request.Referer = "http://www.flightradar24.com/";
-            request.KeepAlive = true;
-            //request.Headers.Add("Cookie", string.Format(System.Globalization.CultureInfo.InvariantCulture, "map_lat={0}; map_lon={1}; map_zoom={2}; " + (!string.IsNullOrEmpty(sid) ? "PHPSESSID=" + sid + ";" : string.Empty) + "__utma=109878426.303091014.1316587318.1316587318.1316587318.1; __utmb=109878426.2.10.1316587318; __utmz=109878426.1316587318.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)", p.Lat, p.Lng, zoom));
+        //    request.UserAgent = GMapProvider.UserAgent;
+        //    request.Timeout = GMapProvider.TimeoutMs;
+        //    request.ReadWriteTimeout = GMapProvider.TimeoutMs * 6;
+        //    request.Accept = "*/*";
+        //    request.Referer = "http://www.flightradar24.com/";
+        //    request.KeepAlive = true;
+        //    //request.Headers.Add("Cookie", string.Format(System.Globalization.CultureInfo.InvariantCulture, "map_lat={0}; map_lon={1}; map_zoom={2}; " + (!string.IsNullOrEmpty(sid) ? "PHPSESSID=" + sid + ";" : string.Empty) + "__utma=109878426.303091014.1316587318.1316587318.1316587318.1; __utmb=109878426.2.10.1316587318; __utmz=109878426.1316587318.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)", p.Lat, p.Lng, zoom));
 
-            using (var response = request.GetResponse() as HttpWebResponse)
-            {
-                //if(string.IsNullOrEmpty(sid))
-                //{
-                //   var c = response.Headers["Set-Cookie"];
-                //   //Debug.WriteLine(c);
-                //   if(c.Contains("PHPSESSID"))
-                //   {
-                //      c = c.Split('=')[1].Split(';')[0];
-                //      ret = c;
-                //   }
-                //}
+        //    using (var response = request.GetResponse() as HttpWebResponse)
+        //    {
+        //        //if(string.IsNullOrEmpty(sid))
+        //        //{
+        //        //   var c = response.Headers["Set-Cookie"];
+        //        //   //Debug.WriteLine(c);
+        //        //   if(c.Contains("PHPSESSID"))
+        //        //   {
+        //        //      c = c.Split('=')[1].Split(';')[0];
+        //        //      ret = c;
+        //        //   }
+        //        //}
 
-                using (var responseStream = response.GetResponseStream())
-                {
-                    using (var read = new StreamReader(responseStream, Encoding.UTF8))
-                    {
-                        string tmp = read.ReadToEnd();
-                        //if(!string.IsNullOrEmpty(sid))
-                        {
-                            ret = tmp;
-                        }
-                    }
-                }
+        //        using (var responseStream = response.GetResponseStream())
+        //        {
+        //            using (var read = new StreamReader(responseStream, Encoding.UTF8))
+        //            {
+        //                string tmp = read.ReadToEnd();
+        //                //if(!string.IsNullOrEmpty(sid))
+        //                {
+        //                    ret = tmp;
+        //                }
+        //            }
+        //        }
 
-                response.Close();
-            }
+        //        response.Close();
+        //    }
 
-            return ret;
-        }
+        //    return ret;
+        //}
     }
 }

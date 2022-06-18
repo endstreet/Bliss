@@ -31,7 +31,7 @@
             this.MainMap = new GMap.NET.WindowsForms.GMapControl();
             this.SuspendLayout();
             // 
-            // gMapControl1
+            // MainMap
             // 
             this.MainMap.Bearing = 0F;
             this.MainMap.CanDragMap = true;
@@ -54,7 +54,7 @@
             this.MainMap.ScaleMode = GMap.NET.WindowsForms.ScaleModes.Integer;
             this.MainMap.SelectedAreaFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
             this.MainMap.ShowTileGridLines = false;
-            this.MainMap.Size = new System.Drawing.Size(381, 348);
+            this.MainMap.Size = new System.Drawing.Size(389, 350);
             this.MainMap.TabIndex = 0;
             this.MainMap.Zoom = 0D;
             // 
@@ -65,7 +65,7 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.MainMap);
             this.Name = "BlissMap";
-            this.Size = new System.Drawing.Size(381, 348);
+            this.Size = new System.Drawing.Size(389, 350);
             this.ResumeLayout(false);
 
         }

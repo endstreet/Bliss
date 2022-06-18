@@ -5,11 +5,17 @@ using Bliss.Shared;
 using GMap.NET.CacheProviders;
 using GMap.NET.MapProviders;
 using System.Diagnostics;
+using System.ComponentModel;
 
 namespace Bliss.Controls
 {
     public partial class BlissMap : UserControl
     {
+        System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+        
+        [Description("GeoLocation"), Category("Data")]
+        public PointLatLng GeoLocation { get; set; }
+
         public string DBFile { get; set; } = "Bliss";
         public string ApiKey { get; set; } = "";
         // layers
@@ -36,6 +42,10 @@ namespace Bliss.Controls
         public BlissMap()
         {
             InitializeComponent();
+            timer.Interval = 1000;
+            timer.Tick += Timer_Tick;
+            //timer.Start();
+            
 
             if (!GMapControl.IsDesignerHosted)
             {
@@ -57,7 +67,7 @@ namespace Bliss.Controls
                 //----------------------------------------
                 // Config Map at Startup
                 //----------------------------------------
-                MainMap.MapProvider = GMapProviders.OpenStreetMap;
+                MainMap.MapProvider = GMapProviders.GoogleMap;
                 MainMap.ShowCenter = false;
 
                 //----------------------------------------
@@ -147,6 +157,11 @@ namespace Bliss.Controls
 //#endif
 //                }
             }
+        }
+
+        private void Timer_Tick(object? sender, EventArgs e)
+        {
+            MainMap_LocationUpdate();
         }
 
         void RegeneratePolygon()
@@ -244,6 +259,7 @@ namespace Bliss.Controls
                 MainMap.Bearing = 0;
             }
         }
+
 
         //#region -- map events --
 

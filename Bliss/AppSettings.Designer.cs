@@ -106,7 +106,7 @@ namespace Bliss {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
         public int PilotSpeedIncrement {
             get {
                 return ((int)(this["PilotSpeedIncrement"]));
@@ -118,7 +118,7 @@ namespace Bliss {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("80")]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
         public int PilotMaxPower {
             get {
                 return ((int)(this["PilotMaxPower"]));
@@ -130,7 +130,7 @@ namespace Bliss {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("60")]
+        [global::System.Configuration.DefaultSettingValueAttribute("200")]
         public int SpeedUpdateInterval {
             get {
                 return ((int)(this["SpeedUpdateInterval"]));
@@ -154,7 +154,7 @@ namespace Bliss {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("-30")]
+        [global::System.Configuration.DefaultSettingValueAttribute("-50")]
         public int PilotMinPower {
             get {
                 return ((int)(this["PilotMinPower"]));

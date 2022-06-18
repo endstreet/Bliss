@@ -8,15 +8,18 @@ namespace Bliss.Services
     {
         //Pilot controls
         public static double Speed = 0;
-        private static double bearing = 0;
+        public static Queue<string> PilotCommands = new Queue<string>();
+        public static double Depth = 0;
         public static string CompassBearing = "0";
         public static bool LeftReverse = false;
         public static bool RightReverse = false;
         public static int PowerLeft = 0;
         public static int PowerRight = 0;
+        public static int PowerLeftState = 0;
+        public static int PowerRightState = 0;
+        public static bool LeftReverseState = false;
+        public static bool RightReverseState = false;
         public static bool Autopilot = false;
-        public static string PilotCommand = "Initialising";
-        public static Queue<PilotCommand> PilotCommands = new Queue<PilotCommand>();
 
         private static bool Reverse = false;
         public static void OnReverse(double fromSpeed, double toSpeed,double bearing)
@@ -51,11 +54,12 @@ namespace Bliss.Services
 
         public static bool MapShowBearing = false;
 
+        private static double _bearing = 0;
         public static double Bearing
         {
             get
             {
-                return bearing;
+                return _bearing;
             }
             set
             {
@@ -63,11 +67,11 @@ namespace Bliss.Services
                 {
                     if (value == 360)
                     {
-                        bearing = 0;
+                        _bearing = 0;
                     }
                     else
                     {
-                        bearing = value - 359;
+                        _bearing = value - 359;
                         
                     }
                     
@@ -76,16 +80,16 @@ namespace Bliss.Services
                 {
                     if (value == -1)
                     {
-                        bearing = 359;
+                        _bearing = 359;
                     }
                     else 
                     {
-                        bearing = value + 359;
+                        _bearing = value + 359;
                     }
                 }
                 else
                 {
-                    bearing = value;
+                    _bearing = value;
                 }
             }
         }
@@ -163,17 +167,43 @@ namespace Bliss.Services
         }
     }
 
-    public class PilotCommand
-    {
-        public bool SpeedUp { get; set; }
-        public bool SpeedDown { get; set; }
-        public bool TurnLeft { get; set; }
-        public bool TurnRight { get; set; }
-        public bool Stop { get; set; }
-        public bool Cancel { get; set; }
-        public bool Alarm { get; set; }
+    //public class PilotCommand
+    //{
+    //    public bool SpeedUp { get; set; }
+    //    public bool SpeedDown { get; set; }
+    //    public bool LeftUp { get; set; }
+    //    public bool LeftDown { get; set; }
+    //    public bool RightUp { get; set; }
+    //    public bool RightDown { get; set; }
+    //    public bool Left { get; set; }
+    //    public bool Right { get; set; }
+    //    public bool Stop { get; set; }
+    //    public bool Cancel { get; set; }
+    //    public bool Alarm { get; set; }
 
-    }
+    //    //public PilotCommand()
+    //    //{
+    //    //}
+
+    //    //public PilotCommand(string[] xboxCommand)
+    //    //{
+    //    //    if (xboxCommand.Length == 1)
+    //    //    {
+    //    //        SpeedUp = xboxCommand[0] == "DPadUp";
+    //    //        SpeedDown = xboxCommand[0] == "DPadDown";
+    //    //        Left = xboxCommand[0] == "DPadLeft";
+    //    //        Right = xboxCommand[0] == "DPadRight";
+    //    //    }
+    //    //    else 
+    //    //    { 
+    //    //        LeftUp = xboxCommand.Contains("DPadLeft") && xboxCommand.Contains("DPadUp");
+    //    //        LeftDown = xboxCommand.Contains("DPadLeft") && xboxCommand.Contains("DPadDown");
+    //    //        RightUp = xboxCommand.Contains("DPadRight") && xboxCommand.Contains("DPadUp");
+    //    //        RightDown = xboxCommand.Contains("DPadRight") && xboxCommand.Contains("DPadDown");
+    //    //    }
+    //    //}
+
+    //}
 
     public static class State
     {

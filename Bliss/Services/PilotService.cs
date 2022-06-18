@@ -1,19 +1,17 @@
 ﻿using Bliss.Models;
 using GMap.NET;
-using System.IO.Ports;
 using System.Timers;
 
 namespace Bliss.Services
 {
     public sealed class PilotService : IDisposable
     {
-        
 
+        private JoystickService joystick;
         private SerialPortService serial;
-        private Queue<string> SerialCommand = new Queue<string>();
+        private MotorService motorService;
+        //private Queue<string> SerialCommand = new Queue<string>();
         public WayPoint? Target { get; set; }
-
-
         public gpsService gps;
         
         public List<string> ActivePorts
@@ -21,180 +19,60 @@ namespace Bliss.Services
             get { return serial.ports.Keys.ToList(); }
         }
 
-        private string _direction = "";
+        public event EventHandler? OnJoystickData;
+        public event EventHandler? OnMotorData;
 
-        System.Timers.Timer PositionUpdateTimer;
-        System.Timers.Timer SteerCancelTimer;
-        System.Timers.Timer CompassTimer;
+        private System.Timers.Timer PositionUpdateTimer;
+        
 
         public bool IsDisposed { get; private set; }
 
-        public PilotService(gpsService _gps,SerialPortService _serial)
+        public PilotService(JoystickService _joystick, gpsService _gps,MotorService _motorService, SerialPortService _serial)
         {
+            joystick = _joystick;
             serial = _serial;
+            motorService = _motorService;
             gps = _gps;
 
             PositionUpdateTimer = new System.Timers.Timer();
-
-            SwitchState();
-
-            SteerCancelTimer = new System.Timers.Timer();
-            SteerCancelTimer.Enabled = true;
-            SteerCancelTimer.Interval = AppSettings.Default.PilotCancelTurn;
-            SteerCancelTimer.Elapsed += OnCancelTurnTimer;
-        }
-
-        public void SwitchState()
-        {
-            PositionUpdateTimer.Elapsed -= OnPositionTimer;
-            PositionUpdateTimer.Enabled = false;
-            if (State.IsSimulating)
-            {
-                PositionUpdateTimer.Interval = 1000;
-            }
-            else
-            {
-                PositionUpdateTimer.Interval = AppSettings.Default.SpeedUpdateInterval * 1000;
-                //_read_task = new Task(SerialTask);
-                //_read_task.Start();
-                serial.OnPilotData += ReceivePilotData;
-
-                CompassTimer = new System.Timers.Timer();
-                CompassTimer.Enabled = true;
-                CompassTimer.Interval = 500; ;
-                CompassTimer.Elapsed += OnCompassTimer;
-                serial.OnCompassData += ReceiveCompassData;
-            }
-            PositionUpdateTimer.Enabled = true;
+            PositionUpdateTimer.Interval = AppSettings.Default.SpeedUpdateInterval * 1000;
             PositionUpdateTimer.Elapsed += OnPositionTimer;
-        }
+            PositionUpdateTimer.Enabled = true;
 
-        /// <summary>
-        /// Simulation code ...
-        /// </summary>
-        /// <param name="command"></param>
-        public void OnPilotCommand(PilotCommand command)
-        {
-            SerialCommand = new Queue<string>();
-
-            if (command.SpeedUp)
-            {
-                Info.PowerRight = Info.PowerRight + AppSettings.Default.PilotSpeedIncrement > AppSettings.Default.PilotMaxPower ? Info.PowerRight = AppSettings.Default.PilotMaxPower : Info.PowerRight += AppSettings.Default.PilotSpeedIncrement;
-                EnqueueCommand("R", Info.PowerRight);
-                Info.PowerLeft = Info.PowerLeft + AppSettings.Default.PilotSpeedIncrement > AppSettings.Default.PilotMaxPower ? AppSettings.Default.PilotMaxPower: Info.PowerLeft += AppSettings.Default.PilotSpeedIncrement;
-                 EnqueueCommand("L", Info.PowerLeft);
-                if(State.IsSimulating)
-                {
-                    if ((int)Info.Speed < AppSettings.Default.PilotMaxPower/10)
-                    {
-                        Info.OnReverse(Info.Speed, Info.Speed + 1, Info.Bearing);
-                        Info.Speed += 1;
-                    }
-                }
-            }
-
-            if (command.TurnLeft || command.SpeedDown)
-            {
-                Info.PowerLeft = Info.PowerLeft - AppSettings.Default.PilotSpeedIncrement < AppSettings.Default.PilotMinPower ? AppSettings.Default.PilotMinPower : Info.PowerLeft -= AppSettings.Default.PilotSpeedIncrement;
-                EnqueueCommand("L", Info.PowerLeft);
-
-                if(State.IsSimulating)
-                {
-                    if ((int)Info.Speed > AppSettings.Default.PilotMinPower / 10)
-                    {
-                        Info.OnReverse(Info.Speed, Info.Speed - 1, Info.Bearing);//Switch bearing 180 if change
-                        Info.Speed -= 0.5;
-                    }
-                    Info.Bearing = Info.Bearing - (1 * (Info.Speed == 0 ? 1 : Info.Speed));
-                }
-            }
-            if (command.TurnRight || command.SpeedDown)
-            {
-                Info.PowerRight = Info.PowerRight - AppSettings.Default.PilotSpeedIncrement < AppSettings.Default.PilotMinPower ? AppSettings.Default.PilotMinPower: Info.PowerRight -= AppSettings.Default.PilotSpeedIncrement;
-                EnqueueCommand("R", Info.PowerRight);
-
-                if (State.IsSimulating)
-                {
-  
-                        if ((int)Info.Speed > AppSettings.Default.PilotMinPower / 10)
-                        {
-                            Info.OnReverse(Info.Speed, Info.Speed - 1, Info.Bearing);//Switch bearing 180 if change
-                            Info.Speed -= 0.5;
-                        }
-                        Info.Bearing = Info.Bearing + (1 * (Info.Speed == 0 ? 1 : Info.Speed));
-                }
-            }
-            if (command.Stop)
-            {
-                Info.PowerRight = 0;
-                EnqueueCommand("R", Info.PowerRight);
-                Info.PowerLeft = 0;
-                EnqueueCommand("L", Info.PowerLeft);
-
-                if (State.IsSimulating)
-                {
-                    Info.Speed = 0;
-                }
-            }
-            if (!State.IsSimulating)
-            {
-                SendCommands();
-            }
-        }
-
-        private void SendCommands()
-        {
-            try
-            {
-                if (serial.ports.ContainsKey("pilotPort"))
-                {
-                    while (SerialCommand.Count > 0)
-                    {
-                        serial.ports["pilotPort"].WriteLine(SerialCommand.Dequeue());
-                    }
-                }
-                else
-                {
-                    serial.ScanDevices();
-                    State.Alarms.Enqueue("PilotPort not available. Command ignored.");
-                }
-            }
-            catch
-            {
-                State.Alarms.Enqueue("PilotPort comm error. Command ignored.");
-            }
-        }
-        //Always running
-
-        private void ReceivePilotData(object? obj, EventArgs e)
-        {
-
+            
+            joystick.OnJoystickData += Joystick_OnJoystickData;
+            motorService.OnMotorData += Motor_OnMotorData;
 
         }
 
-        private void ReceiveCompassData(object? obj, EventArgs e)
+        private void Motor_OnMotorData(object? sender, EventArgs e)
         {
+            OnMotorData?.Invoke(null, EventArgs.Empty);
+        }
 
-            ReadOnlySpan<char> command = serial.ports["compassPort"].ReadLine().AsSpan();
-            switch (command.Slice(0, 7).ToString())
+        private void Joystick_OnJoystickData(object? sender, EventArgs e)
+        {
+            
+            while(Info.PilotCommands.Count >0)
             {
-                case "COMPASS":
-                    Info.CompassBearing = command.Slice(7).ToString().TrimEnd('\n');
-                    break;
-                default:
-                    //Todo: ignore startup..
-                    break;
+                OnJoystickData?.Invoke(null, EventArgs.Empty);
+                motorService.OnPilotCommand(Info.PilotCommands.Dequeue());
             }
-
+        }
+        
+        public void OnPilotCommand(string command)
+        {
+            motorService.OnPilotCommand(command);
         }
 
         public void Dispose()
         {
             if (!IsDisposed)
             {
-                CompassTimer.Dispose();
                 PositionUpdateTimer.Dispose();
-                SteerCancelTimer.Dispose();
+                joystick.Dispose();
+                serial.Dispose();
+                motorService.Dispose();
                 gps.Dispose();
                 IsDisposed = true;
             }
@@ -217,66 +95,11 @@ namespace Bliss.Services
                 {
                     serial.ScanDevices();
                 }
-                if (!serial.ports.ContainsKey("compassPort"))
-                {
-                    serial.ScanDevices();
-                }
-                
+               
                 Info.CalculateSpeed(PositionUpdateTimer.Interval);
             }
             
         }
-
-        public void OnCancelTurnTimer(object? sender, ElapsedEventArgs args)
-        {
-            if (Info.PowerLeft == Info.PowerRight) return;
-            if(Info.PowerLeft > Info.PowerRight)
-            {
-                Info.PowerRight = Info.PowerLeft;
-                EnqueueCommand("R", Info.PowerRight);
-            }
-            if (Info.PowerRight > Info.PowerLeft)
-            {
-                Info.PowerLeft = Info.PowerRight;
-                EnqueueCommand("L", Info.PowerLeft);
-
-            }
-
-            if (State.IsSimulating)
-            {
-                Info.OnReverse(Info.Speed, Info.PowerLeft / 10, Info.Bearing);
-                Info.Speed = Info.PowerLeft / 10;
-            }
-            else
-            { 
-                SendCommands();
-            }
-
-        }
-
-        private void OnCompassTimer(object? sender, ElapsedEventArgs args)
-        {
-            if (serial.ports.ContainsKey("compassPort"))
-            {
-                serial.ports["compassPort"].WriteLine("GET");
-            }
-        }
-        private void EnqueueCommand(string motorId,int speed)
-        {
-            switch(motorId)
-            {
-                case "R":
-                    Info.RightReverse = speed < 0;
-                    break;
-                case "L":
-                    Info.LeftReverse = speed < 0;
-                    break;
-            }
-            _direction = speed < 0 ? "R" : "F";
-            speed = speed < 0 ? speed*-1 : speed;
-            SerialCommand.Enqueue($"{motorId}{_direction}{speed * 4096 / 100}");
-        }
-
         #endregion
 
         #region Simulation
@@ -285,7 +108,7 @@ namespace Bliss.Services
         double lng1;// = Info.CurrentLocation.Lng * Math.PI / 180; //to radians
         double lat;//= Math.Asin(Math.Sin(lat1) * Math.Cos(distance / 6378137) + Math.Cos(lat1) * Math.Sin(distance / 6378137) * Math.Cos(rad));
         double lng;
-        private string result;
+        //private string result;
 
         private void Resultposition()
         {
@@ -302,5 +125,6 @@ namespace Bliss.Services
             Info.CurrentLocation = new PointLatLng(lat * 180 / Math.PI, lng * 180 / Math.PI); // to degrees  
         }
         #endregion
+
     }
 }

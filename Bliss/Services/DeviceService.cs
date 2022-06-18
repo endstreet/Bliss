@@ -3,17 +3,21 @@ using System.Runtime.InteropServices;
 
 namespace Bliss.Services
 {
-
-    internal class DeviceService : IDisposable
+    //F$%^&$^&$% Microfoft trash Code to interrogate usb ports
+    public class DeviceService : IDisposable
     {
-        private Dictionary<string, string> ports = new Dictionary<string, string>();
-        public bool IsDisposed { get; private set; }
-        ////public bool IsInUse;
-        //private readonly object _mutex = new();
+        public Dictionary<string, string> ports;
         DeviceTree deviceTree;
-        public Dictionary<string, string> ScanDevices()
+        public bool IsDisposed { get; private set; }
+
+        public DeviceService()
         {
-            if (IsDisposed) { throw new ObjectDisposedException(nameof(SerialPortService)); }
+            deviceTree = new DeviceTree();
+            ports = new Dictionary<string, string>();
+        }
+        public void GetAttachedPorts()
+        {
+            if (IsDisposed) { throw new ObjectDisposedException(nameof(DeviceService)); }
 
             deviceTree = new DeviceTree();
 
@@ -30,30 +34,24 @@ namespace Bliss.Services
                             break;
                         case "USB Serial Device":
                         case "Prolific USB-to-Serial Comm Port":
-                            string gpsPort = device.FriendlyName.Substring(device.FriendlyName.IndexOf('(') + 1, 4);
+                            string gpsPort = device.FriendlyName.Substring(device.FriendlyName.IndexOf('(') + 1).TrimEnd(')');
                             if (!ports.ContainsKey("gpsPort"))
                             {
                                 ports.Add("gpsPort", gpsPort);
-                                //if (!State.IsSimulating)
-                                //{
-                                //    Start(gpsPort, "gpsPort", 4800);
-                                //}
                             }
                             break;
-                        //case "USB-SERIAL CH340":
-                        //    string pilotPort = device.FriendlyName.Substring(device.FriendlyName.IndexOf('(') + 1, 4);
-                        //    if (!ports.ContainsKey("pilotPort"))
-                        //    {
-                        //        ports.Add("pilotPort", pilotPort);
-                        //        //Start(pilotPort, "pilotPort", 115000);
-                        //    }
-                        //    break;
-                        case "USB-SERIAL CH340":
-                            string compassPort = device.FriendlyName.Substring(device.FriendlyName.IndexOf('(') + 1, 4);
+                        case "Silicon Labs CP210x USB to UART Bridge"://ESP32
+                            string pilotPort = device.FriendlyName.Substring(device.FriendlyName.IndexOf('(') + 1).TrimEnd(')');
+                            if (!ports.ContainsKey("pilotPort"))
+                            {
+                                ports.Add("pilotPort", pilotPort);
+                            }
+                            break;
+                        case "USB-SERIAL CH340"://Chinese Arduino
+                            string compassPort = device.FriendlyName.Substring(device.FriendlyName.IndexOf('(') + 1).TrimEnd(')');
                             if (!ports.ContainsKey("compassPort"))
                             {
                                 ports.Add("compassPort", compassPort);
-                                //Start(pilotPort, "pilotPort", 115000);
                             }
                             break;
                         default:
@@ -61,64 +59,13 @@ namespace Bliss.Services
                     }
                 }
             }
-            return ports;
         }
-        //private void Start(string port, string PortName, int speed)
-        //{
-        //    if (IsDisposed)
-        //    {
-        //        throw new ObjectDisposedException(nameof(GPSSensor));
-        //    }
-
-        //    try
-        //    {
-        //        lock (_mutex)
-        //        {
-        //            SerialPort _port = new SerialPort(port, speed)
-        //            {
-        //                DataBits = 8,
-        //                Parity = Parity.None,
-        //                StopBits = StopBits.One,
-        //                Handshake = Handshake.None,
-        //                NewLine = "\r\n",
-        //            };
-        //            _port.ErrorReceived += Port_ErrorReceived;
-
-        //            _port.Open();
-        //            ports.Add(PortName, _port);
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        State.Alarms.Enqueue($"Error starting {PortName} |"); ;
-        //    }
-        //}
-        //public void Stop(SerialPort? _port)
-        //{
-        //    lock (_mutex)
-        //    {
-        //        if (_port is not null)
-        //        {
-        //            _port.ErrorReceived -= Port_ErrorReceived;
-        //            _port.Close();
-        //            _port.Dispose();
-        //            _port = null;
-        //            Thread.Sleep(5000);
-        //        }
-        //    }
-        //}
-        //private void Port_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
-        //{
-        //    State.Alarms.Enqueue($"{((SerialPort)sender).PortName} error |");
-        //}
         protected virtual void Dispose(bool disposing)
         {
             if (!IsDisposed)
             {
                 if (disposing)
                 {
-
                     ports.Clear();
                     if (deviceTree != null)
                     {
@@ -131,14 +78,6 @@ namespace Bliss.Services
                 IsDisposed = true;
             }
         }
-
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~SerialPortService()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
-
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
@@ -163,7 +102,6 @@ namespace Bliss.Services
                 return this._rootNode;
             }
         }
-
         public List<DeviceNode> DeviceNodes
         {
             get
@@ -171,23 +109,19 @@ namespace Bliss.Services
                 return this._deviceNodes;
             }
         }
-
         public DeviceTree()
         {
             EnumerateDevices();
         }
-
         ~DeviceTree()
         {
             this.Dispose(false);
         }
-
         public void Dispose()
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
         }
-
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -197,7 +131,6 @@ namespace Bliss.Services
 
             this.DisconnectFromMachine();
         }
-
         private void EnumerateDevices()
         {
             this.DisconnectFromMachine();
@@ -234,7 +167,6 @@ namespace Bliss.Services
                 }
             }
         }
-
         private void DisconnectFromMachine()
         {
             if (this._machineHandle != IntPtr.Zero)
@@ -244,7 +176,6 @@ namespace Bliss.Services
             }
         }
     }
-
     public class DeviceNode : IDisposable
     {
         private readonly DeviceNode _parentDevice;
@@ -453,7 +384,6 @@ namespace Bliss.Services
             }
         }
     }
-
     internal static class LinqExtensionMethods
     {
         public static IEnumerable<T> Return<T>(T element)
@@ -466,7 +396,6 @@ namespace Bliss.Services
         {
             return Return(element).Concat(list);
         }
-
         public static IEnumerable<TEntity> Flatten<TEntity>(
             this TEntity element,
             Func<TEntity, IEnumerable<TEntity>> childSelector)
@@ -480,7 +409,6 @@ namespace Bliss.Services
             return items;
         }
     }
-
     public static class Win32
     {
         // this is a partial list

@@ -1,0 +1,80 @@
+﻿@page "/"
+
+@inject IJSRuntime JsRuntime
+
+<div>
+    <div class="d-block pa-2 mud-theme-tertiary">
+<MudMenu Label="Open Menu">
+    <MudMenuItem> <MudButton  StartIcon="@Bliss.BlazorMaps.Icons.InitializationGetCenterIconSrc" OnClick="async () => await GetCenterExample()" >get center</MudButton></MudMenuItem>
+    <MudMenuItem> <MudButton  StartIcon="@Bliss.BlazorMaps.Icons.InitializationSetViewIconSrc" OnClick="async () => await mapRef.SetView(center)" >set view</MudButton></MudMenuItem>
+    <MudMenuItem> <MudButton  StartIcon="@Bliss.BlazorMaps.Icons.InitializationSetZoomIconSrc" OnClick="async () => await mapRef.SetZoom(zoom: 16)" >set zoom</MudButton></MudMenuItem>
+    <MudMenuItem> <MudButton  StartIcon="@Bliss.BlazorMaps.Icons.InitializationZoomInIconSrc" OnClick="async () => await mapRef.ZoomIn(zoomDelta: 1)" >zoom in</MudButton></MudMenuItem>
+    <MudMenuItem> <MudButton  StartIcon="@Bliss.BlazorMaps.Icons.InitializationZoomOutIconSrc" OnClick="async () => await mapRef.ZoomOut(zoomDelta: 3)" >zoom out</MudButton></MudMenuItem>
+    <MudMenuItem> <MudButton  StartIcon="@Bliss.BlazorMaps.Icons.InitializationSetZoomAroundIconSrc" OnClick="async () => await mapRef.SetZoomAround(center, 10)" >set zoom around</MudButton></MudMenuItem>
+</MudMenu>
+    </div>
+
+<MudPaper Elevation="0" Class="pa-4" Style="height:600px; width:800px;">
+        <Map @ref="mapRef" MapOptions="@mapOptions" ></Map>
+</MudPaper>
+</div>
+
+
+
+@*<style>
+    .side-panel {
+        min-width: 400px;
+        display: grid;
+        grid-template-rows: minmax(3rem, 5rem) repeat(2, 150px);
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+        .side-panel .header {
+            grid-column: 1/-1;
+        }
+
+        .side-panel .icon-wrapper .icon {
+            height: auto;
+        }
+</style>*@
+
+@code
+{
+    private readonly LatLng center = new LatLng(50.279133, 18.685578);
+    private Map mapRef = default!;
+    private MapOptions mapOptions;
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+
+                this.mapOptions = new MapOptions()
+                    {
+                        DivId = "mapId",
+                        Center = center,
+                        Zoom = 13,
+                        UrlTileLayer = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                        SubOptions = new MapSubOptions()
+                        {
+                            Attribution = "&copy; <a lhref='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>",
+                            MaxZoom = 18,
+                            TileSize = 512,
+                            ZoomOffset = -1,
+                        }
+                    };
+
+        }
+        catch(Exception ex)
+        {
+            throw;
+        }
+
+    }
+
+    private async Task GetCenterExample()
+    {
+        LatLng center = await mapRef.GetCenter();
+        await this.JsRuntime.InvokeAsync<string>("alert", $"Map centered at: Lat: {center.Lat}, Lng: {center.Lng}");
+    }
+}
