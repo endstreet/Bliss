@@ -210,6 +210,8 @@ namespace Bliss.Services
         public static bool IsSimulating = true;
         public static bool AutoPilot;
         public static bool AutopilotCommand;
+        public static bool EnableRightMotor;
+        public static bool EnableLeftMotor;
 
         public static bool Alarm
         {

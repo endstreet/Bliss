@@ -57,4 +57,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="blissMap1.GeoLocation" mimetype="application/x-microsoft.net.object.binary.base64">
+    <value>
+        AAEAAAD/////AQAAAAAAAAAMAgAAAD9HTWFwLk5FVC5Db3JlLCBDdWx0dXJlPW5ldXRyYWwsIFB1Ymxp
+        Y0tleVRva2VuPWI4NWI5MDI3YjYxNGFmZWYFAQAAABRHTWFwLk5FVC5Qb2ludExhdExuZwMAAAAEX2xh
+        dARfbG5nCV9ub3RFbXB0eQAAAAYGAQIAAAAAAAAAAAAAAAAAAAAAAAAAAAs=
+</value>
+  </data>
 </root>

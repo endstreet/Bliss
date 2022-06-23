@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
-using Svg;
+﻿using System.Text;
+
 
 namespace Bliss.Component
 {
@@ -203,23 +198,23 @@ namespace Bliss.Component
         static Bitmap? bitmap;
         static Bitmap? rotatedImage;
         //SVG Exercise...(graduation)
-        public static Bitmap DrawCompass(string bearing)
-        {
-            if (string.IsNullOrEmpty(background))
-            {
-                background = System.IO.File.ReadAllText(@"D:\FollowTheSun\AutoPilot\Bliss.Controls\Component\CompassBack.svg");
-            }
+        //public static Bitmap DrawCompass(string bearing)
+        //{
+        //    if (string.IsNullOrEmpty(background))
+        //    {
+        //        background = System.IO.File.ReadAllText(@"D:\FollowTheSun\AutoPilot\Bliss.Controls\Component\CompassBack.svg");
+        //    }
             
-            if (bearing == lastbearing && bitmap is not null) return bitmap;
-            lastbearing = bearing;
-            //using (Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(background.Replace("[Bearing]", $"{bearing} 31 28.5"))))
-            using (Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(background.Replace("[Bearing]", $"{bearing}"))))
-            {
-                var svgDocument = SvgDocument.Open<SvgDocument>(stream);
-                bitmap = svgDocument.Draw();
-            }
-            return bitmap;
-        }
+        //    if (bearing == lastbearing && bitmap is not null) return bitmap;
+        //    lastbearing = bearing;
+        //    //using (Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(background.Replace("[Bearing]", $"{bearing} 31 28.5"))))
+        //    using (Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(background.Replace("[Bearing]", $"{bearing}"))))
+        //    {
+        //        var svgDocument = SvgDocument.Open<SvgDocument>(stream);
+        //        bitmap = svgDocument.Draw();
+        //    }
+        //    return bitmap;
+        //}
         
         public static Bitmap RotateImage(int angle)
         {

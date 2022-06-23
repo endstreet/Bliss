@@ -231,19 +231,6 @@ namespace Bliss
             Info.MapShowBearing = button.Text == "Map Orientation BEARING";
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void buttonAlarm_Click(object sender, EventArgs e)
-        {
-            if (State.Alarm)//If there are alarms dequeue one
-            {
-                State.Alarms.Dequeue();
-                btnAlarm.ForeColor = ColorScheme.FG;
-            }
-        }
 
         private void Dispose(object sender, FormClosingEventArgs e)
         {
@@ -251,6 +238,13 @@ namespace Bliss
             pilot.Dispose();
         }
 
-
+        private void btnAlarm_Click(object sender, EventArgs e)
+        {
+            if (State.Alarm)//If there are alarms dequeue one
+            {
+                State.Alarms.Dequeue();
+                btnAlarm.ForeColor = ColorScheme.FG;
+            }
+        }
     }
 }

@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\BlueToothInfo.cs" />
     <Compile Remove="Services\DemoStuff.cs" />
   </ItemGroup>
 
@@ -30,6 +31,7 @@
     <PackageReference Include="GMap.NET.Core" Version="2.1.6" />
     <PackageReference Include="GMap.NET.WinForms" Version="2.1.6" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+    <PackageReference Include="nanoFramework.Hardware.Esp32" Version="1.3.6.7" />
     <PackageReference Include="SharpDX.DirectInput" Version="4.2.0" />
     <PackageReference Include="SharpDX.XInput" Version="4.2.0" />
     <PackageReference Include="System.IO.Ports" Version="6.0.0" />

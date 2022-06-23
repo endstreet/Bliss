@@ -127,7 +127,7 @@ namespace Bliss.Services
 
         private void compassPortDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            OnCompassData?.Invoke(null, EventArgs.Empty);
+            //OnCompassData?.Invoke(null, EventArgs.Empty);
         }
 
         public void Stop(SerialPort? _port)

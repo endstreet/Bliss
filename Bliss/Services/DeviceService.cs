@@ -40,11 +40,11 @@ namespace Bliss.Services
                                 ports.Add("gpsPort", gpsPort);
                             }
                             break;
-                        case "Silicon Labs CP210x USB to UART Bridge"://ESP32
+                        case "Standard Serial over Bluetooth link": // Silicon Labs CP210x USB to UART Bridge"://ESP32
                             string pilotPort = device.FriendlyName.Substring(device.FriendlyName.IndexOf('(') + 1).TrimEnd(')');
                             if (!ports.ContainsKey("pilotPort"))
                             {
-                                ports.Add("pilotPort", pilotPort);
+                                ports.Add("pilotPort", "COM4");// pilotPort);
                             }
                             break;
                         case "USB-SERIAL CH340"://Chinese Arduino

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewDash));
             this.panel1 = new System.Windows.Forms.Panel();
             this.blissMap1 = new Bliss.Controls.BlissMap();
             this.labelAlarms = new System.Windows.Forms.Label();
@@ -95,6 +96,7 @@
             this.blissMap1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.blissMap1.DBFile = "Bliss";
             this.blissMap1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.blissMap1.GeoLocation = ((GMap.NET.PointLatLng)(resources.GetObject("blissMap1.GeoLocation")));
             this.blissMap1.Location = new System.Drawing.Point(0, 0);
             this.blissMap1.Name = "blissMap1";
             this.blissMap1.Size = new System.Drawing.Size(374, 566);
@@ -444,6 +446,7 @@
             this.btnAlarm.TabIndex = 43;
             this.btnAlarm.Text = "alarm";
             this.btnAlarm.UseVisualStyleBackColor = true;
+            this.btnAlarm.Click += new System.EventHandler(this.btnAlarm_Click);
             // 
             // btnRight
             // 
@@ -641,6 +644,7 @@
             this.Controls.Add(this.panel1);
             this.Name = "NewDash";
             this.Text = "Follow the sun";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Dispose);
             this.panel1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();

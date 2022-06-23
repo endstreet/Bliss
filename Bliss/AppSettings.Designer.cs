@@ -25,7 +25,7 @@ namespace Bliss {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("AIzaSyDAmDOAJBNxAt_sfi_OOBE4c25AUio1GHQ")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string GoogleMapApiKey {
             get {
                 return ((string)(this["GoogleMapApiKey"]));

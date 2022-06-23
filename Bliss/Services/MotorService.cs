@@ -134,8 +134,27 @@ namespace Bliss.Services
             _direction = speed < 0 ? "R" : "F";
             speed = speed < 0 ? speed * -1 : speed;
             string command = $"{motorId}{_direction}{(int)(speed * 40.95)}";
-            SerialCommand.Enqueue(command);//Todo: Queue rmp values for command
-            SendCommands();
+            if (!State.IsSimulating)
+            {
+                SerialCommand.Enqueue(command);
+                SendCommands();
+            }
+            else
+            {
+                switch (motorId)
+                {
+                    case "RIGHT":
+                        Info.RightReverse = speed < 0;
+                        Info.RightReverseState = speed < 0;
+                        break;
+                    case "LEFTM":
+                        Info.LeftReverse = speed < 0;
+                        Info.LeftReverseState = speed < 0;
+                        break;
+                }
+                _direction = speed < 0 ? "R" : "F";
+                speed = speed < 0 ? speed * -1 : speed;
+            }
         }
         private void SendCommands()
         {
