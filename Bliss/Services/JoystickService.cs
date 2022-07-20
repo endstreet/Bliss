@@ -99,9 +99,9 @@ namespace Bliss.Services
             {
                 command = commands.First();
             }
-            if (!Info.PilotCommands.Contains(command.Replace(" ", "")))
+            if (!Info.JoystickCommands.Contains(command.Replace(" ", "")))
             {
-                Info.PilotCommands.Enqueue(Commands[command.Replace(" ", "")]);
+                Info.JoystickCommands.Enqueue(Commands[command.Replace(" ", "")]);
                 CommandReady = true;
             }
             IsProcessing = false;
@@ -246,6 +246,4 @@ namespace Bliss.Services
     //        Joystick.Acquire();
     //    }
     //}
-
-
 }

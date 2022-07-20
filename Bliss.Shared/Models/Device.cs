@@ -12,38 +12,25 @@ namespace Bliss.Models
     {
         [Key]
         public int Id { get; set; }
+        public int FeatureId { get; set; }
+        public string MacAddress { get; set; }
+        public bool Enabled { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string FriendlyName { get; set; }
-        public int Speed { get; set; }
 
-        //{ new Guid("{4d36e978-e325-11ce-bfc1-08002be10318}"),"COM Ports" }
-        //{ new Guid("{745a17a0-74d3-11d0-b6fe-00a0c90f57da}"),"HID Interface" }
-        public Guid ClassGuid
+        public Device(int id, int featureId, string macAddress, string name, string friendlyName, string description = "", bool enabled = true)
         {
-            get
-            {
-                return new Guid("{4d36e978-e325-11ce-bfc1-08002be10318}");
-            }
-        }
-        [NotMapped]
-        public string Port {
-            get
-            {
-                try
-                {
-                    return FriendlyName.Substring(FriendlyName.IndexOf('(') + 1, 4);
-                }
-                catch
-                {
-                    return "Unknown";
-                }
-                
-            }
+            Id = id;
+            FeatureId = featureId;
+            MacAddress = macAddress;
+            Enabled = enabled;
+            Name = name;
+            Description = description;
+            FriendlyName = friendlyName;
+            Properties = new List<Function>();
         }
 
-        [NotMapped]
-        public string State { get; set; }
-
+        public virtual List<Function> Properties { get; set; }
     }
 }

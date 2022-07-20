@@ -49,6 +49,12 @@ namespace Bliss.Services
                             Start(port.Value, port.Key, 115200);
                         }
                         break;
+                    case "pilotPortO":
+                        if (!ports.ContainsKey("pilotPortO"))
+                        {
+                            Start(port.Value, port.Key, 115200);
+                        }
+                        break;
                     case "compassPort":
                         if (!ports.ContainsKey("compassPort"))
                         {

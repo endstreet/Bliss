@@ -53,9 +53,7 @@
             this.label10 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.lblCompass = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
-            this.label24 = new System.Windows.Forms.Label();
             this.groupPilot = new System.Windows.Forms.GroupBox();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnSpeedDown = new System.Windows.Forms.Button();
@@ -69,10 +67,8 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.motorControl2 = new Bliss.Controls.MotorControl();
             this.motorControl1 = new Bliss.Controls.MotorControl();
-            this.label1 = new System.Windows.Forms.Label();
             this.SpeedLbl = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.BearingLbl = new System.Windows.Forms.Label();
             this.compassNav = new Bliss.Controls.Compass();
             this.compassMag = new Bliss.Controls.Compass();
             this.panel1.SuspendLayout();
@@ -362,18 +358,6 @@
             this.label5.TabIndex = 5;
             this.label5.Text = "destination";
             // 
-            // lblCompass
-            // 
-            this.lblCompass.AutoSize = true;
-            this.lblCompass.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblCompass.ForeColor = System.Drawing.Color.White;
-            this.lblCompass.Location = new System.Drawing.Point(793, 245);
-            this.lblCompass.Name = "lblCompass";
-            this.lblCompass.Size = new System.Drawing.Size(16, 15);
-            this.lblCompass.TabIndex = 82;
-            this.lblCompass.Text = "...";
-            this.lblCompass.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
             // label23
             // 
             this.label23.AutoSize = true;
@@ -383,16 +367,6 @@
             this.label23.Size = new System.Drawing.Size(39, 15);
             this.label23.TabIndex = 81;
             this.label23.Text = "Depth";
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.ForeColor = System.Drawing.Color.White;
-            this.label24.Location = new System.Drawing.Point(711, 245);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(56, 15);
-            this.label24.TabIndex = 80;
-            this.label24.Text = "Compass";
             // 
             // groupPilot
             // 
@@ -532,7 +506,7 @@
             this.motorControl2.BackColor = System.Drawing.Color.Transparent;
             this.motorControl2.Location = new System.Drawing.Point(196, 16);
             this.motorControl2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.motorControl2.MotorId = "RIGHT";
+            this.motorControl2.MotorId = "MOTOR02";
             this.motorControl2.Name = "motorControl2";
             this.motorControl2.Reverse = false;
             this.motorControl2.Size = new System.Drawing.Size(153, 69);
@@ -543,21 +517,11 @@
             this.motorControl1.BackColor = System.Drawing.Color.Transparent;
             this.motorControl1.Location = new System.Drawing.Point(7, 16);
             this.motorControl1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.motorControl1.MotorId = "LEFT";
+            this.motorControl1.MotorId = "MOTOR01";
             this.motorControl1.Name = "motorControl1";
             this.motorControl1.Reverse = false;
             this.motorControl1.Size = new System.Drawing.Size(141, 69);
             this.motorControl1.TabIndex = 44;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(463, 245);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(47, 15);
-            this.label1.TabIndex = 73;
-            this.label1.Text = "Bearing";
             // 
             // SpeedLbl
             // 
@@ -581,18 +545,6 @@
             this.label2.TabIndex = 74;
             this.label2.Text = "Speed";
             // 
-            // BearingLbl
-            // 
-            this.BearingLbl.AutoSize = true;
-            this.BearingLbl.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.BearingLbl.ForeColor = System.Drawing.Color.White;
-            this.BearingLbl.Location = new System.Drawing.Point(545, 245);
-            this.BearingLbl.Name = "BearingLbl";
-            this.BearingLbl.Size = new System.Drawing.Size(16, 15);
-            this.BearingLbl.TabIndex = 75;
-            this.BearingLbl.Text = "...";
-            this.BearingLbl.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
             // compassNav
             // 
             this.compassNav.BackColor = System.Drawing.Color.Transparent;
@@ -600,13 +552,14 @@
             this.compassNav.Bearing = "0";
             this.compassNav.Location = new System.Drawing.Point(397, 16);
             this.compassNav.Margin = new System.Windows.Forms.Padding(0);
-            this.compassNav.MaximumSize = new System.Drawing.Size(220, 220);
+            this.compassNav.MaximumSize = new System.Drawing.Size(220, 250);
             this.compassNav.MinimumSize = new System.Drawing.Size(220, 220);
             this.compassNav.Name = "compassNav";
             this.compassNav.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.compassNav.Size = new System.Drawing.Size(220, 220);
+            this.compassNav.Size = new System.Drawing.Size(220, 250);
             this.compassNav.TabIndex = 91;
             this.compassNav.TabStop = false;
+            this.compassNav.Title = "Bearing";
             // 
             // compassMag
             // 
@@ -615,12 +568,13 @@
             this.compassMag.Bearing = "0";
             this.compassMag.Location = new System.Drawing.Point(648, 16);
             this.compassMag.Margin = new System.Windows.Forms.Padding(0);
-            this.compassMag.MaximumSize = new System.Drawing.Size(220, 220);
+            this.compassMag.MaximumSize = new System.Drawing.Size(220, 250);
             this.compassMag.MinimumSize = new System.Drawing.Size(220, 220);
             this.compassMag.Name = "compassMag";
             this.compassMag.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.compassMag.Size = new System.Drawing.Size(220, 220);
+            this.compassMag.Size = new System.Drawing.Size(220, 250);
             this.compassMag.TabIndex = 92;
+            this.compassMag.Title = "Compass";
             // 
             // NewDash
             // 
@@ -632,15 +586,11 @@
             this.Controls.Add(this.labelAlarms);
             this.Controls.Add(this.lblDepth);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.lblCompass);
             this.Controls.Add(this.label23);
-            this.Controls.Add(this.label24);
             this.Controls.Add(this.groupPilot);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.SpeedLbl);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.BearingLbl);
             this.Controls.Add(this.panel1);
             this.Name = "NewDash";
             this.Text = "Follow the sun";
@@ -680,9 +630,7 @@
         private Label label10;
         private Label label3;
         private Label label5;
-        private Label lblCompass;
         private Label label23;
-        private Label label24;
         private GroupBox groupPilot;
         private Button btnCancel;
         private Button btnSpeedDown;
@@ -696,10 +644,8 @@
         private GroupBox groupBox1;
         private Controls.MotorControl motorControl2;
         private Controls.MotorControl motorControl1;
-        private Label label1;
         private Label SpeedLbl;
         private Label label2;
-        private Label BearingLbl;
         private Controls.Compass compassNav;
         private Controls.Compass compassMag;
     }

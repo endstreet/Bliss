@@ -1,5 +1,7 @@
 ﻿using System.IO.Ports;
 using System.Runtime.InteropServices;
+using Windows.Devices.Bluetooth;
+using Windows.Devices.Enumeration;
 
 namespace Bliss.Services
 {
@@ -15,7 +17,7 @@ namespace Bliss.Services
             deviceTree = new DeviceTree();
             ports = new Dictionary<string, string>();
         }
-        public void GetAttachedPorts()
+        public async Task GetAttachedPorts()
         {
             if (IsDisposed) { throw new ObjectDisposedException(nameof(DeviceService)); }
 
@@ -44,7 +46,8 @@ namespace Bliss.Services
                             string pilotPort = device.FriendlyName.Substring(device.FriendlyName.IndexOf('(') + 1).TrimEnd(')');
                             if (!ports.ContainsKey("pilotPort"))
                             {
-                                ports.Add("pilotPort", "COM4");// pilotPort);
+                                //ports.Add("pilotPort", "COM3");// pilotPort);//incoming
+                               // ports.Add("pilotPort", "COM4");// pilotPort);
                             }
                             break;
                         case "USB-SERIAL CH340"://Chinese Arduino
@@ -59,6 +62,7 @@ namespace Bliss.Services
                     }
                 }
             }
+
         }
         protected virtual void Dispose(bool disposing)
         {

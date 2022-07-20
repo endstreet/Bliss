@@ -1,0 +1,35 @@
+﻿Adding Features:
+
+1 Select a feature (Drag a feature onto a dashboard)
+2 Allow barcode Scan of supported device to add
+3 Fetch device features from device db
+4 Show device Functions and allow Enble/Disable Functions
+
+
+Feature (UI Element)
+Id
+Name
+Description
+List<Device> Devices (available per option)
+
+public int Id { get; set; }
+public int FeatureId { get; set; }
+public string MacAddress { get; set; }
+public bool Enabled {get;set;}
+public string Name { get; set; }
+public string Description { get; set; }
+public string FriendlyName { get; set; }
+public List<Function> Properties { get; set; }
+
+Function 
+
+public int Id { get; set; }
+public int DeviceId {get;set;}
+public bool Enabled {get;set;}
+public string Name {get;set;}
+public FuctionType { get; set;} Get/Set/Reset
+public string Description { get; set;} "Get motor RPM"
+public string LastValue { get; set;}
+//SETDIR(ECTION) SETSPEED GETRPM GETTEMP GETDIR
+
+public enum FunctionType

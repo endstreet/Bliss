@@ -9,6 +9,8 @@ namespace Bliss.Controls
 
         [Description("Bearing"), Category("Data")]
         public string Bearing { get; set; }
+        [Description("Title"), Category("Data")]
+        public string? Title { get; set; }
         public Compass()
         {
             InitializeComponent();
@@ -20,6 +22,7 @@ namespace Bliss.Controls
         private void timer1_Tick(object? sender, EventArgs e)
         {
             pictureCompass.BackgroundImage = CompassImage.RotateImage(((int)double.Parse(Bearing)) * -1);
+            labelHeading.Text = $"{Title} {Bearing}";
             //pictureCompass.BackgroundImageLayout = ImageLayout.None;
             this.Refresh();
         }

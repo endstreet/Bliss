@@ -32,6 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Compass));
             this.pictureCompass = new System.Windows.Forms.PictureBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.labelHeading = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureCompass)).BeginInit();
             this.SuspendLayout();
             // 
@@ -56,21 +57,36 @@
             // 
             this.timer1.Interval = 2000;
             // 
+            // labelHeading
+            // 
+            this.labelHeading.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelHeading.AutoSize = true;
+            this.labelHeading.Location = new System.Drawing.Point(73, 228);
+            this.labelHeading.Name = "labelHeading";
+            this.labelHeading.Size = new System.Drawing.Size(38, 15);
+            this.labelHeading.TabIndex = 6;
+            this.labelHeading.Text = "label1";
+            this.labelHeading.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // Compass
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.Transparent;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.Controls.Add(this.labelHeading);
             this.Controls.Add(this.pictureCompass);
             this.DoubleBuffered = true;
             this.Margin = new System.Windows.Forms.Padding(0);
-            this.MaximumSize = new System.Drawing.Size(220, 220);
+            this.MaximumSize = new System.Drawing.Size(220, 250);
             this.MinimumSize = new System.Drawing.Size(220, 220);
             this.Name = "Compass";
             this.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.Size = new System.Drawing.Size(220, 220);
+            this.Size = new System.Drawing.Size(220, 250);
             ((System.ComponentModel.ISupportInitialize)(this.pictureCompass)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -78,5 +94,6 @@
 
         private PictureBox pictureCompass;
         private System.Windows.Forms.Timer timer1;
+        private Label labelHeading;
     }
 }

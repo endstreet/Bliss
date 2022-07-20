@@ -7,73 +7,102 @@ namespace Bliss.Services
     public sealed class PilotService : IDisposable
     {
 
-        private JoystickService joystick;
-        private SerialPortService serial;
-        private MotorService motorService;
+        //private JoystickService joystick;
+        //private SerialPortService serial;
+        private BleInterfaceService interfaceService;
+        //private BleService btService;
         //private Queue<string> SerialCommand = new Queue<string>();
         public WayPoint? Target { get; set; }
-        public gpsService gps;
+        //public gpsService gps;
         
-        public List<string> ActivePorts
-        {
-            get { return serial.ports.Keys.ToList(); }
-        }
+        //public List<string> ActivePorts
+        //{
+        //    get { return serial.ports.Keys.ToList(); }
+        //}
+        
 
-        public event EventHandler? OnJoystickData;
-        public event EventHandler? OnMotorData;
+        public event EventHandler? OnInterfaceData;
+        public event EventHandler? OnJoyStickData;
+        //public event EventHandler? OnMotorData;
 
         private System.Timers.Timer PositionUpdateTimer;
-        
 
         public bool IsDisposed { get; private set; }
+        //public Action<object?, string> Motor_OnInterfaceData { get; }
 
-        public PilotService(JoystickService _joystick, gpsService _gps,MotorService _motorService, SerialPortService _serial)
+        public PilotService(BleInterfaceService _ifService)
         {
-            joystick = _joystick;
-            serial = _serial;
-            motorService = _motorService;
-            gps = _gps;
+            interfaceService = _ifService;
 
             PositionUpdateTimer = new System.Timers.Timer();
             PositionUpdateTimer.Interval = AppSettings.Default.SpeedUpdateInterval * 1000;
             PositionUpdateTimer.Elapsed += OnPositionTimer;
             PositionUpdateTimer.Enabled = true;
 
-            
-            joystick.OnJoystickData += Joystick_OnJoystickData;
-            motorService.OnMotorData += Motor_OnMotorData;
+            interfaceService.OnInterfaceData += OnInterFaceData;
+
 
         }
 
-        private void Motor_OnMotorData(object? sender, EventArgs e)
+        private void OnInterFaceData(object? sender, EventArgs e)
         {
-            OnMotorData?.Invoke(null, EventArgs.Empty);
+            OnInterfaceData?.Invoke(null, EventArgs.Empty);
         }
 
-        private void Joystick_OnJoystickData(object? sender, EventArgs e)
-        {
-            
-            while(Info.PilotCommands.Count >0)
-            {
-                OnJoystickData?.Invoke(null, EventArgs.Empty);
-                motorService.OnPilotCommand(Info.PilotCommands.Dequeue());
-            }
-        }
-        
-        public void OnPilotCommand(string command)
-        {
-            motorService.OnPilotCommand(command);
-        }
+        //private void Joystick_OnJoystickData(object? sender, EventArgs e)
+        //{
+
+        //    //while(Info.PilotCommands.Count >0)
+        //    //{
+        //    //    //OnJoystickData?.Invoke(null, EventArgs.Empty);
+        //    //    //motorService.OnPilotCommand(Info.PilotCommands.Dequeue());
+        //    //    string command = Info.PilotCommands.Peek();
+        //    //    btService.SendBTCommand("LEFTMF100");// Info.PilotCommands.Dequeue());
+        //    //}
+        //    btService.SendBTCommand("LEFTMF100");
+        //}
+        //private void Bluetooth_OnBtData(object? sender, String e)
+        //{
+        //    //string command = Info.PilotCommands.Peek();
+        //    //btService.SendBTCommand(Info.PilotCommands.Dequeue());
+        //    if (!State.Notices.Any()) return;
+        //        ReadOnlySpan<char> command = State.Notices.Dequeue();//serial.ports["pilotPort"].ReadLine().AsSpan();
+        //        if (command.Length < 7) return;
+        //        switch (command.Slice(0, 5).ToString())
+        //        {
+        //            case "Error":
+        //                State.Alarms.Enqueue(command.ToString());
+        //                break;
+        //            case "LEFTM":
+        //                Info.PowerLeftState = (int)(double.Parse(command.Slice(6).ToString().TrimEnd('\n')) / 40.95);
+        //                Info.LeftReverseState = command.Slice(5, 1).ToString() == "R";
+        //                break;
+        //            case "RIGHT":
+        //                Info.PowerRightState = (int)(double.Parse(command.Slice(6).ToString().TrimEnd('\n')) / 40.95);
+        //                Info.RightReverseState = command.Slice(5, 1).ToString() == "R";
+        //                break;
+        //            default:
+        //                //Todo: ignore startup..
+        //                break;
+        //        }
+        //        OnMotorData?.Invoke(this, EventArgs.Empty);
+        //}
+        //public void OnJoysticCommand(string command)
+        //{
+        //    motorService.OnJoystickCommand(command);
+        //}
 
         public void Dispose()
         {
             if (!IsDisposed)
             {
+                interfaceService.Dispose();
+               // btService.Dispose();
                 PositionUpdateTimer.Dispose();
-                joystick.Dispose();
-                serial.Dispose();
-                motorService.Dispose();
-                gps.Dispose();
+                //joystick.Dispose();
+                //serial.Dispose();
+                //motorService.Dispose();
+                //gps.Dispose();
                 IsDisposed = true;
             }
 
@@ -91,11 +120,6 @@ namespace Bliss.Services
             }
             else
             {
-                if (!serial.ports.ContainsKey("pilotPort"))
-                {
-                    serial.ScanDevices();
-                }
-               
                 Info.CalculateSpeed(PositionUpdateTimer.Interval);
             }
             

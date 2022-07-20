@@ -36,6 +36,8 @@ namespace Bliss
 
         public NewDash(CompassService _compass, PilotService _pilot, DbService _db, GoogleMaps _api)
         {
+           
+
             InitializeComponent();
 
             blissMap1.ApiKey = AppSettings.Default.GoogleMapApiKey;
@@ -45,7 +47,7 @@ namespace Bliss
             pilot = _pilot;
             dbs = _db;
             api = _api;
-            pilot.OnPilotCommand("Stop");
+            //pilot.OnJoysticCommand("Stop");
 
             ChangeTheme(this.Controls);
 
@@ -54,10 +56,16 @@ namespace Bliss
             GetLocation.Interval = AppSettings.Default.DashBoardUpdateInterval * 1000;
             GetLocation.Start();
 
-            pilot.OnJoystickData += Joystick_OnJoystickData;
+            pilot.OnInterfaceData += Joystick_OnJoystickData;
             //pilot.OnMotorData += Pilot_OnMotordata;
 
+            //RunTest();
         }
+
+        //private async Task RunTest()
+        //{
+        //    await Test.RunTest();
+        //}
         public void ChangeTheme(Control.ControlCollection components)
         {
             foreach (Control component in components)
@@ -97,12 +105,10 @@ namespace Bliss
         /// </summary>
         private void DashboardUpdate(object? sender, EventArgs e)
         {
-            BearingLbl.Text = Info.Bearing.ToString();
             SpeedLbl.Text = Info.Speed.ToString();
 
             compassMag.Bearing = Info.CompassBearing;
             compassNav.Bearing = Info.Bearing.ToString();
-            lblCompass.Text = Info.CompassBearing.ToString();
             
             if (Info.HasPosition)
             {
@@ -158,11 +164,11 @@ namespace Bliss
         #region Joystick        
         private void Joystick_OnJoystickData(object? sender, EventArgs e)
         {
-            if (!Info.PilotCommands.Any()) return;
-            ProcessPilotCommand(Info.PilotCommands.Peek());
+            if (!Info.JoystickCommands.Any()) return;
+            ProcessJoystickCommand(Info.JoystickCommands.Peek());
         }
 
-        private void ProcessPilotCommand(string input)
+        private void ProcessJoystickCommand(string input)
         {
             btnLeft.BackColor = input.Contains("Left") ? Color.Red : Color.Transparent;
             btnRight.BackColor = input.Contains("Right") ? Color.Red : Color.Transparent;
@@ -171,7 +177,7 @@ namespace Bliss
             //btnAlarm.BackColor = input.Alarm ? Color.Red : Color.Transparent;
             btnStop.BackColor = input.Contains("Stop") ? Color.Red : Color.Transparent;
             btnCancel.BackColor = input.Contains("Cancel") ? Color.Red : Color.Transparent;
-            //pilot.OnPilotCommand(input);
+            //pilot.OnJoysticCommand(input);
         }
         //private void JoystickInputTimer_Tick(object sender, EventArgs e)
         //{

@@ -1,4 +1,4 @@
-using Bliss.Services;
+global using Bliss.Services;
 using GoogleApi;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections;
@@ -8,6 +8,7 @@ using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Text;
 
+
 namespace Bliss
 {
     internal static class Program
@@ -15,6 +16,7 @@ namespace Bliss
         [STAThread]
         static void Main()
         {
+            
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -35,9 +37,10 @@ namespace Bliss
         private static void ConfigureServices(ServiceCollection services)
         {
             services.AddSingleton<DeviceService, DeviceService>();
+            services.AddSingleton<BleService, BleService>();
             services.AddSingleton<SerialPortService,SerialPortService>();
             services.AddSingleton<gpsService, gpsService>();
-            services.AddSingleton<MotorService, MotorService>();
+            services.AddSingleton<BleInterfaceService, BleInterfaceService>();
             services.AddSingleton<PilotService, PilotService>();
             services.AddSingleton<DbService, DbService>();
             services.AddSingleton<GoogleMaps, GoogleMaps>();

@@ -8,7 +8,7 @@ namespace Bliss.Services
     {
         //Pilot controls
         public static double Speed = 0;
-        public static Queue<string> PilotCommands = new Queue<string>();
+        public static Queue<string> JoystickCommands = new Queue<string>();//Console joystic commands go in here
         public static double Depth = 0;
         public static string CompassBearing = "0";
         public static bool LeftReverse = false;
@@ -221,6 +221,7 @@ namespace Bliss.Services
             }
         }
         public static Queue<string> Alarms = new Queue<string>();
+        public static Queue<string> Notices = new Queue<string>();
 
         public static new string ToString() 
         {
