@@ -11,6 +11,7 @@ namespace Bliss.Controls
         [Description("Motor ID"), Category("Motor")]
         public string MotorId { get; set; }
 
+
         public MotorControl()
         {
             InitializeComponent();
@@ -24,12 +25,12 @@ namespace Bliss.Controls
         {
             switch (MotorId)
             {
-                case "LEFT":
+                case "MOTOR01":
                     labelDirection.Text = Info.LeftReverseState ? "Reverse" : "Forward";
                     labelRPMValue.Text = (Info.PowerLeftState * 32).ToString();
                     progresstPower.Value = Info.PowerLeftState;
                     break;
-                case "RIGHT":
+                case "MOTOR02":
                     labelDirection.Text = Info.RightReverseState ? "Reverse" : "Forward";
                     labelRPMValue.Text = (Info.PowerRightState * 32).ToString();
                     progresstPower.Value = Info.PowerRightState;

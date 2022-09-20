@@ -7,9 +7,10 @@ namespace Bliss.Services
     public sealed class PilotService : IDisposable
     {
 
-        //private JoystickService joystick;
+        //private JoystickService joystickService;
         //private SerialPortService serial;
         private BleInterfaceService interfaceService;
+        private SimulatorService simulatorService;
         //private BleService btService;
         //private Queue<string> SerialCommand = new Queue<string>();
         public WayPoint? Target { get; set; }
@@ -22,31 +23,51 @@ namespace Bliss.Services
         
 
         public event EventHandler? OnInterfaceData;
-        public event EventHandler? OnJoyStickData;
+        //public event EventHandler? OnJoyStickData;
         //public event EventHandler? OnMotorData;
 
-        private System.Timers.Timer PositionUpdateTimer;
+        //private System.Timers.Timer PositionUpdateTimer;
 
         public bool IsDisposed { get; private set; }
         //public Action<object?, string> Motor_OnInterfaceData { get; }
 
-        public PilotService(BleInterfaceService _ifService)
+        public PilotService(BleInterfaceService _ifService,SimulatorService _simulator)//, JoystickService _joystick)
         {
             interfaceService = _ifService;
+            simulatorService = _simulator;
+            //joystickService = _joystick;
 
-            PositionUpdateTimer = new System.Timers.Timer();
-            PositionUpdateTimer.Interval = AppSettings.Default.SpeedUpdateInterval * 1000;
-            PositionUpdateTimer.Elapsed += OnPositionTimer;
-            PositionUpdateTimer.Enabled = true;
+            //PositionUpdateTimer = new System.Timers.Timer();
+            //PositionUpdateTimer.Interval = AppSettings.Default.SpeedUpdateInterval;
+            //PositionUpdateTimer.Elapsed += OnPositionTimer;
+            //PositionUpdateTimer.Enabled = true;
 
-            interfaceService.OnInterfaceData += OnInterFaceData;
-
+            interfaceService.OnConnection += OnConnection;
 
         }
 
         private void OnInterFaceData(object? sender, EventArgs e)
         {
             OnInterfaceData?.Invoke(null, EventArgs.Empty);
+        }
+
+        private void OnConnection(object? sender, string state)
+        {
+            switch(state)
+            {
+                case "Connected":
+                    //simulatorService.OnInterfaceData -= OnInterFaceData;
+                    //interfaceService.OnInterfaceData += OnInterFaceData;
+                    State.IsSimulating = false;
+                    break;
+                case "DisConnected":
+                    //interfaceService.OnInterfaceData -= OnInterFaceData;
+                    //simulatorService.OnInterfaceData += OnInterFaceData;
+                    State.IsSimulating = true;
+                    break;
+
+            }
+            
         }
 
         //private void Joystick_OnJoystickData(object? sender, EventArgs e)
@@ -92,13 +113,18 @@ namespace Bliss.Services
         //    motorService.OnJoystickCommand(command);
         //}
 
+        private void OnPositionTimer(object? sender, ElapsedEventArgs args)
+        {
+            //Huh?
+        }
+
         public void Dispose()
         {
             if (!IsDisposed)
             {
                 interfaceService.Dispose();
-               // btService.Dispose();
-                PositionUpdateTimer.Dispose();
+                // btService.Dispose();
+                //PositionUpdateTimer.Dispose();
                 //joystick.Dispose();
                 //serial.Dispose();
                 //motorService.Dispose();
@@ -109,46 +135,7 @@ namespace Bliss.Services
             GC.SuppressFinalize(this);
         }
 
-        #region speed and bearing
 
-        private void OnPositionTimer(object? sender, ElapsedEventArgs args)
-        {
-
-            if(State.IsSimulating)
-            {
-                Resultposition();
-            }
-            else
-            {
-                Info.CalculateSpeed(PositionUpdateTimer.Interval);
-            }
-            
-        }
-        #endregion
-
-        #region Simulation
-        double rad;// = Info.Bearing * Math.PI / 180; //to radians
-        double lat1;// = Info.CurrentLocation.Lat * Math.PI / 180; //to radians
-        double lng1;// = Info.CurrentLocation.Lng * Math.PI / 180; //to radians
-        double lat;//= Math.Asin(Math.Sin(lat1) * Math.Cos(distance / 6378137) + Math.Cos(lat1) * Math.Sin(distance / 6378137) * Math.Cos(rad));
-        double lng;
-        //private string result;
-
-        private void Resultposition()
-        {
-            double distance = (Info.Speed / 24 / 60) * 1000;
-            if (distance < 0) distance *= -1;
-
-            rad = Info.Bearing * Math.PI / 180; //to radians
-            lat1 = Info.CurrentLocation.Lat * Math.PI / 180; //to radians
-            lng1 = Info.CurrentLocation.Lng * Math.PI / 180; //to radians
-            lat = Math.Asin(Math.Sin(lat1) * Math.Cos(distance / 6378137) + Math.Cos(lat1) * Math.Sin(distance / 6378137) * Math.Cos(rad));
-            lng = lng1 + Math.Atan2(Math.Sin(rad) * Math.Sin(distance / 6378137) * Math.Cos(lat1), Math.Cos(distance / 6378137) - Math.Sin(lat1) * Math.Sin(lat));
-
-            Info.LastLocation = Info.CurrentLocation;
-            Info.CurrentLocation = new PointLatLng(lat * 180 / Math.PI, lng * 180 / Math.PI); // to degrees  
-        }
-        #endregion
 
     }
 }

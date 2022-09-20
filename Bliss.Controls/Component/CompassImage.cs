@@ -192,9 +192,9 @@ namespace Bliss.Component
 
         //svg content
 
-        static string? background;
+        //static string? background;
         //save memory by only updating on changes
-        static string? lastbearing;
+        //static string? lastbearing;
         static Bitmap? bitmap;
         static Bitmap? rotatedImage;
         //SVG Exercise...(graduation)

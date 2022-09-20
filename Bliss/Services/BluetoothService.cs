@@ -13,22 +13,23 @@ namespace Bliss.Services
     {
         
         public event EventHandler<string>? OnBleData;
+        public event EventHandler<string>? OnBleConnection;
 
         private GattCharacteristic? command;
         private DeviceInformation? device = null;
 
         private const string BOATSERVICE_ID = "0001"; //1800 1801 0001
         private const string BOAT_NAME = "FollowTheSun";//The Bluetooth device
-        //Reconnect Bluetooth is disconnected.
-        private readonly System.Timers.Timer timer = new System.Timers.Timer(10000);// Keepalive
+        //Reconnect Bluetooth if it is disconnected.
+        private readonly System.Timers.Timer Keepalive = new System.Timers.Timer(10000);// Keepalive
 
         public BleService()
         {
-            timer.Elapsed += timer_Elapsed;
-            timer.Enabled = true;
+            Keepalive.Elapsed += Keepalive_Elapsed;
+            Keepalive.Enabled = true;
         }
 
-        private async void timer_Elapsed(object? sender, ElapsedEventArgs e)
+        private async void Keepalive_Elapsed(object? sender, ElapsedEventArgs e)
         {
             if (device == null)
             {
@@ -52,17 +53,18 @@ namespace Bliss.Services
             deviceWatcher.EnumerationCompleted += DeviceWatcher_EnumerationCompleted;
             deviceWatcher.Stopped += DeviceWatcher_Stopped;
 
-            // Start the watcher.
+            // Start the windoews device watcher.
             deviceWatcher.Start();
             while (true)
             {
                 if (device == null)
                 {
                     Thread.Sleep(200);
+                    OnBleConnection?.Invoke(this, "DisConnected");
                 }
                 else
                 {
-
+                    //Try to connect BT device
                     BluetoothLEDevice bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(device.Id);
                     //Attempting to pair with device
                     if (bluetoothLeDevice != null)
@@ -105,9 +107,10 @@ namespace Bliss.Services
                                     }
                                 }
                             }
+                            OnBleConnection?.Invoke(this,"Connected");
                         }
                     }
-                    break;
+                    break;  //Stop DeviceWatcher when Connected
                 }
             }
             deviceWatcher.Stop();
@@ -142,6 +145,7 @@ namespace Bliss.Services
 
         private  void DeviceWatcher_Stopped(DeviceWatcher sender, object args)
         {
+            OnBleConnection?.Invoke(this, "DisConnected");
             //throw new NotImplementedException();
         }
 
@@ -172,8 +176,8 @@ namespace Bliss.Services
 
         public void Dispose()
         {
-            timer.Stop();
-            timer.Dispose();
+            Keepalive.Stop();
+            Keepalive.Dispose();
         }
     }
 }

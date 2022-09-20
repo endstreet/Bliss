@@ -15,6 +15,7 @@ namespace Bliss.Controls
         
         [Description("GeoLocation"), Category("Data")]
         public PointLatLng GeoLocation { get; set; }
+        //public PointLatLng LastLocation { get; set; }
 
         public string DBFile { get; set; } = "Bliss";
         public string ApiKey { get; set; } = "";
@@ -42,8 +43,8 @@ namespace Bliss.Controls
         public BlissMap()
         {
             InitializeComponent();
-            timer.Interval = 1000;
-            timer.Tick += Timer_Tick;
+            //timer.Interval = 1000;
+            //timer.Tick += Timer_Tick;
             //timer.Start();
             
 
@@ -74,7 +75,7 @@ namespace Bliss.Controls
                 // Initial Position
                 //----------------------------------------
                 //-28.804256, 32.043904
-                MainMap.Position = new PointLatLng(-28.804256, 32.043904);
+                //MainMap.Position = new PointLatLng(-28.804256, 32.043904);
                 MainMap.MinZoom = 0;
                 MainMap.MaxZoom = 24;
                 MainMap.Zoom = 9;
@@ -125,6 +126,7 @@ namespace Bliss.Controls
                 _currentMarker = new GMarkerGoogle(MainMap.Position, GMarkerGoogleType.red);
                 _currentMarker.IsHitTestVisible = false;
                 _top.Markers.Add(_currentMarker);
+                GeoLocation = MainMap.Position;
 
 
 
@@ -161,7 +163,7 @@ namespace Bliss.Controls
 
         private void Timer_Tick(object? sender, EventArgs e)
         {
-            MainMap_LocationUpdate();
+            //MainMap_LocationUpdate();
         }
 
         void RegeneratePolygon()
@@ -243,10 +245,11 @@ namespace Bliss.Controls
         public void MainMap_LocationUpdate()
         {
             //if (!GPSSensor.IsValid) return;
-            if (Services.Info.LastLocation == Services.Info.CurrentLocation) return;
+            //if (Services.Info.LastLocation == Services.Info.CurrentLocation) return;
 
             _top.Markers.Clear();
-            DrawTrack(Services.Info.LastLocation, Services.Info.CurrentLocation,Brushes.Green);
+            DrawTrack(GeoLocation, Services.Info.CurrentLocation,Brushes.Green);
+            GeoLocation = Services.Info.CurrentLocation;
             MainMap.Position = Services.Info.CurrentLocation;
             _currentMarker = new GMarkerGoogle(MainMap.Position, GMarkerGoogleType.red);
             _top.Markers.Add(_currentMarker);
@@ -258,6 +261,7 @@ namespace Bliss.Controls
             {
                 MainMap.Bearing = 0;
             }
+            
         }
 
 

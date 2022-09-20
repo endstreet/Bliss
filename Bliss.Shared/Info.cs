@@ -6,22 +6,25 @@ namespace Bliss.Services
 {
     public static class Info
     {
-        //Pilot controls
-        public static double Speed = 0;
+        /// <summary>
+        /// Speed in KM/H
+        /// </summary>
+        public static double Speed;
         public static Queue<string> JoystickCommands = new Queue<string>();//Console joystic commands go in here
         public static double Depth = 0;
         public static string CompassBearing = "0";
         public static bool LeftReverse = false;
         public static bool RightReverse = false;
-        public static int PowerLeft = 0;
+        public static int PowerLeft = 0;//%
         public static int PowerRight = 0;
-        public static int PowerLeftState = 0;
+        public static int PowerLeftState = 0;//%
         public static int PowerRightState = 0;
         public static bool LeftReverseState = false;
         public static bool RightReverseState = false;
         public static bool Autopilot = false;
 
         private static bool Reverse = false;
+
         public static void OnReverse(double fromSpeed, double toSpeed,double bearing)
         {
             bool forwardAfterReverse = fromSpeed < 0 && (toSpeed > 0 || toSpeed == 0);
@@ -39,7 +42,7 @@ namespace Bliss.Services
                     bearing += 180;
                 }
             }
-            Bearing = bearing;
+            Bearing = (int)bearing;
         }
 
         //System Status
@@ -54,8 +57,8 @@ namespace Bliss.Services
 
         public static bool MapShowBearing = false;
 
-        private static double _bearing = 0;
-        public static double Bearing
+        private static int _bearing = 0;
+        public static int Bearing
         {
             get
             {
@@ -98,7 +101,7 @@ namespace Bliss.Services
         {
             get 
             { 
-                return LastLocation.Lng>0 && CurrentLocation.Lng > 0;
+                return LastLocation.Lng > 0 && CurrentLocation.Lng > 0;
             }
         }
         //Navigation
@@ -116,6 +119,10 @@ namespace Bliss.Services
         //Total Distance
         //Remaining Distance
 
+        /// <summary>
+        /// Calculate speed from time and distance travelled
+        /// </summary>
+        /// <param name="duration"></param>
         public static void CalculateSpeed(double duration)
         {
             if (!HasPosition) return;
@@ -125,7 +132,7 @@ namespace Bliss.Services
             if (distance < 8)//Gps deviation
             {
                 Speed = 0;
-                Bearing = 0;
+                //Bearing = 0;
                 return;
             }
             //16.6667 meter per minute = 1 km/h
@@ -138,16 +145,28 @@ namespace Bliss.Services
             LastLocation = Info.CurrentLocation;
             Info.CurrentLocation = CurrentLocation;
         }
+
+        /// <summary>
+        /// Todo: this must me implimented to calculate Bearing while moving
+        /// </summary>
         static void CalculateBearing()
         {
-            if (!HasPosition) return;
-            var dLon = ToRad(CurrentLocation.Lng - LastLocation.Lng);
-            var dPhi = Math.Log(Math.Tan(ToRad(CurrentLocation.Lat) / 2 + Math.PI / 4) / Math.Tan(ToRad(LastLocation.Lat) / 2 + Math.PI / 4));
-            if (Math.Abs(dLon) > Math.PI)
+            if (State.IsSimulating)
             {
-                dLon = dLon > 0 ? -(2 * Math.PI - dLon) : (2 * Math.PI + dLon);
+                //Bearing set by joystic01
             }
-            Bearing = ToBearing(Math.Atan2(dLon, dPhi));
+            else
+            {
+                //Bearing by angle between current and previous position
+                if (!HasPosition) return;
+                var dLon = ToRad(CurrentLocation.Lng - LastLocation.Lng);
+                var dPhi = Math.Log(Math.Tan(ToRad(CurrentLocation.Lat) / 2 + Math.PI / 4) / Math.Tan(ToRad(LastLocation.Lat) / 2 + Math.PI / 4));
+                if (Math.Abs(dLon) > Math.PI)
+                {
+                    dLon = dLon > 0 ? -(2 * Math.PI - dLon) : (2 * Math.PI + dLon);
+                }
+                Bearing = ToBearing(Math.Atan2(dLon, dPhi));
+            }
         }
 
         private static double ToRad(double degrees)
@@ -160,10 +179,10 @@ namespace Bliss.Services
             return radians * 180 / Math.PI;
         }
 
-        private static double ToBearing(double radians)
+        private static int ToBearing(double radians)
         {
             // convert radians to degrees (as bearing: 0...360)
-            return (ToDegrees(radians) + 360) % 360;
+            return (int)(ToDegrees(radians) + 360) % 360;
         }
     }
 
@@ -232,6 +251,95 @@ namespace Bliss.Services
                 sb.Append( alarm + " |");
             }
             return sb.ToString();
+        }
+    }
+
+    public static class Indicators
+    {
+        public static bool Forward
+        {
+            get
+            {
+                if (Info.RightReverse || Info.LeftReverse)
+                {
+                    return false;
+                }
+                else
+                {
+                    return Info.PowerRightState > 0 || Info.PowerLeftState > 0;
+                }
+            }
+        }
+        public static bool Backward
+        {
+            get
+            {
+                if (!Info.RightReverse || !Info.LeftReverse)
+                {
+                    return false;
+                }
+                else
+                {
+                    return Info.PowerRightState > 0 || Info.PowerLeftState > 0;
+                }
+            }
+        }
+        public static bool Turning
+        {
+            get
+            {
+                if (Info.RightReverse == Info.LeftReverse)
+                {
+                    return Info.PowerRightState != Info.PowerLeftState;
+                }
+                else
+                {
+                    return Info.PowerRightState != Info.PowerLeftState || Info.PowerRightState == Info.PowerLeftState;
+                }
+            }
+        }
+        public static bool Right
+        {
+            get
+            {
+                if (Info.RightReverse == Info.LeftReverse)
+                {
+                    if (Info.RightReverse)
+                    {
+                        return Info.PowerRightState > Info.PowerLeftState;
+                    }
+                    else
+                    {
+                        return Info.PowerLeftState > Info.PowerRightState;
+                    }
+                }
+                else
+                {
+                    return Info.RightReverse;
+                }
+            }
+        }
+        public static bool Left
+        {
+            get
+            {
+                if (Info.RightReverse == Info.LeftReverse)
+                {
+                    if (Info.RightReverse)
+                    {
+                        return Info.PowerLeftState > Info.PowerRightState;
+                    }
+                    else
+                    {
+                        return Info.PowerRightState > Info.PowerLeftState;
+                    }
+
+                }
+                else
+                {
+                    return Info.LeftReverse;
+                }
+            }
         }
     }
 }

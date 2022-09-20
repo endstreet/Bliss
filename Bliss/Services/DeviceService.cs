@@ -1,7 +1,4 @@
-﻿using System.IO.Ports;
-using System.Runtime.InteropServices;
-using Windows.Devices.Bluetooth;
-using Windows.Devices.Enumeration;
+﻿using System.Runtime.InteropServices;
 
 namespace Bliss.Services
 {
@@ -89,7 +86,6 @@ namespace Bliss.Services
             GC.SuppressFinalize(this);
         }
     }
-
     public class DeviceTree : IDisposable
     {
         private IntPtr _machineHandle = IntPtr.Zero;

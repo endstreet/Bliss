@@ -32,7 +32,6 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.blissMap1 = new Bliss.Controls.BlissMap();
             this.labelAlarms = new System.Windows.Forms.Label();
-            this.lblDepth = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.buttonMapOrientation = new System.Windows.Forms.Button();
             this.label20 = new System.Windows.Forms.Label();
@@ -53,7 +52,6 @@
             this.label10 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.label23 = new System.Windows.Forms.Label();
             this.groupPilot = new System.Windows.Forms.GroupBox();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnSpeedDown = new System.Windows.Forms.Button();
@@ -65,12 +63,12 @@
             this.btnSpeedUp = new System.Windows.Forms.Button();
             this.btnAutopilot = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.motorControl2 = new Bliss.Controls.MotorControl();
-            this.motorControl1 = new Bliss.Controls.MotorControl();
+            this.motorControlRight = new Bliss.Controls.MotorControl();
+            this.motorControlLeft = new Bliss.Controls.MotorControl();
             this.SpeedLbl = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.compassNav = new Bliss.Controls.Compass();
-            this.compassMag = new Bliss.Controls.Compass();
+            this.depthScanner1 = new Bliss.Controls.DepthScanner();
             this.panel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupPilot.SuspendLayout();
@@ -107,18 +105,6 @@
             this.labelAlarms.Size = new System.Drawing.Size(0, 15);
             this.labelAlarms.TabIndex = 84;
             // 
-            // lblDepth
-            // 
-            this.lblDepth.AutoSize = true;
-            this.lblDepth.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblDepth.ForeColor = System.Drawing.Color.White;
-            this.lblDepth.Location = new System.Drawing.Point(793, 269);
-            this.lblDepth.Name = "lblDepth";
-            this.lblDepth.Size = new System.Drawing.Size(16, 15);
-            this.lblDepth.TabIndex = 83;
-            this.lblDepth.Text = "...";
-            this.lblDepth.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.buttonMapOrientation);
@@ -140,7 +126,7 @@
             this.groupBox2.Controls.Add(this.label10);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.label5);
-            this.groupBox2.Font = new System.Drawing.Font("Copperplate Gothic Bold", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.groupBox2.ForeColor = System.Drawing.Color.DeepSkyBlue;
             this.groupBox2.Location = new System.Drawing.Point(782, 311);
             this.groupBox2.Name = "groupBox2";
@@ -159,6 +145,7 @@
             this.buttonMapOrientation.TabIndex = 38;
             this.buttonMapOrientation.Text = "map orientation north";
             this.buttonMapOrientation.UseVisualStyleBackColor = true;
+            this.buttonMapOrientation.Click += new System.EventHandler(this.buttonMapOrientation_Click);
             // 
             // label20
             // 
@@ -178,7 +165,7 @@
             this.label21.ForeColor = System.Drawing.Color.White;
             this.label21.Location = new System.Drawing.Point(9, 136);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(96, 14);
+            this.label21.Size = new System.Drawing.Size(75, 15);
             this.label21.TabIndex = 22;
             this.label21.Text = "waypoint eta";
             // 
@@ -200,7 +187,7 @@
             this.label19.ForeColor = System.Drawing.Color.White;
             this.label19.Location = new System.Drawing.Point(9, 122);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(131, 14);
+            this.label19.Size = new System.Drawing.Size(104, 15);
             this.label19.TabIndex = 20;
             this.label19.Text = "waypoint distance";
             // 
@@ -234,7 +221,7 @@
             this.label13.ForeColor = System.Drawing.Color.White;
             this.label13.Location = new System.Drawing.Point(9, 108);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(101, 14);
+            this.label13.Size = new System.Drawing.Size(82, 15);
             this.label13.TabIndex = 17;
             this.label13.Text = "waypoint time";
             // 
@@ -244,7 +231,7 @@
             this.label14.ForeColor = System.Drawing.Color.White;
             this.label14.Location = new System.Drawing.Point(9, 94);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(106, 14);
+            this.label14.Size = new System.Drawing.Size(79, 15);
             this.label14.TabIndex = 16;
             this.label14.Text = "total distance";
             // 
@@ -278,7 +265,7 @@
             this.label17.ForeColor = System.Drawing.Color.White;
             this.label17.Location = new System.Drawing.Point(9, 80);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(77, 14);
+            this.label17.Size = new System.Drawing.Size(61, 15);
             this.label17.TabIndex = 13;
             this.label17.Text = "Total time";
             // 
@@ -288,7 +275,7 @@
             this.label18.ForeColor = System.Drawing.Color.White;
             this.label18.Location = new System.Drawing.Point(9, 66);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(135, 14);
+            this.label18.Size = new System.Drawing.Size(112, 15);
             this.label18.TabIndex = 12;
             this.label18.Text = "remaining distance";
             // 
@@ -322,7 +309,7 @@
             this.label9.ForeColor = System.Drawing.Color.White;
             this.label9.Location = new System.Drawing.Point(9, 52);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(105, 14);
+            this.label9.Size = new System.Drawing.Size(90, 15);
             this.label9.TabIndex = 9;
             this.label9.Text = "remaining time";
             // 
@@ -332,7 +319,7 @@
             this.label10.ForeColor = System.Drawing.Color.White;
             this.label10.Location = new System.Drawing.Point(9, 38);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(30, 14);
+            this.label10.Size = new System.Drawing.Size(24, 15);
             this.label10.TabIndex = 8;
             this.label10.Text = "eta";
             // 
@@ -354,19 +341,9 @@
             this.label5.ForeColor = System.Drawing.Color.White;
             this.label5.Location = new System.Drawing.Point(9, 24);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(85, 14);
+            this.label5.Size = new System.Drawing.Size(67, 15);
             this.label5.TabIndex = 5;
             this.label5.Text = "destination";
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.ForeColor = System.Drawing.Color.White;
-            this.label23.Location = new System.Drawing.Point(711, 269);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(39, 15);
-            this.label23.TabIndex = 81;
-            this.label23.Text = "Depth";
             // 
             // groupPilot
             // 
@@ -379,7 +356,7 @@
             this.groupPilot.Controls.Add(this.btnMaxSpeed);
             this.groupPilot.Controls.Add(this.btnSpeedUp);
             this.groupPilot.Controls.Add(this.btnAutopilot);
-            this.groupPilot.Font = new System.Drawing.Font("Copperplate Gothic Bold", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.groupPilot.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.groupPilot.ForeColor = System.Drawing.Color.DeepSkyBlue;
             this.groupPilot.Location = new System.Drawing.Point(397, 312);
             this.groupPilot.Name = "groupPilot";
@@ -407,7 +384,7 @@
             this.btnSpeedDown.Name = "btnSpeedDown";
             this.btnSpeedDown.Size = new System.Drawing.Size(108, 27);
             this.btnSpeedDown.TabIndex = 44;
-            this.btnSpeedDown.Text = "slow down";
+            this.btnSpeedDown.Text = "backward";
             this.btnSpeedDown.UseVisualStyleBackColor = true;
             // 
             // btnAlarm
@@ -474,7 +451,7 @@
             this.btnSpeedUp.Name = "btnSpeedUp";
             this.btnSpeedUp.Size = new System.Drawing.Size(108, 27);
             this.btnSpeedUp.TabIndex = 38;
-            this.btnSpeedUp.Text = "speed up";
+            this.btnSpeedUp.Text = "forward";
             this.btnSpeedUp.UseVisualStyleBackColor = true;
             // 
             // btnAutopilot
@@ -490,9 +467,9 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.motorControl2);
-            this.groupBox1.Controls.Add(this.motorControl1);
-            this.groupBox1.Font = new System.Drawing.Font("Copperplate Gothic Bold", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.groupBox1.Controls.Add(this.motorControlRight);
+            this.groupBox1.Controls.Add(this.motorControlLeft);
+            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.groupBox1.ForeColor = System.Drawing.Color.DeepSkyBlue;
             this.groupBox1.Location = new System.Drawing.Point(397, 444);
             this.groupBox1.Name = "groupBox1";
@@ -501,27 +478,27 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "drive";
             // 
-            // motorControl2
+            // motorControlRight
             // 
-            this.motorControl2.BackColor = System.Drawing.Color.Transparent;
-            this.motorControl2.Location = new System.Drawing.Point(196, 16);
-            this.motorControl2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.motorControl2.MotorId = "MOTOR02";
-            this.motorControl2.Name = "motorControl2";
-            this.motorControl2.Reverse = false;
-            this.motorControl2.Size = new System.Drawing.Size(153, 69);
-            this.motorControl2.TabIndex = 45;
+            this.motorControlRight.BackColor = System.Drawing.Color.Transparent;
+            this.motorControlRight.Location = new System.Drawing.Point(196, 16);
+            this.motorControlRight.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.motorControlRight.MotorId = "MOTOR02";
+            this.motorControlRight.Name = "motorControlRight";
+            this.motorControlRight.Reverse = false;
+            this.motorControlRight.Size = new System.Drawing.Size(153, 69);
+            this.motorControlRight.TabIndex = 45;
             // 
-            // motorControl1
+            // motorControlLeft
             // 
-            this.motorControl1.BackColor = System.Drawing.Color.Transparent;
-            this.motorControl1.Location = new System.Drawing.Point(7, 16);
-            this.motorControl1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.motorControl1.MotorId = "MOTOR01";
-            this.motorControl1.Name = "motorControl1";
-            this.motorControl1.Reverse = false;
-            this.motorControl1.Size = new System.Drawing.Size(141, 69);
-            this.motorControl1.TabIndex = 44;
+            this.motorControlLeft.BackColor = System.Drawing.Color.Transparent;
+            this.motorControlLeft.Location = new System.Drawing.Point(7, 16);
+            this.motorControlLeft.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.motorControlLeft.MotorId = "MOTOR01";
+            this.motorControlLeft.Name = "motorControlLeft";
+            this.motorControlLeft.Reverse = false;
+            this.motorControlLeft.Size = new System.Drawing.Size(141, 69);
+            this.motorControlLeft.TabIndex = 44;
             // 
             // SpeedLbl
             // 
@@ -549,7 +526,6 @@
             // 
             this.compassNav.BackColor = System.Drawing.Color.Transparent;
             this.compassNav.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.compassNav.Bearing = "0";
             this.compassNav.Location = new System.Drawing.Point(397, 16);
             this.compassNav.Margin = new System.Windows.Forms.Padding(0);
             this.compassNav.MaximumSize = new System.Drawing.Size(220, 250);
@@ -561,32 +537,30 @@
             this.compassNav.TabStop = false;
             this.compassNav.Title = "Bearing";
             // 
-            // compassMag
+            // depthScanner1
             // 
-            this.compassMag.BackColor = System.Drawing.Color.Transparent;
-            this.compassMag.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.compassMag.Bearing = "0";
-            this.compassMag.Location = new System.Drawing.Point(648, 16);
-            this.compassMag.Margin = new System.Windows.Forms.Padding(0);
-            this.compassMag.MaximumSize = new System.Drawing.Size(220, 250);
-            this.compassMag.MinimumSize = new System.Drawing.Size(220, 220);
-            this.compassMag.Name = "compassMag";
-            this.compassMag.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.compassMag.Size = new System.Drawing.Size(220, 250);
-            this.compassMag.TabIndex = 92;
-            this.compassMag.Title = "Compass";
+            this.depthScanner1.BackColor = System.Drawing.Color.Transparent;
+            this.depthScanner1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.depthScanner1.Depth = 1F;
+            this.depthScanner1.Location = new System.Drawing.Point(650, 16);
+            this.depthScanner1.Margin = new System.Windows.Forms.Padding(0);
+            this.depthScanner1.MaximumSize = new System.Drawing.Size(220, 250);
+            this.depthScanner1.MinimumSize = new System.Drawing.Size(220, 220);
+            this.depthScanner1.Name = "depthScanner1";
+            this.depthScanner1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.depthScanner1.Size = new System.Drawing.Size(220, 220);
+            this.depthScanner1.TabIndex = 94;
+            this.depthScanner1.Title = null;
             // 
             // NewDash
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(1076, 566);
-            this.Controls.Add(this.compassMag);
+            this.ClientSize = new System.Drawing.Size(1159, 566);
+            this.Controls.Add(this.depthScanner1);
             this.Controls.Add(this.compassNav);
             this.Controls.Add(this.labelAlarms);
-            this.Controls.Add(this.lblDepth);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.label23);
             this.Controls.Add(this.groupPilot);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.SpeedLbl);
@@ -609,7 +583,6 @@
         private Panel panel1;
         private Controls.BlissMap blissMap1;
         private Label labelAlarms;
-        private Label lblDepth;
         private GroupBox groupBox2;
         private Button buttonMapOrientation;
         private Label label20;
@@ -630,7 +603,6 @@
         private Label label10;
         private Label label3;
         private Label label5;
-        private Label label23;
         private GroupBox groupPilot;
         private Button btnCancel;
         private Button btnSpeedDown;
@@ -642,11 +614,11 @@
         private Button btnSpeedUp;
         private Button btnAutopilot;
         private GroupBox groupBox1;
-        private Controls.MotorControl motorControl2;
-        private Controls.MotorControl motorControl1;
+        private Controls.MotorControl motorControlRight;
+        private Controls.MotorControl motorControlLeft;
         private Label SpeedLbl;
         private Label label2;
         private Controls.Compass compassNav;
-        private Controls.Compass compassMag;
+        private Controls.DepthScanner depthScanner1;
     }
 }

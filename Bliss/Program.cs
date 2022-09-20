@@ -38,14 +38,15 @@ namespace Bliss
         {
             services.AddSingleton<DeviceService, DeviceService>();
             services.AddSingleton<BleService, BleService>();
-            services.AddSingleton<SerialPortService,SerialPortService>();
-            services.AddSingleton<gpsService, gpsService>();
+            //services.AddSingleton<SerialPortService,SerialPortService>();
+            //services.AddSingleton<gpsService, gpsService>();
             services.AddSingleton<BleInterfaceService, BleInterfaceService>();
+            services.AddSingleton<SimulatorService, SimulatorService>();
             services.AddSingleton<PilotService, PilotService>();
             services.AddSingleton<DbService, DbService>();
             services.AddSingleton<GoogleMaps, GoogleMaps>();
             services.AddSingleton<JoystickService, JoystickService>();
-            services.AddSingleton<CompassService, CompassService>();
+            //services.AddSingleton<CompassService, CompassService>();
             //services.AddScoped<Dashboard, Dashboard>();
             services.AddScoped<NewDash, NewDash>();
 

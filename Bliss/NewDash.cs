@@ -1,9 +1,10 @@
 ﻿using Bliss.Component;
-using Bliss.Services;
+using GMap.NET;
 using GoogleApi;
 using GoogleApi.Entities.Common;
 using GoogleApi.Entities.Maps.Elevation.Request;
 using GoogleApi.Entities.Maps.Elevation.Response;
+using Newtonsoft.Json.Linq;
 
 
 namespace Bliss
@@ -12,7 +13,7 @@ namespace Bliss
     {
 
         private PilotService pilot;
-        private CompassService compass;
+        //private CompassService compass;
         //private SimulationService pilot = new();
 
         private System.Windows.Forms.Timer GetLocation = new System.Windows.Forms.Timer();
@@ -21,7 +22,10 @@ namespace Bliss
 
         private readonly DbService dbs;
 
-        GoogleMaps api;
+        //counter for depth acquisition
+        int depthCount;
+
+        //GoogleMaps api;
         private string ScrollText
         {
             get
@@ -34,29 +38,61 @@ namespace Bliss
             }
         }
 
-        public NewDash(CompassService _compass, PilotService _pilot, DbService _db, GoogleMaps _api)
-        {
+        //public NewDash(CompassService _compass, PilotService _pilot, DbService _db, GoogleMaps _api)
+        //{
            
+
+        //    InitializeComponent();
+
+        //    blissMap1.ApiKey = AppSettings.Default.GoogleMapApiKey;
+        //    blissMap1.DBFile = AppSettings.Default.DBLocation;
+
+        //    compass = _compass;
+        //    pilot = _pilot;
+        //    dbs = _db;
+        //    api = _api;
+        //    //pilot.OnJoysticCommand("Stop");
+
+        //    ChangeTheme(this.Controls);
+
+        //    //Timer
+        //    GetLocation.Tick += DashboardUpdate;
+        //    GetLocation.Interval = AppSettings.Default.DashBoardUpdateInterval * 1000;
+        //    GetLocation.Start();
+
+        //    pilot.OnInterfaceData += Joystick_OnJoystickData;
+        //    //pilot.OnMotorData += Pilot_OnMotordata;
+
+        //    //RunTest();
+        //}
+        public NewDash(PilotService _pilot, DbService _db)//CompassService _compass,PilotService _pilot,
+        {
+
 
             InitializeComponent();
 
             blissMap1.ApiKey = AppSettings.Default.GoogleMapApiKey;
             blissMap1.DBFile = AppSettings.Default.DBLocation;
+            blissMap1.GeoLocation = new PointLatLng(-28.817941, 32.105346);
+            //Set initial position
+            Info.LastLocation = new PointLatLng(-28.817941, 32.105346);
+            Info.CurrentLocation = new PointLatLng(-28.817941, 32.105346);
+            //blissMap1.Position = new PointLatLng(-28.804256, 32.043904);
 
-            compass = _compass;
+            //compass = _compass;
             pilot = _pilot;
             dbs = _db;
-            api = _api;
-            //pilot.OnJoysticCommand("Stop");
+            //api = _api;
+
 
             ChangeTheme(this.Controls);
 
             //Timer
             GetLocation.Tick += DashboardUpdate;
-            GetLocation.Interval = AppSettings.Default.DashBoardUpdateInterval * 1000;
+            GetLocation.Interval = AppSettings.Default.DashBoardUpdateInterval * 1000;//todo: set 1000
             GetLocation.Start();
 
-            pilot.OnInterfaceData += Joystick_OnJoystickData;
+            //pilot.OnInterfaceData += OnPilotData;
             //pilot.OnMotorData += Pilot_OnMotordata;
 
             //RunTest();
@@ -103,23 +139,36 @@ namespace Bliss
         /// <summary>
         ///  On Positionchanged
         /// </summary>
-        private void DashboardUpdate(object? sender, EventArgs e)
+        private async void DashboardUpdate(object? sender, EventArgs e)
         {
-            SpeedLbl.Text = Info.Speed.ToString();
 
-            compassMag.Bearing = Info.CompassBearing;
-            compassNav.Bearing = Info.Bearing.ToString();
+            UpdateUI();
+            SpeedLbl.Text = string.Format("{0:F1}", Info.Speed);
+            compassNav.Update(Info.Bearing);
+            //compassMag.Update(int.Parse(Info.CompassBearing));
             
             if (Info.HasPosition)
             {
                 blissMap1.MainMap_LocationUpdate();
-                if (string.IsNullOrEmpty(lblDepth.Text) || lblDepth.Text == "0")
+                if (Indicators.Forward)
                 {
-                    GetElevation();
+                    depthCount++;
+                    if (depthCount > 10)
+                    {
+                        await GetElevation();
+                        depthCount = 0;
+                        depthScanner1.Depth = (float)Info.Depth * -1;
+                        depthScanner1.Update();
+                    }
                 }
-                lblDepth.Text = Math.Round(Info.Depth, 2).ToString();
+                //if (depthWidget1.checkAutoScan.Checked && Indicators.Forward)
+                //{
+                //    await GetElevation();
+                //    depthWidget1.Depth = (float)Info.Depth * -1;
+                //    depthWidget1.Update();
+                //}
             }
-            //Todo:incomment
+            //Todo:uncomment
             //listPorts.DataSource = pilot.ActivePorts;
 
             if (State.Alarm)
@@ -140,6 +189,10 @@ namespace Bliss
             }
 
         }
+        /// <summary>
+        /// GoogleApi provides Elevation
+        /// </summary>
+        /// <returns></returns>
         private async Task GetElevation()
         {
             try
@@ -157,52 +210,22 @@ namespace Bliss
             }
             catch (Exception ex)
             {
-                State.Alarms.Enqueue(ex.Message);
+                State.Alarms.Enqueue(ex.Message + "Get Elevation");
             }
         }
+     
 
-        #region Joystick        
-        private void Joystick_OnJoystickData(object? sender, EventArgs e)
+        private void UpdateUI()
         {
-            if (!Info.JoystickCommands.Any()) return;
-            ProcessJoystickCommand(Info.JoystickCommands.Peek());
-        }
-
-        private void ProcessJoystickCommand(string input)
-        {
-            btnLeft.BackColor = input.Contains("Left") ? Color.Red : Color.Transparent;
-            btnRight.BackColor = input.Contains("Right") ? Color.Red : Color.Transparent;
-            btnSpeedUp.BackColor = input.Contains("Forward") ? Color.Red : Color.Transparent;
-            btnSpeedDown.BackColor = input.Contains("Backward") ? Color.Red : Color.Transparent;
+            btnLeft.BackColor = Indicators.Left && Indicators.Turning ? Color.Red : Color.Transparent;
+            btnRight.BackColor = Indicators.Right && Indicators.Turning ? Color.Red : Color.Transparent;
+            btnSpeedUp.BackColor = Indicators.Forward ? Color.Red : Color.Transparent;
+            btnSpeedDown.BackColor = Indicators.Backward ? Color.Red : Color.Transparent;
             //btnAlarm.BackColor = input.Alarm ? Color.Red : Color.Transparent;
-            btnStop.BackColor = input.Contains("Stop") ? Color.Red : Color.Transparent;
-            btnCancel.BackColor = input.Contains("Cancel") ? Color.Red : Color.Transparent;
+            btnStop.BackColor = (!Indicators.Backward && !Indicators.Forward) && !Indicators.Turning ? Color.Red : Color.Transparent;
+            //btnCancel.BackColor = input.Contains("Cancel") ? Color.Red : Color.Transparent;
             //pilot.OnJoysticCommand(input);
         }
-        //private void JoystickInputTimer_Tick(object sender, EventArgs e)
-        //{
-        //    try
-        //    {
-        //        if (Joystick.IsConnected)
-        //        {
-        //            Joystick.Update();
-        //        }
-        //        else if (XJoystick.IsConnected)
-        //        {
-        //            XJoystick.Update();
-        //        }
-        //        ProcessPilotCommands();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        if (JoystickInputTimer.Enabled)
-        //        {
-        //            State.Alarms.Enqueue("Joystick unplugged |");
-        //        }
-        //        ScanJoysticks();
-        //    }
-        //}
-        #endregion
 
         private void MouseOverButton(object sender, EventArgs e)
         {
@@ -230,7 +253,7 @@ namespace Bliss
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void buttonMapO_Click(object sender, EventArgs e)
+        private void buttonMapOrientation_Click(object sender, EventArgs e)
         {
             Button button = (Button)sender;
             button.Text = button.Text == "Map Orientation BEARING" ? "Map Orientation NORTH" : "Map Orientation BEARING";
@@ -240,7 +263,7 @@ namespace Bliss
 
         private void Dispose(object sender, FormClosingEventArgs e)
         {
-            compass.Dispose();
+            //compass.Dispose();
             pilot.Dispose();
         }
 

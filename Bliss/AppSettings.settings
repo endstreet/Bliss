@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="GoogleMapApiKey" Type="System.String" Scope="Application">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">AIzaSyDAmDOAJBNxAt_sfi_OOBE4c25AUio1GHQ</Value>
     </Setting>
     <Setting Name="DashBoardUpdateInterval" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1</Value>
