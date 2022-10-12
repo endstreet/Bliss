@@ -556,7 +556,7 @@
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(1159, 566);
+            this.ClientSize = new System.Drawing.Size(1065, 566);
             this.Controls.Add(this.depthScanner1);
             this.Controls.Add(this.compassNav);
             this.Controls.Add(this.labelAlarms);
