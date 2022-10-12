@@ -1,9 +1,4 @@
 ﻿using Bliss.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Bliss.Services
 {
@@ -13,7 +8,7 @@ namespace Bliss.Services
         public ConfigurationService()
         {
             configs = new List<ConfigurationSet>();
-            ConfigurationSet configSet = new ConfigurationSet("TestConfig",1, "FollowTheSun","MACADDRESS","BLE to Wireless Gateway");
+            ConfigurationSet configSet = new ConfigurationSet("TestConfig", 1, "FollowTheSun", "MACADDRESS", "BLE to Wireless Gateway");
             Device device = new Device(1, 1, "1234567890", "MOTOR01", "Main Left motor", "20 KW Bldc watercooled motor");
             device.Properties.Add(new Function(1, 1, "Reset", FunctionType.Reset, "Initialize motor controller."));
             device.Properties.Add(new Function(2, 1, "Set", FunctionType.SetValue, "Set motor Speed|Direction."));

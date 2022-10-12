@@ -25,7 +25,7 @@ namespace Bliss.Services
 
         private static bool Reverse = false;
 
-        public static void OnReverse(double fromSpeed, double toSpeed,double bearing)
+        public static void OnReverse(double fromSpeed, double toSpeed, double bearing)
         {
             bool forwardAfterReverse = fromSpeed < 0 && (toSpeed > 0 || toSpeed == 0);
             Reverse = toSpeed < 0 && (fromSpeed > 0 || fromSpeed == 0);
@@ -51,7 +51,7 @@ namespace Bliss.Services
         //Motor Temperature
         //Motor RPM
 
-        
+
         public static PointLatLng LastLocation; //new PointLatLng(-28.804256, 32.043904);
         public static PointLatLng CurrentLocation;//new PointLatLng(-28.804256, 32.043904);
 
@@ -75,17 +75,17 @@ namespace Bliss.Services
                     else
                     {
                         _bearing = value - 359;
-                        
+
                     }
-                    
+
                 }
-                else if(value < 0)
+                else if (value < 0)
                 {
                     if (value == -1)
                     {
                         _bearing = 359;
                     }
-                    else 
+                    else
                     {
                         _bearing = value + 359;
                     }
@@ -99,8 +99,8 @@ namespace Bliss.Services
 
         public static bool HasPosition
         {
-            get 
-            { 
+            get
+            {
                 return LastLocation.Lng > 0 && CurrentLocation.Lng > 0;
             }
         }
@@ -242,13 +242,13 @@ namespace Bliss.Services
         public static Queue<string> Alarms = new Queue<string>();
         public static Queue<string> Notices = new Queue<string>();
 
-        public static new string ToString() 
+        public static new string ToString()
         {
             StringBuilder sb = new StringBuilder();
             List<string> snap = Alarms.ToList();
-            foreach(string alarm in snap)
+            foreach (string alarm in snap)
             {
-                sb.Append( alarm + " |");
+                sb.Append(alarm + " |");
             }
             return sb.ToString();
         }

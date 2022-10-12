@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace Bliss.Controls
 {
-    
+
     public partial class Compass : UserControl
     {
 

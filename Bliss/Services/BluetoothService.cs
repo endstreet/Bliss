@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
-using System.Runtime.InteropServices.WindowsRuntime;
+﻿using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Timers;
 using Windows.Devices.Bluetooth;
@@ -9,9 +8,9 @@ using Windows.Storage.Streams;
 
 namespace Bliss.Services
 {
-    public  class BleService :IDisposable
+    public class BleService : IDisposable
     {
-        
+
         public event EventHandler<string>? OnBleData;
         public event EventHandler<string>? OnBleConnection;
 
@@ -38,11 +37,11 @@ namespace Bliss.Services
         }
 
         private async Task ScanBle()
-        { 
+        {
             // Query for extra properties you want returned
             string[] requestedProperties = { "System.Devices.Aep.DeviceAddress", "System.Devices.Aep.IsConnected" };
 
-            DeviceWatcher deviceWatcher = DeviceInformation.CreateWatcher( BluetoothLEDevice.GetDeviceSelectorFromPairingState(true), requestedProperties, DeviceInformationKind.AssociationEndpoint);
+            DeviceWatcher deviceWatcher = DeviceInformation.CreateWatcher(BluetoothLEDevice.GetDeviceSelectorFromPairingState(true), requestedProperties, DeviceInformationKind.AssociationEndpoint);
 
             // Register event handlers before starting the watcher. 
             deviceWatcher.Added += DeviceWatcher_Added;
@@ -107,7 +106,7 @@ namespace Bliss.Services
                                     }
                                 }
                             }
-                            OnBleConnection?.Invoke(this,"Connected");
+                            OnBleConnection?.Invoke(this, "Connected");
                         }
                     }
                     break;  //Stop DeviceWatcher when Connected
@@ -135,7 +134,7 @@ namespace Bliss.Services
             }
         }
 
-        private  void Characteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
+        private void Characteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             var reader = DataReader.FromBuffer(args.CharacteristicValue);
             var notice = reader.ReadString(args.CharacteristicValue.Length);
@@ -143,30 +142,30 @@ namespace Bliss.Services
             OnBleData?.Invoke(this, notice);
         }
 
-        private  void DeviceWatcher_Stopped(DeviceWatcher sender, object args)
+        private void DeviceWatcher_Stopped(DeviceWatcher sender, object args)
         {
             OnBleConnection?.Invoke(this, "DisConnected");
             //throw new NotImplementedException();
         }
 
-        private  void DeviceWatcher_EnumerationCompleted(DeviceWatcher sender, object args)
+        private void DeviceWatcher_EnumerationCompleted(DeviceWatcher sender, object args)
         {
             //throw new NotImplementedException();
         }
 
-        private  void DeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate args)
+        private void DeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate args)
         {
 
-                device = null;
+            device = null;
 
         }
 
-        private  void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
+        private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
         {
             //throw new NotImplementedException();
         }
 
-        private  void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation args)
+        private void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation args)
         {
             if (args.Name == BOAT_NAME)
             {

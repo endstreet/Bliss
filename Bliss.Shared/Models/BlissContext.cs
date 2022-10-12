@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Bliss.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Bliss.Models
 {

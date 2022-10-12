@@ -4,7 +4,6 @@ using GoogleApi;
 using GoogleApi.Entities.Common;
 using GoogleApi.Entities.Maps.Elevation.Request;
 using GoogleApi.Entities.Maps.Elevation.Response;
-using Newtonsoft.Json.Linq;
 
 
 namespace Bliss
@@ -40,7 +39,7 @@ namespace Bliss
 
         //public NewDash(CompassService _compass, PilotService _pilot, DbService _db, GoogleMaps _api)
         //{
-           
+
 
         //    InitializeComponent();
 
@@ -146,7 +145,7 @@ namespace Bliss
             SpeedLbl.Text = string.Format("{0:F1}", Info.Speed);
             compassNav.Update(Info.Bearing);
             //compassMag.Update(int.Parse(Info.CompassBearing));
-            
+
             if (Info.HasPosition)
             {
                 blissMap1.MainMap_LocationUpdate();
@@ -213,7 +212,7 @@ namespace Bliss
                 State.Alarms.Enqueue(ex.Message + "Get Elevation");
             }
         }
-     
+
 
         private void UpdateUI()
         {

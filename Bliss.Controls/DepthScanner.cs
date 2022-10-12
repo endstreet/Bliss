@@ -1,16 +1,12 @@
-﻿using Bliss.Component;
-using Bliss.Controls.Properties;
-using GMap.NET;
+﻿using Bliss.Controls.Properties;
 using System.ComponentModel;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
-using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Reflection;
-using System.Windows.Forms;
 
 namespace Bliss.Controls
 {
-    
+
     public partial class DepthScanner : UserControl
     {
 
@@ -24,7 +20,7 @@ namespace Bliss.Controls
 
         static Rectangle textRect = new Rectangle(60, 30, 80, 30);
         static Rectangle targetRect = new Rectangle(10, 98, 200, 60);
-        
+
         Bitmap targetBitmap = Resources.DepthGuage;
         Brush bgBrush = new LinearGradientBrush(targetRect, Color.DodgerBlue, Color.Black, 90f);
         Brush myBrush = new SolidBrush(Color.Brown);
@@ -98,7 +94,7 @@ namespace Bliss.Controls
                 }
             }
             //Set the scale factor for the Depthmap
-            
+
             float factor = (float)targetRect.Height / (float)DepthScales[newscale].Max();
             if (depths.Count > targetRect.Width / 4) depths.Dequeue();
 
@@ -121,7 +117,7 @@ namespace Bliss.Controls
                     Rectangle bar = new Rectangle(postion, targetRect.Y, 4, height);
                     g.FillRectangle(eraser, bar);
                     int scaledDepth = (int)(depth * factor) + targetRect.Y;
-                    Rectangle rect = new Rectangle(postion, scaledDepth, 4, (height+ targetRect.Y) - scaledDepth);
+                    Rectangle rect = new Rectangle(postion, scaledDepth, 4, (height + targetRect.Y) - scaledDepth);
                     g.FillRectangle(myBrush, rect);
                     postion = postion + 4;
                 }

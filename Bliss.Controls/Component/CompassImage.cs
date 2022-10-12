@@ -1,7 +1,4 @@
-﻿using System.Text;
-
-
-namespace Bliss.Component
+﻿namespace Bliss.Component
 {
     public static class CompassImage
     {
@@ -204,7 +201,7 @@ namespace Bliss.Component
         //    {
         //        background = System.IO.File.ReadAllText(@"D:\FollowTheSun\AutoPilot\Bliss.Controls\Component\CompassBack.svg");
         //    }
-            
+
         //    if (bearing == lastbearing && bitmap is not null) return bitmap;
         //    lastbearing = bearing;
         //    //using (Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(background.Replace("[Bearing]", $"{bearing} 31 28.5"))))
@@ -215,10 +212,10 @@ namespace Bliss.Component
         //    }
         //    return bitmap;
         //}
-        
+
         public static Bitmap RotateImage(int angle)
         {
-            if(bitmap == null)
+            if (bitmap == null)
             {
                 bitmap = new Bitmap(Controls.Properties.Resources.CompassBack);
                 rotatedImage = new Bitmap(bitmap.Width, bitmap.Height);

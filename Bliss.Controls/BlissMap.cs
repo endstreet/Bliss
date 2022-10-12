@@ -1,10 +1,8 @@
 ﻿using GMap.NET;
-using GMap.NET.WindowsForms;
-using GMap.NET.WindowsForms.Markers;
-using Bliss.Shared;
 using GMap.NET.CacheProviders;
 using GMap.NET.MapProviders;
-using System.Diagnostics;
+using GMap.NET.WindowsForms;
+using GMap.NET.WindowsForms.Markers;
 using System.ComponentModel;
 
 namespace Bliss.Controls
@@ -12,7 +10,7 @@ namespace Bliss.Controls
     public partial class BlissMap : UserControl
     {
         System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
-        
+
         [Description("GeoLocation"), Category("Data")]
         public PointLatLng GeoLocation { get; set; }
         //public PointLatLng LastLocation { get; set; }
@@ -46,14 +44,14 @@ namespace Bliss.Controls
             //timer.Interval = 1000;
             //timer.Tick += Timer_Tick;
             //timer.Start();
-            
+
 
             if (!GMapControl.IsDesignerHosted)
             {
-                
+
                 // add your custom map db provider
                 MsSQLPureImageCache ch = new MsSQLPureImageCache();
-                
+
                 // Create a new database connection:
                 ch.ConnectionString = $"Data Source={DBFile}.db; Version = 3; New = True; Compress = True;";
                 MainMap.Manager.SecondaryCache = ch;
@@ -84,7 +82,7 @@ namespace Bliss.Controls
                 //textBoxLng.Text = MainMap.Position.Lng.ToString(CultureInfo.InvariantCulture);
                 //textBoxGeo.Text = "Lithuania, Vilnius";
 
-                
+
 
                 MainMap.ScaleMode = ScaleModes.Fractional;
 
@@ -137,27 +135,27 @@ namespace Bliss.Controls
 
                 //RegeneratePolygon();
 
-//                try
-//                {
-//                    var overlay = DeepClone(Objects);
-//                    Debug.WriteLine("ISerializable status for markers: OK");
+                //                try
+                //                {
+                //                    var overlay = DeepClone(Objects);
+                //                    Debug.WriteLine("ISerializable status for markers: OK");
 
-//                    var overlay2 = DeepClone(Polygons);
-//                    Debug.WriteLine("ISerializable status for polygons: OK");
+                //                    var overlay2 = DeepClone(Polygons);
+                //                    Debug.WriteLine("ISerializable status for polygons: OK");
 
-//                    var overlay3 = DeepClone(Routes);
-//                    Debug.WriteLine("ISerializable status for routes: OK");
-//                }
-//                catch (Exception ex)
-//                {
-//                    Debug.WriteLine("ISerializable failure: " + ex.Message);
-//#if DEBUG
-//                    if (Debugger.IsAttached)
-//                    {
-//                        Debugger.Break();
-//                    }
-//#endif
-//                }
+                //                    var overlay3 = DeepClone(Routes);
+                //                    Debug.WriteLine("ISerializable status for routes: OK");
+                //                }
+                //                catch (Exception ex)
+                //                {
+                //                    Debug.WriteLine("ISerializable failure: " + ex.Message);
+                //#if DEBUG
+                //                    if (Debugger.IsAttached)
+                //                    {
+                //                        Debugger.Break();
+                //                    }
+                //#endif
+                //                }
             }
         }
 
@@ -214,7 +212,7 @@ namespace Bliss.Controls
         //    }
         //}
 
-        public void DrawTrack(PointLatLng from, PointLatLng to,Brush brushColor)
+        public void DrawTrack(PointLatLng from, PointLatLng to, Brush brushColor)
         {
             GMapRoute track_layer = new GMapRoute("track_layer");
             track_layer.Stroke = new Pen(brushColor, 2); //width and color of line
@@ -248,7 +246,7 @@ namespace Bliss.Controls
             //if (Services.Info.LastLocation == Services.Info.CurrentLocation) return;
 
             _top.Markers.Clear();
-            DrawTrack(GeoLocation, Services.Info.CurrentLocation,Brushes.Green);
+            DrawTrack(GeoLocation, Services.Info.CurrentLocation, Brushes.Green);
             GeoLocation = Services.Info.CurrentLocation;
             MainMap.Position = Services.Info.CurrentLocation;
             _currentMarker = new GMarkerGoogle(MainMap.Position, GMarkerGoogleType.red);
@@ -261,7 +259,7 @@ namespace Bliss.Controls
             {
                 MainMap.Bearing = 0;
             }
-            
+
         }
 
 

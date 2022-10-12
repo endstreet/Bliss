@@ -1,11 +1,9 @@
 ﻿using Bliss.NMEA;
 using GMap.NET;
-using System.Globalization;
-using System.IO.Ports;
 
 namespace Bliss.Services
 {
-    public sealed class gpsService :IDisposable
+    public sealed class gpsService : IDisposable
     {
 
         private NMEA0183 gpsdata;
@@ -42,17 +40,17 @@ namespace Bliss.Services
                 var result = gpsdata.ProcessNMEA0183(message);
                 if (result != null && result.GetType() == typeof(NMEA0183Data.GNSSData.GPSFixData))
                 {
-                        if (((NMEA0183Data.GNSSData.GPSFixData)result).QualityIndicator == GPSQualityIndicator.ValidSPSFix)
-                        {
-                            AverageLocation(new PointLatLng(((NMEA0183Data.GNSSData.GPSFixData)result).Coordinates.Latitude, ((NMEA0183Data.GNSSData.GPSFixData)result).Coordinates.Longitude));// should go here
-                        }
+                    if (((NMEA0183Data.GNSSData.GPSFixData)result).QualityIndicator == GPSQualityIndicator.ValidSPSFix)
+                    {
+                        AverageLocation(new PointLatLng(((NMEA0183Data.GNSSData.GPSFixData)result).Coordinates.Latitude, ((NMEA0183Data.GNSSData.GPSFixData)result).Coordinates.Longitude));// should go here
+                    }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 State.Alarms.Enqueue($"gps : {ex.Message}");
             }
-            
+
         }
 
         private List<PointLatLng> recents = new();

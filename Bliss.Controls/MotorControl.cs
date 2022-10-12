@@ -1,7 +1,6 @@
 ﻿
-using System.ComponentModel;
-using System.Timers;
 using Bliss.Services;
+using System.ComponentModel;
 
 namespace Bliss.Controls
 {

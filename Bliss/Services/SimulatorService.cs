@@ -1,16 +1,11 @@
 ﻿using GMap.NET;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Timers;
 
 namespace Bliss.Services
 {
-    public  class SimulatorService:IDisposable
+    public class SimulatorService : IDisposable
     {
-        private int steercancel = 0; 
+        private int steercancel = 0;
         private JoystickService joy;
         //private string _direction = "F";
         //public event EventHandler? OnInterfaceData;
@@ -60,7 +55,7 @@ namespace Bliss.Services
                     State.Alarms.Enqueue($"Error! Unknown command received ({command})");
                     break;
             }
-            
+
         }
         private string ParseCommand(string command)
         {
@@ -213,7 +208,7 @@ namespace Bliss.Services
                     break;
             }
             Info.Speed = ((speed * 32 / 200) + (speed * 32 / 200)) / 2;
-            
+
 
         }
 
@@ -254,7 +249,7 @@ namespace Bliss.Services
             {
                 if (Indicators.Forward)
                 {
-                    Info.Bearing += 5; 
+                    Info.Bearing += 5;
                 }
                 if (Indicators.Backward)
                 {

@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Bliss.Services
+﻿namespace Bliss.Services
 {
     internal class StaticData
     {
         private static List<string>? _deviceTypes;
         public static List<string> DeviceTypes
         {
-            get 
+            get
             {
                 if (_deviceTypes != null) return _deviceTypes;
 

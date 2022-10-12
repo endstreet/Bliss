@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
-
-namespace Bliss.Services
+﻿namespace Bliss.Services
 {
-    public  class BleInterfaceService:IDisposable
+    public class BleInterfaceService : IDisposable
     {
         //private SerialPortService serial;
         BleService bleConnection;
         private Queue<string> BleCommands;
         //private string _direction = "F";
         public event EventHandler? OnInterfaceData;
-       // public event EventHandler? OnSimulatorData;
+        // public event EventHandler? OnSimulatorData;
         public event EventHandler<string>? OnConnection;
         //private System.Timers.Timer SteerCancelTimer;
         public bool IsDisposed { get; private set; }
@@ -143,17 +136,17 @@ namespace Bliss.Services
             //Not Simulating send the commands to the motors
             BleCommands.Enqueue(command);
             SendCommands();
- 
+
         }
         private async void SendCommands()
         {
             string command = "";
             try
             {
-                if(BleCommands.Count > 0)
+                if (BleCommands.Count > 0)
                 {
-                   command = BleCommands.Dequeue();
-                   await bleConnection.SendBTCommand(command);
+                    command = BleCommands.Dequeue();
+                    await bleConnection.SendBTCommand(command);
                 }
 
             }
@@ -190,12 +183,12 @@ namespace Bliss.Services
                     State.Alarms.Enqueue($"Error! Unknown command received ({command})");
                     break;
             }
-            
+
         }
 
         public void BleConnection(object? obj, string state)
         {
-            OnConnection?.Invoke(this,state);
+            OnConnection?.Invoke(this, state);
         }
         private string ParseCommand(string command)
         {

@@ -44,7 +44,7 @@ namespace Bliss.Services
                             if (!ports.ContainsKey("pilotPort"))
                             {
                                 //ports.Add("pilotPort", "COM3");// pilotPort);//incoming
-                               // ports.Add("pilotPort", "COM4");// pilotPort);
+                                // ports.Add("pilotPort", "COM4");// pilotPort);
                             }
                             break;
                         case "USB-SERIAL CH340"://Chinese Arduino

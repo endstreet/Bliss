@@ -1,5 +1,4 @@
 ﻿using Bliss.Models;
-using GMap.NET;
 using System.Timers;
 
 namespace Bliss.Services
@@ -15,12 +14,12 @@ namespace Bliss.Services
         //private Queue<string> SerialCommand = new Queue<string>();
         public WayPoint? Target { get; set; }
         //public gpsService gps;
-        
+
         //public List<string> ActivePorts
         //{
         //    get { return serial.ports.Keys.ToList(); }
         //}
-        
+
 
         public event EventHandler? OnInterfaceData;
         //public event EventHandler? OnJoyStickData;
@@ -31,7 +30,7 @@ namespace Bliss.Services
         public bool IsDisposed { get; private set; }
         //public Action<object?, string> Motor_OnInterfaceData { get; }
 
-        public PilotService(BleInterfaceService _ifService,SimulatorService _simulator)//, JoystickService _joystick)
+        public PilotService(BleInterfaceService _ifService, SimulatorService _simulator)//, JoystickService _joystick)
         {
             interfaceService = _ifService;
             simulatorService = _simulator;
@@ -53,7 +52,7 @@ namespace Bliss.Services
 
         private void OnConnection(object? sender, string state)
         {
-            switch(state)
+            switch (state)
             {
                 case "Connected":
                     //simulatorService.OnInterfaceData -= OnInterFaceData;
@@ -67,7 +66,7 @@ namespace Bliss.Services
                     break;
 
             }
-            
+
         }
 
         //private void Joystick_OnJoystickData(object? sender, EventArgs e)

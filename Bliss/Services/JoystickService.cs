@@ -2,7 +2,6 @@
 using SharpDX.DirectInput;
 using SharpDX.XInput;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using System.Timers;
 using DeviceType = SharpDX.DirectInput.DeviceType;
 //using System.Diagnostics;
@@ -10,11 +9,11 @@ using DeviceType = SharpDX.DirectInput.DeviceType;
 
 namespace Bliss.Services
 {
-    public class JoystickService :IDisposable
+    public class JoystickService : IDisposable
     {
         private System.Timers.Timer JoystickInputTimer;
         private XInputController XJoystick;
-        
+
         public event EventHandler? OnJoystickData;
         public JoystickService()
         {
@@ -62,7 +61,7 @@ namespace Bliss.Services
             XJoystick.Dispose();
         }
     }
-    
+
     internal class XInputController : IDisposable
     {
         private Dictionary<string, string> Commands;
@@ -82,7 +81,7 @@ namespace Bliss.Services
         {
             controller = new Controller(UserIndex.One);//One
             IsConnected = controller.IsConnected;
-            if(!IsConnected)
+            if (!IsConnected)
             {
                 ThrustMaster();
                 return;

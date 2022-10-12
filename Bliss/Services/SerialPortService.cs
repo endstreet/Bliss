@@ -1,11 +1,10 @@
 ﻿using System.IO.Ports;
-using System.Runtime.InteropServices;
 
 
 
 namespace Bliss.Services
 {
-    public class SerialPortService:IDisposable
+    public class SerialPortService : IDisposable
     {
         public Dictionary<string, string> attachedports;
         public Dictionary<string, SerialPort> ports;
@@ -35,7 +34,7 @@ namespace Bliss.Services
             //Connect the Ports
             foreach (var port in attachedports)
             {
-                switch(port.Key)
+                switch (port.Key)
                 {
                     case "gpsPort":
                         if (!ports.ContainsKey("gpsPort"))
@@ -64,11 +63,11 @@ namespace Bliss.Services
                 }
             }
         }
-        
+
         //public bool IsInUse;
         private readonly object _mutex = new();
 
-        public void Start(string port,string PortName,int speed)
+        public void Start(string port, string PortName, int speed)
         {
             if (IsDisposed)
             {
@@ -90,7 +89,7 @@ namespace Bliss.Services
                     };
 
                     _port.Open();
-                    ports.Add(PortName,_port);
+                    ports.Add(PortName, _port);
                     _port.ErrorReceived += Port_ErrorReceived;
                     // Attach a method to be called when there
                     // is data waiting in the port's buffer
@@ -112,18 +111,18 @@ namespace Bliss.Services
                 }
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                State.Alarms.Enqueue($"Error starting {PortName} |");;
+                State.Alarms.Enqueue($"Error starting {PortName} |"); ;
                 ports.Remove(PortName);
                 Task.Delay(1000);
             }
         }
 
-        private void gpsPortDataReceived(object sender,SerialDataReceivedEventArgs e)
+        private void gpsPortDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
 
-                OnGpsData?.Invoke(null,EventArgs.Empty);
+            OnGpsData?.Invoke(null, EventArgs.Empty);
         }
 
         private void pilotPortDataReceived(object sender, SerialDataReceivedEventArgs e)
