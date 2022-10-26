@@ -481,12 +481,12 @@
             // motorControlRight
             // 
             this.motorControlRight.BackColor = System.Drawing.Color.Transparent;
-            this.motorControlRight.Location = new System.Drawing.Point(196, 16);
+            this.motorControlRight.Location = new System.Drawing.Point(167, 16);
             this.motorControlRight.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.motorControlRight.MotorId = "MOTOR02";
             this.motorControlRight.Name = "motorControlRight";
             this.motorControlRight.Reverse = false;
-            this.motorControlRight.Size = new System.Drawing.Size(153, 69);
+            this.motorControlRight.Size = new System.Drawing.Size(111, 69);
             this.motorControlRight.TabIndex = 45;
             // 
             // motorControlLeft
@@ -497,7 +497,7 @@
             this.motorControlLeft.MotorId = "MOTOR01";
             this.motorControlLeft.Name = "motorControlLeft";
             this.motorControlLeft.Reverse = false;
-            this.motorControlLeft.Size = new System.Drawing.Size(141, 69);
+            this.motorControlLeft.Size = new System.Drawing.Size(113, 69);
             this.motorControlLeft.TabIndex = 44;
             // 
             // SpeedLbl

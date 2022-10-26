@@ -186,44 +186,6 @@ namespace Bliss.Services
         }
     }
 
-    //public class PilotCommand
-    //{
-    //    public bool SpeedUp { get; set; }
-    //    public bool SpeedDown { get; set; }
-    //    public bool LeftUp { get; set; }
-    //    public bool LeftDown { get; set; }
-    //    public bool RightUp { get; set; }
-    //    public bool RightDown { get; set; }
-    //    public bool Left { get; set; }
-    //    public bool Right { get; set; }
-    //    public bool Stop { get; set; }
-    //    public bool Cancel { get; set; }
-    //    public bool Alarm { get; set; }
-
-    //    //public PilotCommand()
-    //    //{
-    //    //}
-
-    //    //public PilotCommand(string[] xboxCommand)
-    //    //{
-    //    //    if (xboxCommand.Length == 1)
-    //    //    {
-    //    //        SpeedUp = xboxCommand[0] == "DPadUp";
-    //    //        SpeedDown = xboxCommand[0] == "DPadDown";
-    //    //        Left = xboxCommand[0] == "DPadLeft";
-    //    //        Right = xboxCommand[0] == "DPadRight";
-    //    //    }
-    //    //    else 
-    //    //    { 
-    //    //        LeftUp = xboxCommand.Contains("DPadLeft") && xboxCommand.Contains("DPadUp");
-    //    //        LeftDown = xboxCommand.Contains("DPadLeft") && xboxCommand.Contains("DPadDown");
-    //    //        RightUp = xboxCommand.Contains("DPadRight") && xboxCommand.Contains("DPadUp");
-    //    //        RightDown = xboxCommand.Contains("DPadRight") && xboxCommand.Contains("DPadDown");
-    //    //    }
-    //    //}
-
-    //}
-
     public static class State
     {
         public static bool IsSimulating = true;
