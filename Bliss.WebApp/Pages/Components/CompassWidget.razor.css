@@ -1,7 +1,5 @@
-﻿.dial {
-    position: relative;
-    width: 220px;
-    height: 220px;
+﻿.widget {
+    margin: 20px;
 }
 
 svg {

@@ -16,6 +16,7 @@
 
     .home {
         grid-area: home;
+        margin:15px;
     }
 
     .toprow {
@@ -44,6 +45,7 @@
     }
 
     .voyage {
+        min-width: 250px;
         justify-self: stretch;
         align-self: stretch;
         grid-area: voyage;
