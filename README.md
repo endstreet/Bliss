@@ -9,7 +9,7 @@ Startup project is Bliss.csproj. It is a windows app.
 
 Pre-requisites for Simulation mode:
 
-A joystick is required for Simulation mode. The "View" thub control will provide Forward(speed-up),Backward(speed-down), Left and Right control.
+A joystick is required for Simulation mode. The "View" thumb control will provide Forward(speed-up),Backward(speed-down), Left and Right control.
 
 Feel free to  contact me for any required info.
 
