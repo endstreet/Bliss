@@ -1,0 +1,18 @@
+﻿.dial {
+    position: relative;
+    width: 220px;
+    height: 220px;
+}
+
+svg {
+    top: 20px;
+    position: absolute;
+    overflow: visible;
+}
+
+.lens {
+    position: absolute;
+    top: 20px;
+    width:220px;
+    height:220px;
+}

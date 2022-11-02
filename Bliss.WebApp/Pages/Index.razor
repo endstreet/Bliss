@@ -1,0 +1,16 @@
+﻿@page "/"
+
+@inject IJSRuntime JSRuntime
+
+<div class="map" id="map" style="height:100%;width:100%;">
+</div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync($"initializemap",-28.817941,32.105346);
+        }
+    }
+}

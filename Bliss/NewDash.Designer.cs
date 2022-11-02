@@ -30,7 +30,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewDash));
             this.panel1 = new System.Windows.Forms.Panel();
-            this.blissMap1 = new Bliss.Controls.BlissMap();
             this.labelAlarms = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.buttonMapOrientation = new System.Windows.Forms.Button();
@@ -69,6 +68,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.compassNav = new Bliss.Controls.Compass();
             this.depthScanner1 = new Bliss.Controls.DepthScanner();
+            this.blissMap1 = new Bliss.Controls.BlissMap();
             this.panel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupPilot.SuspendLayout();
@@ -83,18 +83,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(374, 566);
             this.panel1.TabIndex = 1;
-            // 
-            // blissMap1
-            // 
-            this.blissMap1.ApiKey = "";
-            this.blissMap1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.blissMap1.DBFile = "Bliss";
-            this.blissMap1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.blissMap1.GeoLocation = ((GMap.NET.PointLatLng)(resources.GetObject("blissMap1.GeoLocation")));
-            this.blissMap1.Location = new System.Drawing.Point(0, 0);
-            this.blissMap1.Name = "blissMap1";
-            this.blissMap1.Size = new System.Drawing.Size(374, 566);
-            this.blissMap1.TabIndex = 1;
             // 
             // labelAlarms
             // 
@@ -552,6 +540,18 @@
             this.depthScanner1.TabIndex = 94;
             this.depthScanner1.Title = null;
             // 
+            // blissMap1
+            // 
+            this.blissMap1.ApiKey = "";
+            this.blissMap1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.blissMap1.DBFile = "Bliss";
+            this.blissMap1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.blissMap1.GeoLocation = ((GMap.NET.PointLatLng)(resources.GetObject("blissMap1.GeoLocation")));
+            this.blissMap1.Location = new System.Drawing.Point(0, 0);
+            this.blissMap1.Name = "blissMap1";
+            this.blissMap1.Size = new System.Drawing.Size(374, 566);
+            this.blissMap1.TabIndex = 1;
+            // 
             // NewDash
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -581,7 +581,6 @@
 
         #endregion
         private Panel panel1;
-        private Controls.BlissMap blissMap1;
         private Label labelAlarms;
         private GroupBox groupBox2;
         private Button buttonMapOrientation;
@@ -620,5 +619,6 @@
         private Label label2;
         private Controls.Compass compassNav;
         private Controls.DepthScanner depthScanner1;
+        private Controls.BlissMap blissMap1;
     }
 }
