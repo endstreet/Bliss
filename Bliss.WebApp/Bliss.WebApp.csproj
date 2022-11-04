@@ -6,13 +6,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Include="wwwroot\images\compassdial.svg" />
-    <None Include="wwwroot\images\needlecover.svg" />
-  </ItemGroup>
-
+ 
   <ItemGroup>
     <PackageReference Include="Svg" Version="3.4.4" />
+  </ItemGroup>
+
+ 
+  <ItemGroup>
+    <Folder Include="Pages\Components\" />
   </ItemGroup>
 
 </Project>

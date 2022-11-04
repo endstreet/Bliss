@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
+
 <div class="page">
     <div class="home"><img src="/images/logo.svg" /></div>
     <div class="sidebar">
@@ -11,7 +12,15 @@
 @*            <a href="..." target="_blank">About</a>*@
         </div>
         <div class="voyage">
-            <CompassWidget ></CompassWidget>
+         <div class="col">
+            <div class="row">
+            <CompassComponent ></CompassComponent>
+        </div>
+        <br/>
+            <div class="row">
+            <DepthComponent></DepthComponent>
+        </div>
+        </div>
         </div>
         <div class="body">
             @Body

@@ -1,0 +1,17 @@
+﻿.widget {
+    margin: 20px;
+}
+
+svg {
+    top: 260px;
+    width: 220px;
+    position: absolute;
+    overflow: visible;
+}
+
+.lens {
+    position: absolute;
+    top: 260px;
+    width: 220px;
+    height: 220px;
+}
