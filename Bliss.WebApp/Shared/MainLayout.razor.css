@@ -1,8 +1,12 @@
 
 
-@media (min-width: 641px) {
+@media (min-width: 640px) {
 
+    .logo{
+        width:150px;
+    }
     .page {
+        overflow: hidden;
         background-color: darkslategrey;
         display: grid;
         grid-template-columns: 2fr 8fr 2fr;
@@ -16,7 +20,8 @@
 
     .home {
         grid-area: home;
-        margin:15px;
+        margin: 15px;
+        width: 150px;
     }
 
     .toprow {
@@ -31,10 +36,10 @@
 
     .sidebar {
         background-color: darkslategrey;
-        width: 250px;
-        height: 90vh;
-        position: sticky;
-        top: 0;
+        width: 200px;
+        height: 90.7vh;
+/*        position: sticky;*/
+/*        top: 0;*/
         grid-area: sidebar;
     }
 

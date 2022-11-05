@@ -28,6 +28,7 @@ namespace Bliss.Controls
 
         // marker
         GMapMarker _currentMarker;
+        SvgDocument FtsIcon;
 
         // polygons
         //GMapPolygon _polygon;
@@ -46,7 +47,7 @@ namespace Bliss.Controls
             //timer.Interval = 1000;
             //timer.Tick += Timer_Tick;
             //timer.Start();
-
+            FtsIcon = SvgDocument.Open("images/icon.svg");
 
             if (!GMapControl.IsDesignerHosted)
             {
@@ -267,13 +268,10 @@ namespace Bliss.Controls
 
         private Bitmap GetIcon()
         {
-
-            //todo: scale with map zoom
-            SvgDocument svg = SvgDocument.Open("images/icon.svg");
             SvgTransform rotate = new SvgRotate((float)Services.Info.Bearing,30,30);
-            svg.Transforms = new SvgTransformCollection();
-            svg.Transforms.Add(rotate);
-            return svg.Draw( (int)(2*MainMap.Zoom), (int)(2*MainMap.Zoom));
+            FtsIcon.Transforms = new SvgTransformCollection();
+            FtsIcon.Transforms.Add(rotate);
+            return FtsIcon.Draw( (int)(2*MainMap.Zoom), (int)(2*MainMap.Zoom));
         }
 
         //#region -- map events --

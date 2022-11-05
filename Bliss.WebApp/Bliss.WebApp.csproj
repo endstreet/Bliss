@@ -8,12 +8,22 @@
 
  
   <ItemGroup>
+    <PackageReference Include="GoogleApi" Version="4.2.6" />
     <PackageReference Include="Svg" Version="3.4.4" />
   </ItemGroup>
 
  
   <ItemGroup>
     <Folder Include="Pages\Components\" />
+  </ItemGroup>
+
+ 
+  <ItemGroup>
+    <Content Update="wwwroot\images\icon.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

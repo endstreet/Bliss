@@ -1,6 +1,6 @@
-.navbar-toggler {
+/*.navbar-toggler {
     background-color: darkslategrey;
-}
+}*/
 
 .top-row {
     height: 3.5rem;
@@ -50,7 +50,7 @@
     color: white;
 }
 
-@media (min-width: 641px) {
+@media (min-width: 640px) {
     .navbar-toggler {
         display: none;
     }

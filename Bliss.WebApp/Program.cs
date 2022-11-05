@@ -1,4 +1,5 @@
 using Bliss.WebApp.Data;
+using Bliss.WebApp.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -13,6 +14,7 @@ namespace Bliss.WebApp
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
+            builder.Services.AddSingleton<MapService>();
             builder.Services.AddSingleton<WeatherForecastService>();
 
             var app = builder.Build();

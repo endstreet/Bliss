@@ -1,11 +1,25 @@
 ﻿@page "/"
+@using GoogleApi.Entities.Maps.StaticMaps.Request
+@using GoogleApi.Entities.Maps.StaticMaps.Request.Enums
 
 @inject IJSRuntime JSRuntime
+@inject MapService mapService
 
 <div class="map" id="map" style="height:100%;width:100%;">
 </div>
 
 @code {
+    //Todo: place marker
+    protected override void OnInitialized()
+    {
+        //MapMarker fts = new MapMarker
+        //    {
+        //        Label = "label",
+        //        Size = MarkerSize.Normal,
+        //        Color = "color",
+        //        Icon = new MapMarkerIcon(mapService.GetIcon(0,1)
+        //    };
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)

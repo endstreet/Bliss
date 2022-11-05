@@ -226,7 +226,7 @@
 @code {
 
     [Parameter]
-    public float Depth { get; set; } = 0;
+    public float Depth { get; set; } = 626;
 
     Dictionary<int, List<int>> DepthScales = new Dictionary<int, List<int>>();
     Queue<float> depths = new Queue<float>();
@@ -253,9 +253,11 @@
             DepthScales.Add(i, ints);
             scale = scale * 10;
         }
-        for(int i =1;i <= barCount;i++)
+        float simulated = 0;
+        for (int i = 1; i <= barCount; i++)
         {
-            depths.Enqueue(0);
+            simulated = simulated + i/2;
+            depths.Enqueue(simulated);
         }
     }
 
@@ -269,17 +271,18 @@
         int scaleMax = DepthScales[DepthScales.Where(s => s.Value.Max() > depths.Max()).First().Key].Max(); ;
         //Set the scale factor for the Depthmap
         float factor = barHeight / (float)scaleMax;
-        int height = (int)barHeight;
-        int position = (int)xPosition;
+        //float height = barHeight;
+        int xposition = xPosition;
 
         //Build Rectangles markup
         StringBuilder sb = new StringBuilder();
 
         foreach (var depth in depths)
         {
-            int scaledDepth = (int)(depth * factor);
-            sb.Append($"<rect style=\"fill:#800000;\" width=\"{barWidth}\" height=\"{barHeight - scaledDepth}\" x=\"{position}\" y=\"{yPosition + scaledDepth}\" />");
-            position = position + barWidth;
+            float scaledDepth = depth * factor;
+            //string xx = $"<rect style=\"fill:#800000;\" width=\"{barWidth}\" height=\"{(barHeight - scaledDepth).ToString("0.00", CultureInfo.InvariantCulture)}\" x=\"{xposition}\" y=\"{((float)(yPosition + scaledDepth)).ToString("0.00", CultureInfo.InvariantCulture)}\" />";
+            sb.Append($"<rect style=\"fill:#800000;\" width=\"{barWidth}\" height=\"{(barHeight - scaledDepth).ToString("0.00", CultureInfo.InvariantCulture)}\" x=\"{xposition}\" y=\"{((float)(yPosition + scaledDepth)).ToString("0.00", CultureInfo.InvariantCulture)}\" />");
+            xposition = xposition + barWidth;
         }
         rectangles = new MarkupString(sb.ToString());
     }
