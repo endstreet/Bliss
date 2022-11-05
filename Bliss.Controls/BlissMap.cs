@@ -273,7 +273,7 @@ namespace Bliss.Controls
             SvgTransform rotate = new SvgRotate((float)Services.Info.Bearing,30,30);
             svg.Transforms = new SvgTransformCollection();
             svg.Transforms.Add(rotate);
-            return svg.Draw(30, 30);
+            return svg.Draw( (int)(2*MainMap.Zoom), (int)(2*MainMap.Zoom));
         }
 
         //#region -- map events --
