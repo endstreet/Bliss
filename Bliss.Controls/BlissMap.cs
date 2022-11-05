@@ -3,13 +3,15 @@ using GMap.NET.CacheProviders;
 using GMap.NET.MapProviders;
 using GMap.NET.WindowsForms;
 using GMap.NET.WindowsForms.Markers;
+using Svg;
+using Svg.Transforms;
 using System.ComponentModel;
 
 namespace Bliss.Controls
 {
     public partial class BlissMap : UserControl
     {
-        System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+       // System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
 
         [Description("GeoLocation"), Category("Data")]
         public PointLatLng GeoLocation { get; set; }
@@ -121,7 +123,8 @@ namespace Bliss.Controls
 #endif
 
                 // set current marker
-                _currentMarker = new GMarkerGoogle(MainMap.Position, GMarkerGoogleType.red);
+                //_currentMarker = new GMarkerGoogle(MainMap.Position, GMarkerGoogleType.red);
+                _currentMarker = new GMarkerGoogle(MainMap.Position, GetIcon());
                 _currentMarker.IsHitTestVisible = false;
                 _top.Markers.Add(_currentMarker);
                 GeoLocation = MainMap.Position;
@@ -249,7 +252,7 @@ namespace Bliss.Controls
             DrawTrack(GeoLocation, Services.Info.CurrentLocation, Brushes.Green);
             GeoLocation = Services.Info.CurrentLocation;
             MainMap.Position = Services.Info.CurrentLocation;
-            _currentMarker = new GMarkerGoogle(MainMap.Position, GMarkerGoogleType.red);
+            _currentMarker = new GMarkerGoogle(MainMap.Position, GetIcon());
             _top.Markers.Add(_currentMarker);
             if (Services.Info.MapShowBearing)
             {
@@ -262,6 +265,16 @@ namespace Bliss.Controls
 
         }
 
+        private Bitmap GetIcon()
+        {
+
+            //todo: scale with map zoom
+            SvgDocument svg = SvgDocument.Open("images/icon.svg");
+            SvgTransform rotate = new SvgRotate((float)Services.Info.Bearing,30,30);
+            svg.Transforms = new SvgTransformCollection();
+            svg.Transforms.Add(rotate);
+            return svg.Draw(30, 30);
+        }
 
         //#region -- map events --
 

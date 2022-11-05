@@ -20,10 +20,16 @@
 
   <ItemGroup>
     <None Remove="application.json" />
+    <None Remove="images\icon.svg" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="application.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\icon.svg">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
