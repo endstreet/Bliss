@@ -2,7 +2,8 @@
     var latlng = new google.maps.LatLng(lat, lon);
     var options = {
         zoom: 13, center: latlng,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
+/*        mapTypeId: google.maps.MapTypeId.ROADMAP,*/
+        mapId: '1dff965742cecac1'
     };
     var map = new google.maps.Map(document.getElementById("map"), options);
     const ftsIcon = {
